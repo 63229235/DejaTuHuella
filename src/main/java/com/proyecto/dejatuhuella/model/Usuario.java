@@ -1,6 +1,9 @@
 package com.proyecto.dejatuhuella.model;
 
+import com.proyecto.dejatuhuella.model.enums.Rol;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
@@ -17,6 +20,12 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
+
+    @OneToMany(mappedBy = "vendedor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Producto> productosPublicados = new HashSet<>();
+
+    @OneToMany(mappedBy = "comprador", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Pedido> pedidosRealizados = new HashSet<>();
 
     // Constructor vacío
     public Usuario() {}
@@ -77,5 +86,21 @@ public class Usuario {
 
     public void setRol(Rol rol) {
         this.rol = rol;
+    }
+
+    public Set<Producto> getProductosPublicados() {
+        return productosPublicados;
+    }
+
+    public void setProductosPublicados(Set<Producto> productosPublicados) {
+        this.productosPublicados = productosPublicados;
+    }
+
+    public Set<Pedido> getPedidosRealizados() {
+        return pedidosRealizados;
+    }
+
+    public void setPedidosRealizados(Set<Pedido> pedidosRealizados) {
+        this.pedidosRealizados = pedidosRealizados;
     }
 }
