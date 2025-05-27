@@ -1,78 +1,87 @@
 package com.proyecto.dejatuhuella.controller;
 
-import com.proyecto.dejatuhuella.model.Usuario;
-// Asegúrate de que Rol se importe correctamente si no está en el mismo paquete que Usuario
-// import com.proyecto.dejatuhuella.model.enums.Rol;
-import com.proyecto.dejatuhuella.service.UsuarioService;
-import com.proyecto.dejatuhuella.service.SeguridadService; // Necesario para @seguridadService
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List; // Importar List
+import com.proyecto.dejatuhuella.model.Usuario;
+import com.proyecto.dejatuhuella.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // Considera restringir esto en producción
 public class UsuarioController {
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioService usuarioService;
 
-    // SeguridadService para comprobaciones personalizadas como esUsuarioActual
-    // Spring lo inyectará si está anotado con @Service y es un bean gestionado.
-    // No es necesario un @Autowired aquí si se usa en la expresión SpEL directamente.
+    // Endpoint público para registrar nuevos usuarios
+    @PostMapping
+public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
+    log.info("Intentando crear usuario con datos: {}", usuario);
+    try {
+        Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
+        log.info("Usuario creado exitosamente: {}", nuevoUsuario);
+        return ResponseEntity.ok(nuevoUsuario);
+    } catch (RuntimeException e) {
+        log.error("Error al crear usuario (RuntimeException): {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    } catch (Exception e) {
+        log.error("Error inesperado al crear usuario: ", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 
     // Solo administradores pueden ver todos los usuarios
     @GetMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() { // Especificar el tipo de respuesta
+    public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
+        log.info("Solicitud para obtener todos los usuarios.");
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
-    // Un usuario puede ver su propia información, o un administrador puede ver cualquier usuario
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR') or @seguridadService.esUsuarioActual(#id)")
-    public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Long id) { // Especificar el tipo de respuesta
+    public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Long id) {
+        log.info("Solicitud para obtener usuario por ID: {}", id);
         return usuarioService.obtenerUsuarioPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Solo administradores pueden crear nuevos usuarios (ej. desde un panel de admin)
-    // Si necesitas autorregistro, se haría en un endpoint público, posiblemente en un AuthController.
-    @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) { // Especificar el tipo de respuesta
-        return ResponseEntity.ok(usuarioService.crearUsuario(usuario));
-    }
-
-    // Un usuario puede actualizar su propia información, o un administrador puede actualizar cualquier usuario
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR') or @seguridadService.esUsuarioActual(#id)")
-    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) { // Especificar el tipo de respuesta
-        // Asegurarse de que el ID del path se usa para la entidad a actualizar
-        // y que el usuario que actualiza no pueda cambiar su rol o el ID de otro.
-        // Esta lógica de validación adicional iría en el UsuarioService.
-        return usuarioService.obtenerUsuarioPorId(id)
-                .map(usuarioExistente -> {
-                    usuario.setId(id); // Asegurar que el ID es el del path
-                    // Considerar no permitir cambiar el email o rol directamente aquí sin lógica de negocio adicional
-                    return ResponseEntity.ok(usuarioService.actualizarUsuario(usuarioExistente, usuario)); // Pasar usuarioExistente y los datos nuevos
-                })
+    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        log.info("Intentando actualizar usuario ID: {} con datos: {}", id, usuario);
+        return usuarioService.actualizarUsuario(id, usuario)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Solo administradores pueden eliminar usuarios
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        return usuarioService.obtenerUsuarioPorId(id)
-                .map(usuarioExistente -> { // Cambiado 'usuario' a 'usuarioExistente' para claridad
-                    usuarioService.eliminarUsuario(id);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        log.info("Intentando eliminar usuario ID: {}", id);
+        if (usuarioService.eliminarUsuario(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.proyecto.dejatuhuella.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// Ya no se necesita @Autowired aquí si no se usa directamente
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,27 +14,27 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.proyecto.dejatuhuella.service.CustomUserDetailsService; // Asegúrate de tener este import
+// No es necesario importar CustomUserDetailsService aquí si no se usa directamente en esta clase.
+// Spring lo encontrará automáticamente si es un @Service y lo usará para el AuthenticationManager.
+// import com.proyecto.dejatuhuella.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    // CustomUserDetailsService será inyectado automáticamente por Spring donde sea necesario,
-    // como en el AuthenticationManager que se configurará a continuación.
-    // No es estrictamente necesario tener el @Autowired aquí si no se usa directamente en esta clase,
-    // pero no hace daño.
+    // El campo CustomUserDetailsService ya no es necesario aquí,
+    // Spring Security lo detectará automáticamente si es un bean @Service.
+    /*
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+    */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Spring Security usará este AuthenticationManager.
-    // Se configura automáticamente con el UserDetailsService y PasswordEncoder disponibles.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -46,30 +47,31 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/", "/home", "/registro", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-                                // ESTA LÍNEA HACE PÚBLICO EL REGISTRO (POST /api/usuarios)
-                                .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() 
-                                .requestMatchers("/api/public/**", "/api/categorias/**", "/api/productos/**").permitAll() // Otros endpoints públicos
+                                .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Permite el registro público
+                                .requestMatchers("/api/public/**", "/api/categorias/**", "/api/productos/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                                 .requestMatchers("/api/vendedor/**").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
                                 .requestMatchers("/api/comprador/**").hasAnyRole("COMPRADOR", "ADMINISTRADOR")
-                                .anyRequest().authenticated() // Todas las demás solicitudes requieren autenticación
+                                .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->
                         formLogin
-                                .loginPage("/login") // Especifica la página de login personalizada
-                                .permitAll() // Permite a todos acceder a la página de login
+                                .loginPage("/login")
+                                .permitAll()
                 )
                 .logout(logout ->
-                        logout.permitAll() // Permite a todos acceder a la funcionalidad de logout
+                        logout.permitAll()
                 );
         return http.build();
     }
-}
 
-    // Eliminamos el método configureGlobal(AuthenticationManagerBuilder auth)
+    // El método configureGlobal ya no es la forma preferida de configurar UserDetailsService
+    // con las versiones más recientes de Spring Security cuando se usa Java config.
+    // Spring Boot lo configurará automáticamente si CustomUserDetailsService es un bean @Service.
     /*
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
     */
+}

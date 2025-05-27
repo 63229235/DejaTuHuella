@@ -1,97 +1,100 @@
 package com.proyecto.dejatuhuella.service;
 
-import com.proyecto.dejatuhuella.model.Usuario;
-import com.proyecto.dejatuhuella.repository.UsuarioRepository;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder; // Asegúrate de tener esta dependencia
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List; // Añadido para obtenerTodosLosUsuarios
-import java.util.Optional; // Añadido para obtenerUsuarioPorId
+import com.proyecto.dejatuhuella.model.Usuario;
+import com.proyecto.dejatuhuella.model.enums.Rol;
+import com.proyecto.dejatuhuella.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Necesario para encriptar contraseñas
-
-    // ... existing code ...
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Usuario crearUsuario(Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        return usuarioRepository.save(usuario);
+public Usuario crearUsuario(Usuario usuario) {
+    log.info("Servicio: Intentando crear usuario: {}", usuario);
+    // Solo asignar rol por defecto si es null
+    if (usuario.getRol() == null) {
+        usuario.setRol(Rol.COMPRADOR);
+        log.info("Servicio: Rol asignado por defecto: COMPRADOR para el usuario: {}", usuario.getEmail());
+    } else {
+        log.info("Servicio: Usando rol seleccionado: {} para el usuario: {}", usuario.getRol(), usuario.getEmail());
     }
+    
+    // Verificar si el email ya existe antes de intentar guardar
+    if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
+        log.warn("Servicio: Email '{}' ya registrado.", usuario.getEmail());
+        throw new RuntimeException("El email '" + usuario.getEmail() + "' ya está registrado.");
+    }
+    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+    log.info("Servicio: Contraseña codificada para el usuario: {}", usuario.getEmail());
+    Usuario guardado = usuarioRepository.save(usuario);
+    log.info("Servicio: Usuario guardado en BD: {}", guardado);
+    return guardado;
+}
 
     @Transactional(readOnly = true)
     public List<Usuario> obtenerTodosLosUsuarios() {
+        log.info("Servicio: Obteniendo todos los usuarios.");
         return usuarioRepository.findAll();
     }
 
     @Transactional(readOnly = true)
     public Optional<Usuario> obtenerUsuarioPorId(Long id) {
+        log.info("Servicio: Obteniendo usuario por ID: {}", id);
         return usuarioRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
     public Usuario buscarPorEmail(String email) {
+        log.info("Servicio: Buscando usuario por email: {}", email);
         return usuarioRepository.findByEmail(email);
     }
 
-
     @Transactional
-    public Usuario actualizarUsuario(Usuario usuarioExistente, Usuario datosNuevosDelRequest) {
-        // 'usuarioExistente' es la entidad cargada desde la BD (gestionada por JPA)
-        // 'datosNuevosDelRequest' es el objeto que viene del @RequestBody en el controlador
-
-        // Actualizar los campos de usuarioExistente con los valores de datosNuevosDelRequest
-        if (datosNuevosDelRequest.getNombre() != null) {
-            usuarioExistente.setNombre(datosNuevosDelRequest.getNombre());
-        }
-        if (datosNuevosDelRequest.getApellido() != null) {
-            usuarioExistente.setApellido(datosNuevosDelRequest.getApellido());
-        }
-
-        // Lógica para el email:
-        // Solo actualizar si el email es diferente y no está ya en uso por OTRO usuario.
-        if (datosNuevosDelRequest.getEmail() != null && !datosNuevosDelRequest.getEmail().equals(usuarioExistente.getEmail())) {
-            if (usuarioRepository.findByEmail(datosNuevosDelRequest.getEmail()) != null &&
-                    !usuarioRepository.findByEmail(datosNuevosDelRequest.getEmail()).getId().equals(usuarioExistente.getId())) {
-                throw new RuntimeException("El email '" + datosNuevosDelRequest.getEmail() + "' ya está en uso por otro usuario.");
-            }
-            usuarioExistente.setEmail(datosNuevosDelRequest.getEmail());
-        }
-
-        // Lógica para la contraseña:
-        // Solo actualizar si se proporciona una nueva contraseña (no vacía)
-        if (datosNuevosDelRequest.getPassword() != null && !datosNuevosDelRequest.getPassword().isEmpty()) {
-            usuarioExistente.setPassword(passwordEncoder.encode(datosNuevosDelRequest.getPassword()));
-        }
-
-        // Lógica para el rol:
-        // Considera si este cambio debe ser permitido y bajo qué condiciones (ej. solo por un ADMIN)
-        if (datosNuevosDelRequest.getRol() != null && datosNuevosDelRequest.getRol() != usuarioExistente.getRol()) {
-            // Aquí podrías añadir validaciones de seguridad si es necesario.
-            // Por ejemplo, verificar si el usuario autenticado tiene permisos para cambiar roles.
-            usuarioExistente.setRol(datosNuevosDelRequest.getRol());
-        }
-
-        // Guarda la entidad usuarioExistente actualizada.
-        // Como usuarioExistente es una entidad gestionada por JPA y estamos dentro de una transacción,
-        // los cambios se persistirán al finalizar el método, pero un save explícito es una buena práctica.
-        return usuarioRepository.save(usuarioExistente);
+    public Optional<Usuario> actualizarUsuario(Long id, Usuario usuarioDetalles) {
+        log.info("Servicio: Intentando actualizar usuario ID: {} con detalles: {}", id, usuarioDetalles);
+        return usuarioRepository.findById(id)
+                .map(usuarioExistente -> {
+                    usuarioExistente.setNombre(usuarioDetalles.getNombre());
+                    usuarioExistente.setApellido(usuarioDetalles.getApellido());
+                    usuarioExistente.setEmail(usuarioDetalles.getEmail());
+                    if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isEmpty()) {
+                        usuarioExistente.setPassword(passwordEncoder.encode(usuarioDetalles.getPassword()));
+                        log.info("Servicio: Contraseña actualizada para usuario ID: {}", id);
+                    }
+                    // Considera si el rol puede ser actualizado y por quién
+                    // usuarioExistente.setRol(usuarioDetalles.getRol());
+                    Usuario actualizado = usuarioRepository.save(usuarioExistente);
+                    log.info("Servicio: Usuario ID: {} actualizado: {}", id, actualizado);
+                    return actualizado;
+                });
     }
 
     @Transactional
-    public void eliminarUsuario(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + id);
+    public boolean eliminarUsuario(Long id) {
+        log.info("Servicio: Intentando eliminar usuario ID: {}", id);
+        if (usuarioRepository.existsById(id)) {
+            usuarioRepository.deleteById(id);
+            log.info("Servicio: Usuario ID: {} eliminado.", id);
+            return true;
         }
-        usuarioRepository.deleteById(id);
+        log.warn("Servicio: Usuario ID: {} no encontrado para eliminar.", id);
+        return false;
     }
-
 }

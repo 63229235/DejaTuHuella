@@ -1,10 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Registro de Usuario</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
-
+<h2>Formulario de Registro</h2>
+<!-- El action apuntará a un endpoint en tu UsuarioController que maneje el POST -->
+<form th:action="@{/api/usuarios}" method="post">
+    <div>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+    </div>
+    <div>
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" required>
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+        <label for="rol">Rol:</label>
+        <select id="rol" name="rol">
+            <option value="COMPRADOR">Comprador</option>
+            <option value="VENDEDOR">Vendedor</option>
+            <!-- Considera si el rol ADMINISTRADOR se asigna desde aquí o de otra forma -->
+        </select>
+    </div>
+    <button type="submit">Registrarse</button>
+</form>
+<p><a th:href="@{/}">Volver al inicio</a></p>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userData = {
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                rol: document.getElementById('rol').value
+            };
+            
+            fetch('/api/usuarios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Usuario registrado correctamente');
+                    window.location.href = '/login';
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Error al registrar usuario');
+                    });
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+    });
+    </script>
 </body>
 </html>

@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Bienvenido a DejaTuHuella</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
-$END$
+<h1>¡Bienvenido a DejaTuHuella!</h1>
+<p>Esta es la página de inicio.</p>
+<ul>
+    <li><a th:href="@{/registro}">Registrarse</a></li>
+    <li><a th:href="@{/login}">Iniciar Sesión</a></li>
+    <li><a th:href="@{/panel-control}">Panel de Control (requiere inicio de sesión)</a></li>
+</ul>
 </body>
 </html>

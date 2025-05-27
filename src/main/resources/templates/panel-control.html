@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Panel de Control</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
-$END$
+<h1>Panel de Control</h1>
+
+<div sec:authorize="isAuthenticated()">
+    <p>Bienvenido, <span sec:authentication="name">Usuario</span>!</p>
+    <p>Roles: <span sec:authentication="principal.authorities">[Roles]</span></p>
+</div>
+
+<div sec:authorize="hasRole('ADMINISTRADOR')">
+    <p>Hola Administrador! Tienes acceso a funciones de administrador.</p>
+    <!-- Contenido específico para ADMINISTRADOR -->
+</div>
+
+<div sec:authorize="hasRole('VENDEDOR')">
+    <p>Hola Vendedor! Puedes gestionar tus productos.</p>
+    <!-- Contenido específico para VENDEDOR -->
+</div>
+
+<div sec:authorize="hasRole('COMPRADOR')">
+    <p>Hola Comprador! Puedes ver tus pedidos.</p>
+    <!-- Contenido específico para COMPRADOR -->
+</div>
+
+<form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+    <button type="submit">Cerrar Sesión</button>
+</form>
+
+<p><a th:href="@{/}">Volver al inicio</a></p>
 </body>
 </html>
