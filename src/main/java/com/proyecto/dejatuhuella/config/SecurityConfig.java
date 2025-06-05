@@ -50,8 +50,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Permite el registro público
                                 .requestMatchers("/api/public/**", "/api/categorias/**", "/api/productos/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
-                                .requestMatchers("/api/vendedor/**").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
-                                .requestMatchers("/api/comprador/**").hasAnyRole("COMPRADOR", "ADMINISTRADOR")
+                                .requestMatchers("/api/usuario/**").hasAnyRole("USUARIO", "ADMINISTRADOR")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->

@@ -26,27 +26,27 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-public Usuario crearUsuario(Usuario usuario) {
-    log.info("Servicio: Intentando crear usuario: {}", usuario);
-    // Solo asignar rol por defecto si es null
-    if (usuario.getRol() == null) {
-        usuario.setRol(Rol.COMPRADOR);
-        log.info("Servicio: Rol asignado por defecto: COMPRADOR para el usuario: {}", usuario.getEmail());
-    } else {
-        log.info("Servicio: Usando rol seleccionado: {} para el usuario: {}", usuario.getRol(), usuario.getEmail());
+    public Usuario crearUsuario(Usuario usuario) {
+        log.info("Servicio: Intentando crear usuario: {}", usuario);
+        // Solo asignar rol por defecto si es null
+        if (usuario.getRol() == null) {
+            usuario.setRol(Rol.USUARIO);
+            log.info("Servicio: Rol asignado por defecto: USUARIO para el usuario: {}", usuario.getEmail());
+        } else {
+            log.info("Servicio: Usando rol seleccionado: {} para el usuario: {}", usuario.getRol(), usuario.getEmail());
+        }
+        
+        // Verificar si el email ya existe antes de intentar guardar
+        if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
+            log.warn("Servicio: Email '{}' ya registrado.", usuario.getEmail());
+            throw new RuntimeException("El email '" + usuario.getEmail() + "' ya está registrado.");
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        log.info("Servicio: Contraseña codificada para el usuario: {}", usuario.getEmail());
+        Usuario guardado = usuarioRepository.save(usuario);
+        log.info("Servicio: Usuario guardado en BD: {}", guardado);
+        return guardado;
     }
-    
-    // Verificar si el email ya existe antes de intentar guardar
-    if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
-        log.warn("Servicio: Email '{}' ya registrado.", usuario.getEmail());
-        throw new RuntimeException("El email '" + usuario.getEmail() + "' ya está registrado.");
-    }
-    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-    log.info("Servicio: Contraseña codificada para el usuario: {}", usuario.getEmail());
-    Usuario guardado = usuarioRepository.save(usuario);
-    log.info("Servicio: Usuario guardado en BD: {}", guardado);
-    return guardado;
-}
 
     @Transactional(readOnly = true)
     public List<Usuario> obtenerTodosLosUsuarios() {

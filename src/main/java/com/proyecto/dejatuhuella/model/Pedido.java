@@ -102,6 +102,4 @@ public class Pedido {
         detalle.setPedido(null);
     }
 
-    // equals y hashCode (basados en id)
-// ... existing code ...
 }
