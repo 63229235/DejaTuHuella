@@ -1,6 +1,7 @@
 package com.proyecto.dejatuhuella.repository;
 
 import com.proyecto.dejatuhuella.model.Producto;
+import com.proyecto.dejatuhuella.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +10,9 @@ import java.util.List;
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByVendedorId(Long vendedorId);
-    // Puedes añadir más métodos de búsqueda personalizados si los necesitas
+    // Añadimos método para filtrar por categoría
+    List<Producto> findByCategoriaId(Long categoriaId);
+    // Método para búsqueda por nombre (opcional)
+    List<Producto> findByNombreContainingIgnoreCase(String nombre);
+    List<Producto> findByVendedor(Usuario vendedor);
 }

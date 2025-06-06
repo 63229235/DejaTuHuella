@@ -35,9 +35,9 @@ public class UsuarioService {
         } else {
             log.info("Servicio: Usando rol seleccionado: {} para el usuario: {}", usuario.getRol(), usuario.getEmail());
         }
-        
+
         // Verificar si el email ya existe antes de intentar guardar
-        if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             log.warn("Servicio: Email '{}' ya registrado.", usuario.getEmail());
             throw new RuntimeException("El email '" + usuario.getEmail() + "' ya está registrado.");
         }
@@ -61,7 +61,7 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Usuario buscarPorEmail(String email) {
+    public Optional<Usuario> buscarPorEmail(String email) {
         log.info("Servicio: Buscando usuario por email: {}", email);
         return usuarioRepository.findByEmail(email);
     }

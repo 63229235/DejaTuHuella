@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${categoria.nombre} + ' - DejaTuHuella'">Categoría - DejaTuHuella</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome para iconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+  <div class="mb-4">
+    <a href="/categorias" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Volver a Categorías</a>
+  </div>
+
+  <h1 class="mb-4" th:text="${categoria.nombre}">Nombre Categoría</h1>
+  <p class="lead mb-5" th:text="${categoria.descripcion}">Descripción de la categoría</p>
+
+  <div class="row g-4">
+    <div class="col-md-4" th:each="producto : ${productos}">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${producto.nombre}">Nombre Producto</h5>
+          <p class="card-text" th:text="${producto.descripcion}">Descripción del producto</p>
+          <p class="card-text fw-bold" th:text="'$' + ${producto.precio}">$0.00</p>
+          <p class="card-text" th:text="'Stock: ' + ${producto.stock}">Stock: 0</p>
+          <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+            <input type="hidden" name="productoId" th:value="${producto.id}">
+            <div class="d-flex align-items-center mb-3">
+              <label for="cantidad" class="me-2">Cantidad:</label>
+              <input type="number" id="cantidad" name="cantidad" class="form-control" value="1" min="1" th:max="${producto.stock}" style="width: 70px;">
+            </div>
+            <button type="submit" class="btn btn-primary" th:disabled="${producto.stock < 1}">
+              <i class="fas fa-cart-plus"></i> Añadir al Carrito
+            </button>
+          </form>
+          <a th:href="@{/login}" class="btn btn-primary" sec:authorize="!isAuthenticated()">
+            Inicia sesión para comprar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay productos -->
+    <div class="col-12 text-center" th:if="${productos.empty}">
+      <div class="alert alert-info">
+        <h4>No hay productos disponibles en esta categoría</h4>
+        <p>Vuelve más tarde o explora otras categorías</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

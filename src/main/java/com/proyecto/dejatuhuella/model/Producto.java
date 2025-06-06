@@ -8,8 +8,6 @@ import java.util.Set;
 @Entity
 @Table(name = "productos")
 public class Producto {
-
-    // ... existing code ...
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +16,7 @@ public class Producto {
     private String descripcion;
     private BigDecimal precio;
     private Integer stock;
+    private Boolean activo = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendedor_id", nullable = false)
@@ -39,7 +38,6 @@ public class Producto {
     }
 
     public Producto(String nombre, String descripcion, BigDecimal precio, Integer stock, Usuario vendedor, Categoria categoria) {
-        // ... existing code ...
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
@@ -49,7 +47,6 @@ public class Producto {
     }
 
     // Getters y Setters
-    // ... existing code ...
 
     public Long getId() {
         return id;
@@ -113,5 +110,13 @@ public class Producto {
 
     public void setDetallesPedido(Set<DetallePedido> detallesPedido) {
         this.detallesPedido = detallesPedido;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Boolean getActivo() {
+        return activo;
     }
 }

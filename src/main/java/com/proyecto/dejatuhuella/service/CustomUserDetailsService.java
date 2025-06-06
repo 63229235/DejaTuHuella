@@ -24,15 +24,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    // Agregar una propiedad para almacenar el usuario actual
+    private Usuario usuario;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         logger.info("Intentando cargar usuario por email: {}", email);
-        Usuario usuario = usuarioRepository.findByEmail(email);
-
-        if (usuario == null) {
-            logger.warn("Usuario no encontrado con email: {}", email);
-            throw new UsernameNotFoundException("Usuario no encontrado con email: " + email);
-        }
+        usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
         logger.info("Usuario encontrado: {}, Rol: {}", usuario.getEmail(), usuario.getRol().name());
         // Por seguridad, NUNCA registres la contraseña, ni siquiera la codificada, en producción.
@@ -44,5 +43,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         logger.info("Autoridades asignadas para {}: {}", email, roleName);
 
         return new User(usuario.getEmail(), usuario.getPassword(), authorities);
+    }
+
+    // Método para obtener el usuario actual
+    public Usuario getUsuario() {
+        return usuario;
     }
 }

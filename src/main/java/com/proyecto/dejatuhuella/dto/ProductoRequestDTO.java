@@ -25,7 +25,7 @@ public class ProductoRequestDTO {
     private Integer stock;
 
     @NotNull(message = "El ID del vendedor es obligatorio")
-    private Long vendedorId; // Se obtendrá del usuario autenticado en una implementación más robusta
+    private Long vendedorId;
 
     private Long categoriaId; // Opcional, un producto podría no tener categoría inicialmente
 

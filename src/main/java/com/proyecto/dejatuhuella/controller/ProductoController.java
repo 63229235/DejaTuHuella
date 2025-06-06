@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -34,18 +36,32 @@ public class ProductoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Crear un nuevo producto (solo VENDEDOR o ADMINISTRADOR)
     @PostMapping
     @PreAuthorize("hasRole('VENDEDOR') or hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> crearProducto(@Valid @RequestBody ProductoRequestDTO productoRequestDTO) {
-        // En una implementación más robusta, el vendedorId se tomaría del usuario autenticado (Principal)
-        // y no se pasaría en el DTO, o se validaría que el vendedorId del DTO coincida con el autenticado si es VENDEDOR.
-        // Por ahora, confiamos en el DTO y la autorización de rol.
+    public ResponseEntity<?> crearProducto(
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("precio") BigDecimal precio,
+            @RequestParam("stock") Integer stock,
+            @RequestParam("vendedorId") Long vendedorId,
+            @RequestParam(value = "categoriaId", required = false) Long categoriaId,
+            @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
         try {
+            // Crear el DTO manualmente
+            ProductoRequestDTO productoRequestDTO = new ProductoRequestDTO();
+            productoRequestDTO.setNombre(nombre);
+            productoRequestDTO.setDescripcion(descripcion);
+            productoRequestDTO.setPrecio(precio);
+            productoRequestDTO.setStock(stock);
+            productoRequestDTO.setVendedorId(vendedorId);
+            productoRequestDTO.setCategoriaId(categoriaId);
+
+            // Aquí puedes manejar la imagen si es necesario
+            // Por ejemplo, guardarla en el sistema de archivos o en la base de datos
+
             Producto nuevoProducto = productoService.crearProducto(productoRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);
         } catch (RuntimeException e) {
-            // Considerar un manejo de excepciones más específico
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -78,5 +94,32 @@ public class ProductoController {
             }
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // Cambiar estado de un producto (solo ADMINISTRADOR)
+    @PutMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<?> cambiarEstadoProducto(@PathVariable Long id, @RequestParam Boolean activo) {
+        try {
+            Producto producto = productoService.cambiarEstadoProducto(id, activo);
+            return ResponseEntity.ok(producto);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("no encontrado")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Obtener productos por categoría
+    @GetMapping("/categoria/{categoriaId}")
+    public ResponseEntity<List<Producto>> obtenerProductosPorCategoria(@PathVariable Long categoriaId) {
+        return ResponseEntity.ok(productoService.obtenerProductosPorCategoria(categoriaId));
+    }
+
+    // Buscar productos por nombre
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Producto>> buscarProductos(@RequestParam String query) {
+        return ResponseEntity.ok(productoService.buscarProductos(query));
     }
 }
