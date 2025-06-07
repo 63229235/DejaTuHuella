@@ -11,29 +11,7 @@
 </head>
 <body>
 <!-- Barra de navegación -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/}">DejaTuHuella</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/}">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/categorias}">Categorías</a>
-                </li>
-            </ul>
-            <div class="d-flex">
-                <a th:href="@{/cart}" class="btn btn-outline-primary me-2">
-                    <i class="fas fa-shopping-cart"></i> Carrito <span class="badge bg-danger" th:text="${cartCount}">0</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</nav>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="container mt-4">
     <div class="row">
@@ -152,7 +130,7 @@
                                     <button class="btn btn-sm btn-outline-info" th:onclick="'verDetallePedido(' + ${venta.id} + ')'">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <div sec:authorize="hasRole('VENDEDOR') or hasRole('ADMINISTRADOR')">
+                                    <div sec:authorize="hasRole('USUARIO') or hasRole('ADMINISTRADOR')">
                                         <button th:if="${venta.estado.name() == 'PENDIENTE'}" class="btn btn-sm btn-outline-success"
                                                 th:onclick="'actualizarEstadoPedido(' + ${venta.id} + ', \'PAGADO\')'">
                                             <i class="fas fa-check"></i> Marcar Pagado

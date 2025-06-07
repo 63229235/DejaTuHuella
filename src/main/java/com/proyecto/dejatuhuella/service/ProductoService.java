@@ -66,6 +66,14 @@ public class ProductoService {
         producto.setVendedor(vendedor);
         producto.setCategoria(categoria); // Asignar la categoría
 
+        // Guardar la URL de la imagen
+        if (productoRequestDTO.getImagenUrl() != null) {
+            producto.setImagenUrl(productoRequestDTO.getImagenUrl());
+        } else {
+            // URL de imagen por defecto si no se proporciona una
+            producto.setImagenUrl("https://via.placeholder.com/150");
+        }
+
         return productoRepository.save(producto);
     }
 

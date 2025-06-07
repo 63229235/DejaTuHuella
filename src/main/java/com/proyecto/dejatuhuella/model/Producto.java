@@ -17,6 +17,7 @@ public class Producto {
     private BigDecimal precio;
     private Integer stock;
     private Boolean activo = true;
+    private String imagenUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendedor_id", nullable = false)
@@ -118,5 +119,13 @@ public class Producto {
 
     public Boolean getActivo() {
         return activo;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
     }
 }

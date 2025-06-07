@@ -29,6 +29,8 @@ public class ProductoRequestDTO {
 
     private Long categoriaId; // Opcional, un producto podría no tener categoría inicialmente
 
+    private String imagenUrl;
+
     // Getters y Setters
     public String getNombre() {
         return nombre;
@@ -76,5 +78,13 @@ public class ProductoRequestDTO {
 
     public void setCategoriaId(Long categoriaId) {
         this.categoriaId = categoriaId;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
     }
 }

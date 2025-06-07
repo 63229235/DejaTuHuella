@@ -32,7 +32,7 @@ public class SeguridadService {
             return null;
         }
         String emailUsuarioAutenticado = authentication.getName();
-        return usuarioService.buscarPorEmail(emailUsuarioAutenticado);
+        return usuarioService.buscarPorEmail(emailUsuarioAutenticado).orElse(null);
     }
 
     /**

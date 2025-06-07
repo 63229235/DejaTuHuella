@@ -56,10 +56,13 @@ function editarProducto(id) {
         formData.append('precio', document.getElementById('precio').value);
         formData.append('stock', document.getElementById('stock').value);
         formData.append('categoriaId', document.getElementById('categoria').value);
+        // Añadir el vendedorId - Puedes obtener este valor del usuario actual
+        formData.append('vendedorId', obtenerVendedorIdActual()); // Implementa esta función o usa un valor fijo
 
         const imagenInput = document.getElementById('imagen');
         if (imagenInput.files.length > 0) {
             formData.append('imagen', imagenInput.files[0]);
+            // Ya no necesitamos establecer imagenUrl aquí, el servidor lo manejará
         }
 
         const url = productoId ? `/api/productos/${productoId}` : '/api/productos';
@@ -76,6 +79,17 @@ function editarProducto(id) {
                 alert('Error al guardar el producto');
             }
         });
+    }
+
+    // Función para obtener el ID del vendedor actual
+    function obtenerVendedorIdActual() {
+        // Puedes implementar esto de varias formas:
+        // 1. Obtener el ID del vendedor de una variable global establecida en el servidor
+        // 2. Hacer una petición al servidor para obtener el ID del usuario actual
+        // 3. Almacenar el ID en un campo oculto en el HTML
+
+        // Por ahora, retornamos un valor fijo (debes cambiarlo por el ID real)
+        return 1; // Reemplaza con el ID real del vendedor
     }
 
     function verDetallePedido(id) {

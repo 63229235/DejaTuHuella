@@ -2,6 +2,7 @@ package com.proyecto.dejatuhuella.controller;
 
 import com.proyecto.dejatuhuella.dto.ProductoRequestDTO;
 import com.proyecto.dejatuhuella.model.Producto;
+import com.proyecto.dejatuhuella.service.FileStorageService;
 import com.proyecto.dejatuhuella.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     // Obtener todos los productos (público o para cualquier rol autenticado)
     @GetMapping
     public ResponseEntity<List<Producto>> obtenerTodosLosProductos() {
@@ -37,7 +41,7 @@ public class ProductoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('VENDEDOR') or hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('USUARIO') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<?> crearProducto(
             @RequestParam("nombre") String nombre,
             @RequestParam("descripcion") String descripcion,
@@ -56,8 +60,14 @@ public class ProductoController {
             productoRequestDTO.setVendedorId(vendedorId);
             productoRequestDTO.setCategoriaId(categoriaId);
 
-            // Aquí puedes manejar la imagen si es necesario
-            // Por ejemplo, guardarla en el sistema de archivos o en la base de datos
+            // Procesar la imagen si existe
+            if (imagen != null && !imagen.isEmpty()) {
+                String imagenUrl = fileStorageService.storeFile(imagen);
+                productoRequestDTO.setImagenUrl(imagenUrl);
+            } else {
+                // URL de imagen por defecto
+                productoRequestDTO.setImagenUrl("/images/producto-default.jpg");
+            }
 
             Producto nuevoProducto = productoService.crearProducto(productoRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);
@@ -66,11 +76,40 @@ public class ProductoController {
         }
     }
 
-    // Actualizar un producto (solo VENDEDOR propietario o ADMINISTRADOR)
+    // Actualizar un producto (solo USUARIO propietario o ADMINISTRADOR)
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR') or (hasRole('VENDEDOR') and @seguridadService.esPropietarioDelProducto(#id))")
-    public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @Valid @RequestBody ProductoRequestDTO productoRequestDTO) {
+    @PreAuthorize("hasRole('ADMINISTRADOR') or (hasRole('USUARIO') and @seguridadService.esPropietarioDelProducto(#id))")
+    public ResponseEntity<?> actualizarProducto(
+            @PathVariable Long id,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("precio") BigDecimal precio,
+            @RequestParam("stock") Integer stock,
+            @RequestParam(value = "categoriaId", required = false) Long categoriaId,
+            @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
         try {
+            // Obtener el producto existente
+            Producto productoExistente = productoService.obtenerProductoPorId(id)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+
+            // Crear el DTO manualmente
+            ProductoRequestDTO productoRequestDTO = new ProductoRequestDTO();
+            productoRequestDTO.setNombre(nombre);
+            productoRequestDTO.setDescripcion(descripcion);
+            productoRequestDTO.setPrecio(precio);
+            productoRequestDTO.setStock(stock);
+            productoRequestDTO.setCategoriaId(categoriaId);
+            productoRequestDTO.setVendedorId(productoExistente.getVendedor().getId());
+
+            // Procesar la imagen si existe
+            if (imagen != null && !imagen.isEmpty()) {
+                String imagenUrl = fileStorageService.storeFile(imagen);
+                productoRequestDTO.setImagenUrl(imagenUrl);
+            } else {
+                // Mantener la URL de imagen existente
+                productoRequestDTO.setImagenUrl(productoExistente.getImagenUrl());
+            }
+
             Producto productoActualizado = productoService.actualizarProducto(id, productoRequestDTO);
             return ResponseEntity.ok(productoActualizado);
         } catch (RuntimeException e) {
@@ -83,7 +122,7 @@ public class ProductoController {
 
     // Eliminar un producto (solo VENDEDOR propietario o ADMINISTRADOR)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR') or (hasRole('VENDEDOR') and @seguridadService.esPropietarioDelProducto(#id))")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or (hasRole('USUARIO') and @seguridadService.esPropietarioDelProducto(#id))")
     public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
         try {
             productoService.eliminarProducto(id);
