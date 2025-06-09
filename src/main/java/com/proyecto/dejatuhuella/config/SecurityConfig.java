@@ -56,21 +56,17 @@ public class SecurityConfig {
                 .formLogin(formLogin ->
                         formLogin
                                 .loginPage("/login")
+                                .defaultSuccessUrl("/", true) // Añadir esta línea
                                 .permitAll()
                 )
                 .logout(logout ->
-                        logout.permitAll()
+                        logout
+                                .logoutSuccessUrl("/") // Añadir esta línea
+                                .permitAll()
+                )
+                .exceptionHandling(handling ->
+                        handling.accessDeniedPage("/403") // Añadir esta línea
                 );
         return http.build();
     }
-
-    // El método configureGlobal ya no es la forma preferida de configurar UserDetailsService
-    // con las versiones más recientes de Spring Security cuando se usa Java config.
-    // Spring Boot lo configurará automáticamente si CustomUserDetailsService es un bean @Service.
-    /*
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-    }
-    */
 }

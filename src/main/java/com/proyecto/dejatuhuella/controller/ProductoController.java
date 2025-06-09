@@ -2,6 +2,7 @@ package com.proyecto.dejatuhuella.controller;
 
 import com.proyecto.dejatuhuella.dto.ProductoRequestDTO;
 import com.proyecto.dejatuhuella.model.Producto;
+import com.proyecto.dejatuhuella.repository.UsuarioRepository;
 import com.proyecto.dejatuhuella.service.FileStorageService;
 import com.proyecto.dejatuhuella.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.proyecto.dejatuhuella.model.Usuario;
+import com.proyecto.dejatuhuella.repository.UsuarioRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -24,6 +31,9 @@ public class ProductoController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     // Obtener todos los productos (público o para cualquier rol autenticado)
     @GetMapping
@@ -46,17 +56,22 @@ public class ProductoController {
             @RequestParam("descripcion") String descripcion,
             @RequestParam("precio") BigDecimal precio,
             @RequestParam("stock") Integer stock,
-            @RequestParam("usuarioId") Long usuarioId,
             @RequestParam(value = "categoriaId", required = false) Long categoriaId,
             @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
         try {
+            // Obtener el usuario autenticado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
             // Crear el DTO manualmente
             ProductoRequestDTO productoRequestDTO = new ProductoRequestDTO();
             productoRequestDTO.setNombre(nombre);
             productoRequestDTO.setDescripcion(descripcion);
             productoRequestDTO.setPrecio(precio);
             productoRequestDTO.setStock(stock);
-            productoRequestDTO.setUsuarioId(usuarioId);
+            productoRequestDTO.setUsuarioId(usuario.getId()); // Usar el ID del usuario autenticado
             productoRequestDTO.setCategoriaId(categoriaId);
 
             // Procesar la imagen si existe
@@ -137,8 +152,11 @@ public class ProductoController {
     // Cambiar estado de un producto (solo ADMINISTRADOR)
     @PutMapping("/{id}/estado")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> cambiarEstadoProducto(@PathVariable Long id, @RequestParam Boolean activo) {
+    public ResponseEntity<?> cambiarEstadoProducto(
+            @PathVariable Long id,
+            @RequestBody Map<String, Boolean> estadoMap) {
         try {
+            Boolean activo = estadoMap.get("activo");
             Producto producto = productoService.cambiarEstadoProducto(id, activo);
             return ResponseEntity.ok(producto);
         } catch (RuntimeException e) {
