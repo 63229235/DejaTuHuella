@@ -24,8 +24,8 @@ public class ProductoRequestDTO {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
 
-    @NotNull(message = "El ID del vendedor es obligatorio")
-    private Long vendedorId;
+    @NotNull(message = "El ID del usuario es obligatorio")
+    private Long usuarioId;
 
     private Long categoriaId; // Opcional, un producto podría no tener categoría inicialmente
 
@@ -64,12 +64,12 @@ public class ProductoRequestDTO {
         this.stock = stock;
     }
 
-    public Long getVendedorId() {
-        return vendedorId;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setVendedorId(Long vendedorId) {
-        this.vendedorId = vendedorId;
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public Long getCategoriaId() {

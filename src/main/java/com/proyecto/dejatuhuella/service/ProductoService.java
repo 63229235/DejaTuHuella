@@ -42,15 +42,14 @@ public class ProductoService {
         return productoRepository.findById(id);
     }
 
-    @Transactional(readOnly = true)
-    public List<Producto> obtenerProductosPorVendedor(Long vendedorId) {
-        return productoRepository.findByVendedorId(vendedorId);
+    public List<Producto> obtenerProductosPorUsuario(Long usuarioId) {
+        return productoRepository.findByUsuarioId(usuarioId);
     }
 
     @Transactional
     public Producto crearProducto(ProductoRequestDTO productoRequestDTO) {
-        Usuario vendedor = usuarioService.obtenerUsuarioPorId(productoRequestDTO.getVendedorId())
-                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado con ID: " + productoRequestDTO.getVendedorId()));
+        Usuario usuario = usuarioService.obtenerUsuarioPorId(productoRequestDTO.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + productoRequestDTO.getUsuarioId()));
 
         Categoria categoria = null;
         if (productoRequestDTO.getCategoriaId() != null) {
@@ -63,7 +62,7 @@ public class ProductoService {
         producto.setDescripcion(productoRequestDTO.getDescripcion());
         producto.setPrecio(productoRequestDTO.getPrecio());
         producto.setStock(productoRequestDTO.getStock());
-        producto.setVendedor(vendedor);
+        producto.setUsuario(usuario);
         producto.setCategoria(categoria); // Asignar la categoría
 
         // Guardar la URL de la imagen
@@ -148,7 +147,7 @@ public class ProductoService {
             Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            return productoRepository.findByVendedor(usuario);
+            return productoRepository.findByUsuario(usuario);
         }
 
         return List.of();

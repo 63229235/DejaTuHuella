@@ -8,6 +8,7 @@ import com.proyecto.dejatuhuella.service.ProductoService;
 import com.proyecto.dejatuhuella.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -71,7 +72,7 @@ public class WebController {
             model.addAttribute("pedidos", pedidoService.obtenerPedidosDelUsuario());
 
             // Cargar ventas del usuario si es vendedor
-            model.addAttribute("ventas", pedidoService.obtenerVentasDelVendedor());
+            model.addAttribute("ventas", pedidoService.obtenerVentasDelUsuario());
 
             // Cargar categorías para el formulario de productos
             model.addAttribute("categorias", categoriaService.obtenerTodasLasCategorias());
@@ -91,5 +92,26 @@ public class WebController {
         model.addAttribute("categoria", categoriaService.obtenerCategoriaPorId(id).orElse(null));
         model.addAttribute("productos", productoService.obtenerProductosPorCategoria(id));
         return "productos-categoria";
+    }
+
+    @GetMapping("/productos/{id}")
+    public String detalleProducto(@PathVariable Long id, Model model) {
+        productoService.obtenerProductoPorId(id)
+                .ifPresent(producto -> model.addAttribute("producto", producto));
+        return "producto-detalle";
+    }
+
+    @GetMapping("/mis-compras")
+    @PreAuthorize("isAuthenticated()")
+    public String misCompras(Model model) {
+        model.addAttribute("pedidos", pedidoService.obtenerPedidosDelUsuario());
+        return "mis-compras";
+    }
+
+    @GetMapping("/mis-ventas")
+    @PreAuthorize("isAuthenticated()")
+    public String misVentas(Model model) {
+        model.addAttribute("ventas", pedidoService.obtenerVentasDelUsuario());
+        return "mis-ventas";
     }
 }

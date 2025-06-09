@@ -39,10 +39,6 @@ public class PedidoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    // No necesitamos DetallePedidoRepository aquí directamente si usamos CascadeType.ALL en Pedido.
-    // @Autowired
-    // private DetallePedidoRepository detallePedidoRepository;
-
     @Transactional(readOnly = true)
     public List<Pedido> obtenerTodosLosPedidos() {
         return pedidoRepository.findAll();
@@ -54,14 +50,14 @@ public class PedidoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Pedido> obtenerPedidosPorComprador(Long compradorId) {
-        return pedidoRepository.findByCompradorId(compradorId);
+    public List<Pedido> obtenerPedidosPorComprador(Long usuarioId) {
+        return pedidoRepository.findByUsuarioId(usuarioId);
     }
 
     @Transactional
     public Pedido crearPedido(PedidoRequestDTO pedidoRequestDTO) {
-        Usuario comprador = usuarioService.obtenerUsuarioPorId(pedidoRequestDTO.getCompradorId())
-                .orElseThrow(() -> new RuntimeException("Comprador no encontrado con ID: " + pedidoRequestDTO.getCompradorId()));
+        Usuario comprador = usuarioService.obtenerUsuarioPorId(pedidoRequestDTO.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + pedidoRequestDTO.getUsuarioId()));
 
         Pedido nuevoPedido = new Pedido(comprador);
         nuevoPedido.setFechaPedido(LocalDateTime.now());
@@ -151,13 +147,13 @@ public class PedidoService {
             Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            return pedidoRepository.findByComprador(usuario);
+            return pedidoRepository.findByUsuario(usuario);
         }
 
         return List.of();
     }
 
-    public List<Pedido> obtenerVentasDelVendedor() {
+    public List<Pedido> obtenerVentasDelUsuario() {
         // Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
@@ -166,7 +162,7 @@ public class PedidoService {
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
             // Aquí necesitarías una consulta personalizada que busque pedidos que contengan productos del vendedor
-            return pedidoRepository.findVentasByVendedor(usuario.getId());
+            return pedidoRepository.findVentasByUsuario(usuario.getId());
         }
 
         return List.of();

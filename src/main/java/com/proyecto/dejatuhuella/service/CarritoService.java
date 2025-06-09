@@ -111,7 +111,7 @@ public class CarritoService {
 
     public PedidoRequestDTO generarPedidoRequest(Long usuarioId) {
         PedidoRequestDTO pedidoRequest = new PedidoRequestDTO();
-        pedidoRequest.setCompradorId(usuarioId);
+        pedidoRequest.setUsuarioId(usuarioId);
 
         List<DetallePedidoRequestDTO> detalles = new ArrayList<>();
         for (Map.Entry<Long, Integer> entry : items.entrySet()) {

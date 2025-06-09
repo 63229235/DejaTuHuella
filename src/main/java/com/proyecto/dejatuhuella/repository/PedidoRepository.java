@@ -11,12 +11,12 @@ import java.util.List;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-    List<Pedido> findByCompradorId(Long compradorId);
+    List<Pedido> findByUsuarioId(Long usuarioId);
+    List<Pedido> findByUsuario(Usuario usuario);
 
-    List<Pedido> findByComprador(Usuario comprador);
-
-    @Query("SELECT DISTINCT p FROM Pedido p JOIN p.detalles d WHERE d.producto.vendedor.id = :vendedorId")
-    List<Pedido> findVentasByVendedor(@Param("vendedorId") Long vendedorId);// Puedes añadir más métodos de búsqueda personalizados
+    @Query("SELECT DISTINCT p FROM Pedido p JOIN p.detalles d WHERE d.producto.usuario.id = :usuarioId")
+    List<Pedido> findVentasByUsuario(@Param("usuarioId") Long usuarioId);
+    ;// Puedes añadir más métodos de búsqueda personalizados
 }
 
 

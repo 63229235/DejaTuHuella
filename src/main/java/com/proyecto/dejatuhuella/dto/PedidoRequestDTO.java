@@ -7,20 +7,20 @@ import java.util.List; // Cambiado de Set a List para mantener el orden si es ne
 
 public class PedidoRequestDTO {
 
-    @NotNull(message = "El ID del comprador es obligatorio")
-    private Long compradorId; // En una app real, esto se obtendría del usuario autenticado
+    @NotNull(message = "El ID del usuario es obligatorio")
+    private Long usuarioId; // En una app real, esto se obtendría del usuario autenticado
 
     @NotEmpty(message = "El pedido debe contener al menos un producto")
     @Valid // Para que se validen los DTOs anidados
     private List<DetallePedidoRequestDTO> detalles;
 
     // Getters y Setters
-    public Long getCompradorId() {
-        return compradorId;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setCompradorId(Long compradorId) {
-        this.compradorId = compradorId;
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public List<DetallePedidoRequestDTO> getDetalles() {

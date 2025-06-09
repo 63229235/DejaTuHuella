@@ -190,74 +190,138 @@
                 <div class="tab-pane fade" id="perfil">
                     <h2>Mi Perfil</h2>
                     <!-- Contenido de perfil -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    <i class="fas fa-user-circle fa-6x mb-3"></i>
+                                    <h4 sec:authentication="principal.usuario.nombre">Nombre</h4>
+                                    <p class="text-muted" sec:authentication="principal.usuario.email">email@example.com</p>
+                                </div>
+                                <div class="col-md-8">
+                                    <form id="perfilForm">
+                                        <div class="mb-3">
+                                            <label for="nombrePerfil" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control" id="nombrePerfil" th:value="${#authentication.principal.usuario.nombre}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="apellidoPerfil" class="form-label">Apellido</label>
+                                            <input type="text" class="form-control" id="apellidoPerfil" th:value="${#authentication.principal.usuario.apellido}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="emailPerfil" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="emailPerfil" th:value="${#authentication.principal.usuario.email}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="telefonoPerfil" class="form-label">Teléfono</label>
+                                            <input type="text" class="form-control" id="telefonoPerfil" th:value="${#authentication.principal.usuario.telefono}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="direccionPerfil" class="form-label">Dirección</label>
+                                            <textarea class="form-control" id="direccionPerfil" rows="3" th:text="${#authentication.principal.usuario.direccion}"></textarea>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" onclick="actualizarPerfil()">
+                                            <i class="fas fa-save"></i> Guardar Cambios
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab-pane fade" id="usuarios" sec:authorize="hasRole('ADMINISTRADOR')">
                     <h2>Gestión de Usuarios</h2>
-                    <!-- Contenido de gestión de usuarios -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody id="usuariosTableBody">
+                            <!-- Se cargará dinámicamente con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="tab-pane fade" id="categorias" sec:authorize="hasRole('ADMINISTRADOR')">
                     <h2>Gestión de Categorías</h2>
-                    <!-- Contenido de gestión de categorías -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Categorías</h3>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarCategoriaModal">
+                            <i class="fas fa-plus me-2"></i>Agregar Categoría
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="categoria : ${categorias}">
+                                <td th:text="${categoria.id}">1</td>
+                                <td th:text="${categoria.nombre}">Nombre Categoría</td>
+                                <td th:text="${categoria.descripcion}">Descripción</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'editarCategoria(' + ${categoria.id} + ')'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            th:onclick="'eliminarCategoria(' + ${categoria.id} + ')'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Agregar/Editar Producto -->
-<div class="modal fade" id="agregarProductoModal" tabindex="-1">
+<!-- Modal Agregar/Editar Categoría -->
+<div class="modal fade" id="agregarCategoriaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Agregar Nuevo Producto</h5>
+                <h5 class="modal-title">Agregar Nueva Categoría</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="productoForm">
-                    <input type="hidden" id="productoId">
+                <form id="categoriaForm">
+                    <input type="hidden" id="categoriaId">
                     <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombre" required>
+                        <label for="nombreCategoria" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombreCategoria" required>
                     </div>
                     <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="precio" class="form-label">Precio (S/)</label>
-                        <input type="number" class="form-control" id="precio" step="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="stock" class="form-label">Stock</label>
-                        <input type="number" class="form-control" id="stock" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="categoria" class="form-label">Categoría</label>
-                        <select class="form-select" id="categoria" required>
-                            <option value="">Seleccionar categoría</option>
-                            <option th:each="cat : ${categorias}"
-                                    th:value="${cat.id}"
-                                    th:text="${cat.nombre}">
-                                Categoría
-                            </option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="imagen" class="form-label">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" accept="image/*">
+                        <label for="descripcionCategoria" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionCategoria" rows="3"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarCategoria()">Guardar</button>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Modal Detalle Pedido -->
 <div class="modal fade" id="detallePedidoModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -297,6 +361,53 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Agregar/Editar Producto -->
+<div class="modal fade" id="agregarProductoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Nuevo Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productoForm" enctype="multipart/form-data">
+                    <input type="hidden" id="productoId">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precio" step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen</label>
+                        <input type="file" class="form-control" id="imagen" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
             </div>
         </div>
     </div>

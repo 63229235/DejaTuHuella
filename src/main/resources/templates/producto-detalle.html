@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Producto - DejaTuHuella</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Imagen del producto -->
+        <div class="col-md-5">
+            <img th:src="${producto.imagenUrl}" class="img-fluid rounded" alt="Imagen del producto">
+        </div>
+
+        <!-- Detalles del producto -->
+        <div class="col-md-7">
+            <h1 th:text="${producto.nombre}">Nombre del Producto</h1>
+            <p class="text-muted" th:text="'Categoría: ' + ${producto.categoria != null ? producto.categoria.nombre : 'Sin categoría'}"></p>
+            <p class="text-muted" th:text="'Vendedor: ' + ${producto.vendedor.nombre + ' ' + producto.vendedor.apellido}"></p>
+
+            <h3 class="mt-3" th:text="'$' + ${producto.precio}">$0.00</h3>
+
+            <p class="mt-3" th:text="${producto.descripcion}">Descripción del producto</p>
+
+            <p class="mt-3">
+                <span th:if="${producto.stock > 0}" class="badge bg-success">Disponible</span>
+                <span th:if="${producto.stock == 0}" class="badge bg-danger">Agotado</span>
+                <span th:text="'Stock: ' + ${producto.stock}">Stock: 0</span>
+            </p>
+
+            <!-- Formulario para añadir al carrito -->
+            <form th:action="@{/cart/add}" method="post" class="mt-4" th:if="${producto.stock > 0}">
+                <input type="hidden" name="productoId" th:value="${producto.id}">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="cantidad" class="col-form-label">Cantidad:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" id="cantidad" name="cantidad" class="form-control" value="1" min="1" th:max="${producto.stock}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-cart-plus"></i> Añadir al Carrito
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Mensaje de producto agotado -->
+            <div class="alert alert-danger mt-4" th:if="${producto.stock == 0}">
+                Este producto está agotado actualmente.
+            </div>
+
+            <!-- Botones de acción para el propietario o admin -->
+            <div class="mt-4" sec:authorize="isAuthenticated()" th:if="${#authentication.principal.username == producto.vendedor.email or #authorization.expression('hasRole(\'ADMINISTRADOR\')')}">
+                <a th:href="@{'/panel-control/productos/editar/' + ${producto.id}}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Editar Producto
+                </a>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#eliminarProductoModal">
+                    <i class="fas fa-trash"></i> Eliminar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar producto -->
+    <div class="modal fade" id="eliminarProductoModal" tabindex="-1" aria-labelledby="eliminarProductoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eliminarProductoModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form th:action="@{'/api/productos/' + ${producto.id}}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

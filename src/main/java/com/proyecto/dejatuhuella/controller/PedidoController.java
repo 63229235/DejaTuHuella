@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class PedidoController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('COMPRADOR') or hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('USUARIO') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<?> crearPedido(@Valid @RequestBody PedidoRequestDTO pedidoRequestDTO) {
         // En una implementación real, el compradorId se obtendría del Principal (usuario autenticado)
         // si el rol es COMPRADOR, para evitar que un comprador cree pedidos para otro.
@@ -61,7 +62,7 @@ public class PedidoController {
     }
 
     @PutMapping("/{id}/estado")
-    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('VENDEDOR')")
+    @PreAuthorize("hasRole('USUARIO') or hasRole('VENDEDOR')")
     public ResponseEntity<?> actualizarEstadoPedido(@PathVariable Long id, @RequestParam EstadoPedido estado) {
         try {
             Pedido pedidoActualizado = pedidoService.actualizarEstadoPedido(id, estado);
@@ -86,5 +87,30 @@ public class PedidoController {
             }
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/{id}/cancelar")
+    @PreAuthorize("isAuthenticated() and @seguridadService.esPropietarioDelPedido(#id)")
+    public String cancelarPedido(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            pedidoService.actualizarEstadoPedido(id, EstadoPedido.CANCELADO);
+            redirectAttributes.addFlashAttribute("mensaje", "Pedido cancelado con éxito");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cancelar el pedido: " + e.getMessage());
+        }
+        return "redirect:/mis-compras";
+    }
+
+    @PostMapping("/{id}/estado")
+    @PreAuthorize("isAuthenticated() and @seguridadService.esVendedorEnPedido(#id)")
+    public String actualizarEstadoPedido(@PathVariable Long id, @RequestParam EstadoPedido estado,
+                                         RedirectAttributes redirectAttributes) {
+        try {
+            pedidoService.actualizarEstadoPedido(id, estado);
+            redirectAttributes.addFlashAttribute("mensaje", "Estado del pedido actualizado con éxito");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar el estado: " + e.getMessage());
+        }
+        return "redirect:/mis-ventas";
     }
 }

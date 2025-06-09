@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Mis Ventas - DejaTuHuella</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome para iconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+  <h1 class="mb-4">Mis Ventas</h1>
+
+  <!-- Mensajes de alerta -->
+  <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+  <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+  <!-- Sin ventas -->
+  <div class="alert alert-info" th:if="${#lists.isEmpty(ventas)}">
+    <h4>No has realizado ninguna venta todavía</h4>
+    <p>Publica productos para empezar a vender.</p>
+    <a th:href="@{/panel-control}" class="btn btn-primary">Ir al Panel de Control</a>
+  </div>
+
+  <!-- Lista de ventas -->
+  <div th:if="${!#lists.isEmpty(ventas)}">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>Pedido #</th>
+          <th>Fecha</th>
+          <th>Comprador</th>
+          <th>Productos</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="venta : ${ventas}">
+          <td th:text="${venta.id}">123</td>
+          <td th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+          <td th:text="${venta.comprador.nombre + ' ' + venta.comprador.apellido}">Nombre Comprador</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
+                    th:data-bs-target="'#detallesVenta' + ${venta.id}" aria-expanded="false"
+                    th:aria-controls="'detallesVenta' + ${venta.id}">
+              Ver Productos
+            </button>
+          </td>
+          <td th:text="'$' + ${venta.total}">$0.00</td>
+          <td>
+              <span class="badge" th:classappend="${venta.estado.name() == 'PENDIENTE' ? 'bg-warning' :
+                                              (venta.estado.name() == 'PROCESANDO' ? 'bg-info' :
+                                              (venta.estado.name() == 'ENVIADO' ? 'bg-primary' :
+                                              (venta.estado.name() == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
+                    th:text="${venta.estado}">Estado</span>
+          </td>
+          <td>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                      th:id="'dropdownVenta' + ${venta.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                Actualizar Estado
+              </button>
+              <ul class="dropdown-menu" th:aria-labelledby="'dropdownVenta' + ${venta.id}">
+                <li th:if="${venta.estado.name() != 'PROCESANDO' && venta.estado.name() != 'CANCELADO' && venta.estado.name() != 'ENTREGADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="PROCESANDO">
+                    <button type="submit" class="dropdown-item">Procesando</button>
+                  </form>
+                </li>
+                <li th:if="${venta.estado.name() != 'ENVIADO' && venta.estado.name() != 'CANCELADO' && venta.estado.name() != 'ENTREGADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="ENVIADO">
+                    <button type="submit" class="dropdown-item">Enviado</button>
+                  </form>
+                </li>
+                <li th:if="${venta.estado.name() != 'ENTREGADO' && venta.estado.name() != 'CANCELADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="ENTREGADO">
+                    <button type="submit" class="dropdown-item">Entregado</button>
+                  </form>
+                </li>
+                <li th:if="${venta.estado.name() != 'CANCELADO' && venta.estado.name() != 'ENTREGADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="CANCELADO">
+                    <button type="submit" class="dropdown-item text-danger">Cancelar</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <!-- Detalles colapsables de cada venta -->
+        <tr th:each="venta : ${ventas}" class="collapse" th:id="'detallesVenta' + ${venta.id}">
+          <td colspan="7">
+            <div class="card card-body">
+              <table class="table table-sm">
+                <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Precio Unitario</th>
+                  <th>Cantidad</th>
+                  <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="detalle : ${venta.detalles}" th:if="${detalle.producto.vendedor.id == #authentication.principal.usuario.id}">
+                  <td th:text="${detalle.producto.nombre}">Nombre Producto</td>
+                  <td th:text="'$' + ${detalle.precioUnitarioAlComprar}">$0.00</td>
+                  <td th:text="${detalle.cantidad}">1</td>
+                  <td th:text="'$' + ${detalle.precioUnitarioAlComprar.multiply(new java.math.BigDecimal(detalle.cantidad))}">$0.00</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

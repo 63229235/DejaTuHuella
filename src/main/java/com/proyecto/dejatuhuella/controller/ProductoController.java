@@ -4,7 +4,6 @@ import com.proyecto.dejatuhuella.dto.ProductoRequestDTO;
 import com.proyecto.dejatuhuella.model.Producto;
 import com.proyecto.dejatuhuella.service.FileStorageService;
 import com.proyecto.dejatuhuella.service.ProductoService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,7 @@ public class ProductoController {
             @RequestParam("descripcion") String descripcion,
             @RequestParam("precio") BigDecimal precio,
             @RequestParam("stock") Integer stock,
-            @RequestParam("vendedorId") Long vendedorId,
+            @RequestParam("usuarioId") Long usuarioId,
             @RequestParam(value = "categoriaId", required = false) Long categoriaId,
             @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
         try {
@@ -57,7 +56,7 @@ public class ProductoController {
             productoRequestDTO.setDescripcion(descripcion);
             productoRequestDTO.setPrecio(precio);
             productoRequestDTO.setStock(stock);
-            productoRequestDTO.setVendedorId(vendedorId);
+            productoRequestDTO.setUsuarioId(usuarioId);
             productoRequestDTO.setCategoriaId(categoriaId);
 
             // Procesar la imagen si existe
@@ -99,7 +98,7 @@ public class ProductoController {
             productoRequestDTO.setPrecio(precio);
             productoRequestDTO.setStock(stock);
             productoRequestDTO.setCategoriaId(categoriaId);
-            productoRequestDTO.setVendedorId(productoExistente.getVendedor().getId());
+            productoRequestDTO.setUsuarioId(productoExistente.getUsuario().getId());
 
             // Procesar la imagen si existe
             if (imagen != null && !imagen.isEmpty()) {

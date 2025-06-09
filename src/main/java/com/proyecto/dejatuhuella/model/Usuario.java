@@ -1,5 +1,6 @@
 package com.proyecto.dejatuhuella.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.proyecto.dejatuhuella.model.enums.Rol;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -17,15 +18,21 @@ public class Usuario {
     private String apellido;
     private String email;
     private String password;
+    private String telefono;
+    private String direccion;
+    private Boolean activo = true; // Agregar este campo
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
-    @OneToMany(mappedBy = "vendedor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Producto> productosPublicados = new HashSet<>();
 
-    @OneToMany(mappedBy = "comprador", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Pedido> pedidosRealizados = new HashSet<>();
+
 
     // Constructor vacío
     public Usuario() {}
@@ -80,6 +87,22 @@ public class Usuario {
         this.password = password;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
     public Rol getRol() {
         return rol;
     }
@@ -102,5 +125,13 @@ public class Usuario {
 
     public void setPedidosRealizados(Set<Pedido> pedidosRealizados) {
         this.pedidosRealizados = pedidosRealizados;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 }

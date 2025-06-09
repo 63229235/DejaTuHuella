@@ -1,5 +1,6 @@
 package com.proyecto.dejatuhuella.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -20,30 +21,27 @@ public class Producto {
     private String imagenUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vendedor_id", nullable = false)
-    private Usuario vendedor;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    // Ya no hay @ManyToMany con Pedido
-    // @ManyToMany(mappedBy = "productos", fetch = FetchType.LAZY)
-    // private Set<Pedido> pedidos = new HashSet<>();
-
-    @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY) // No cascade ALL desde aquí usualmente
+    @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<DetallePedido> detallesPedido = new HashSet<>();
 
     // Constructores
     public Producto() {
     }
 
-    public Producto(String nombre, String descripcion, BigDecimal precio, Integer stock, Usuario vendedor, Categoria categoria) {
+    public Producto(String nombre, String descripcion, BigDecimal precio, Integer stock, Usuario usuario, Categoria categoria) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
         this.stock = stock;
-        this.vendedor = vendedor;
+        this.usuario = usuario;
         this.categoria = categoria;
     }
 
@@ -89,12 +87,12 @@ public class Producto {
         this.stock = stock;
     }
 
-    public Usuario getVendedor() {
-        return vendedor;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setVendedor(Usuario vendedor) {
-        this.vendedor = vendedor;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Categoria getCategoria() {

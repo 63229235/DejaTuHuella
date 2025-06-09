@@ -3,6 +3,7 @@ package com.proyecto.dejatuhuella.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.proyecto.dejatuhuella.dto.UsuarioDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,10 @@ public class UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    // Eliminar esta inyección incorrecta
+    // @Autowired
+    // private UsuarioDTO usuarioDTO;
 
     @Transactional
     public Usuario crearUsuario(Usuario usuario) {
@@ -58,6 +63,20 @@ public class UsuarioService {
     public Optional<Usuario> obtenerUsuarioPorId(Long id) {
         log.info("Servicio: Obteniendo usuario por ID: {}", id);
         return usuarioRepository.findById(id);
+    }
+
+    @Transactional
+    public Usuario actualizarPerfilUsuario(String email, UsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Actualizar solo los campos permitidos
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setDireccion(usuarioDTO.getDireccion());
+
+        return usuarioRepository.save(usuario);
     }
 
     @Transactional(readOnly = true)
@@ -96,5 +115,13 @@ public class UsuarioService {
         }
         log.warn("Servicio: Usuario ID: {} no encontrado para eliminar.", id);
         return false;
+    }
+
+    @Transactional
+    public Usuario cambiarEstadoUsuario(Long id, boolean activo) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setActivo(activo);
+        return usuarioRepository.save(usuario);
     }
 }

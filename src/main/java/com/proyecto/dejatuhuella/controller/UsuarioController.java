@@ -1,13 +1,17 @@
 package com.proyecto.dejatuhuella.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import com.proyecto.dejatuhuella.dto.UsuarioDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -82,6 +86,35 @@ public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/perfil")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Usuario> actualizarPerfil(@RequestBody UsuarioDTO usuarioDTO) {
+        log.info("Intentando actualizar perfil con datos: {}", usuarioDTO);
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String email = auth.getName(); // Obtiene el email del usuario autenticado
+            Usuario usuarioActualizado = usuarioService.actualizarPerfilUsuario(email, usuarioDTO);
+            log.info("Perfil actualizado exitosamente para: {}", email);
+            return ResponseEntity.ok(usuarioActualizado);
+        } catch (RuntimeException e) {
+            log.error("Error al actualizar perfil: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @PutMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<Usuario> cambiarEstadoUsuario(@PathVariable Long id, @RequestBody Map<String, Boolean> estado) {
+        log.info("Intentando cambiar estado del usuario ID: {} a: {}", id, estado.get("activo"));
+        try {
+            Usuario usuario = usuarioService.cambiarEstadoUsuario(id, estado.get("activo"));
+            return ResponseEntity.ok(usuario);
+        } catch (RuntimeException e) {
+            log.error("Error al cambiar estado del usuario: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

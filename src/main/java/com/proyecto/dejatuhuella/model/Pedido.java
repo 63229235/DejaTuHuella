@@ -1,5 +1,6 @@
 package com.proyecto.dejatuhuella.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.proyecto.dejatuhuella.model.enums.EstadoPedido;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -23,10 +24,11 @@ public class Pedido {
     private BigDecimal total;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comprador_id", nullable = false)
-    private Usuario comprador;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<DetallePedido> detalles = new HashSet<>(); // Cambiado de productos a detalles
 
     // Constructores
@@ -37,9 +39,9 @@ public class Pedido {
 
     // El constructor con parámetros se simplifica o se elimina,
     // ya que los detalles se añadirán a través de métodos o en el servicio.
-    public Pedido(Usuario comprador) {
+    public Pedido(Usuario usuario) {
         this();
-        this.comprador = comprador;
+        this.usuario = usuario;
     }
 
     // Getters y Setters
@@ -75,12 +77,12 @@ public class Pedido {
         this.total = total;
     }
 
-    public Usuario getComprador() {
-        return comprador;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setComprador(Usuario comprador) {
-        this.comprador = comprador;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Set<DetallePedido> getDetalles() {
