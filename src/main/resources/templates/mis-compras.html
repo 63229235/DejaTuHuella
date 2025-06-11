@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Mis Compras - DejaTuHuella</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome para iconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+  <h1 class="mb-4">Mis Compras</h1>
+
+  <!-- Mensajes de alerta -->
+  <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+  <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+  <!-- Sin pedidos -->
+  <div class="alert alert-info" th:if="${#lists.isEmpty(pedidos)}">
+    <h4>No has realizado ninguna compra todavía</h4>
+    <p>Explora nuestros productos y realiza tu primera compra.</p>
+    <a th:href="@{/categorias}" class="btn btn-primary">Ver Categorías</a>
+  </div>
+
+  <!-- Lista de pedidos -->
+  <div th:if="${!#lists.isEmpty(pedidos)}">
+    <div class="accordion" id="accordionPedidos">
+      <div class="accordion-item" th:each="pedido, iterStat : ${pedidos}">
+        <h2 class="accordion-header" th:id="'heading' + ${iterStat.index}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                  th:data-bs-target="'#collapse' + ${iterStat.index}" aria-expanded="true"
+                  th:aria-controls="'collapse' + ${iterStat.index}">
+            <div class="d-flex justify-content-between w-100 me-3">
+              <span>
+                <strong th:text="'Pedido #' + ${pedido.id}">Pedido #123</strong>
+                <span class="ms-3 text-muted" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</span>
+              </span>
+              <span>
+                <span class="badge" th:classappend="${pedido.estado.name() == 'PENDIENTE' ? 'bg-warning' :
+                                                  (pedido.estado.name() == 'PROCESANDO' ? 'bg-info' :
+                                                  (pedido.estado.name() == 'ENVIADO' ? 'bg-primary' :
+                                                  (pedido.estado.name() == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
+                      th:text="${pedido.estado}">Estado</span>
+                <span class="ms-3" th:text="'$' + ${pedido.total}">$0.00</span>
+              </span>
+            </div>
+          </button>
+        </h2>
+        <div th:id="'collapse' + ${iterStat.index}" class="accordion-collapse collapse"
+             th:aria-labelledby="'heading' + ${iterStat.index}" data-bs-parent="#accordionPedidos">
+          <div class="accordion-body">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="detalle : ${pedido.detalles}">
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <h6 th:text="${detalle.producto.nombre}">Nombre Producto</h6>
+                      <small class="text-muted" th:text="${detalle.producto.descripcion}">Descripción</small>
+                    </div>
+                  </div>
+                </td>
+                <td th:text="'$' + ${detalle.precioUnitarioAlComprar}">$0.00</td>
+                <td th:text="${detalle.cantidad}">1</td>
+                <td th:text="'$' + ${detalle.precioUnitarioAlComprar.multiply(new java.math.BigDecimal(detalle.cantidad))}">$0.00</td>
+              </tr>
+              </tbody>
+              <tfoot>
+              <tr>
+                <td colspan="3" class="text-end fw-bold">Total:</td>
+                <td th:text="'$' + ${pedido.total}" class="fw-bold">$0.00</td>
+              </tr>
+              </tfoot>
+            </table>
+
+            <!-- Botón para cancelar pedido si está pendiente -->
+            <div th:if="${pedido.estado.name() == 'PENDIENTE'}" class="text-end mt-3">
+              <form th:action="@{'/api/pedidos/' + ${pedido.id} + '/cancelar'}" method="post">
+                <button type="submit" class="btn btn-danger">
+                  <i class="fas fa-times"></i> Cancelar Pedido
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
