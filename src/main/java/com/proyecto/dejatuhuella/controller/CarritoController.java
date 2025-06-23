@@ -84,7 +84,7 @@ public class CarritoController {
 
             // Buscar el usuario por su nombre de usuario (email)
             com.proyecto.dejatuhuella.model.Usuario usuario =
-                    ((com.proyecto.dejatuhuella.service.CustomUserDetailsService)
+                    ((com.proyecto.dejatuhuella.security.CustomUserDetails)
                             org.springframework.security.core.context.SecurityContextHolder
                                     .getContext().getAuthentication().getPrincipal()).getUsuario();
 

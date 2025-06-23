@@ -1,6 +1,7 @@
 package com.proyecto.dejatuhuella.service;
 
-import com.proyecto.dejatuhuella.dto.DetallePedidoRequestDTO; // Importar
+import com.proyecto.dejatuhuella.dto.DetallePedidoRequestDTO;
+import com.proyecto.dejatuhuella.dto.PedidoDTO;
 import com.proyecto.dejatuhuella.dto.PedidoRequestDTO; // Importar
 import com.proyecto.dejatuhuella.model.DetallePedido; // Importar
 import com.proyecto.dejatuhuella.model.Pedido;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
@@ -43,15 +45,30 @@ public class PedidoService {
     public List<Pedido> obtenerTodosLosPedidos() {
         return pedidoRepository.findAll();
     }
+    
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> obtenerTodosLosPedidosDTO() {
+        return pedidoRepository.findAll().stream()
+                .map(this::convertirPedidoADTO)
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public Optional<Pedido> obtenerPedidoPorId(Long id) {
         return pedidoRepository.findById(id);
     }
+    
+    @Transactional(readOnly = true)
+    public Optional<PedidoDTO> obtenerPedidoDTOPorId(Long id) {
+        return pedidoRepository.findById(id)
+                .map(this::convertirPedidoADTO);
+    }
 
     @Transactional(readOnly = true)
-    public List<Pedido> obtenerPedidosPorComprador(Long usuarioId) {
-        return pedidoRepository.findByUsuarioId(usuarioId);
+    public List<PedidoDTO> obtenerPedidosPorComprador(Long usuarioId) {
+        return pedidoRepository.findByUsuarioId(usuarioId).stream()
+                .map(this::convertirPedidoADTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -139,32 +156,68 @@ public class PedidoService {
 
     // Añadir estos métodos a la clase PedidoService
 
-    public List<Pedido> obtenerPedidosDelUsuario() {
+    public List<PedidoDTO> obtenerPedidosDelUsuario() {
         // Obtener el usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
-            UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
+                UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            return pedidoRepository.findByUsuario(usuario);
+                List<Pedido> pedidos = pedidoRepository.findByUsuario(usuario);
+                
+                // Convertir las entidades Pedido a DTOs para evitar problemas de serialización
+                return pedidos.stream()
+                    .map(this::convertirPedidoADTO)
+                    .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            // Loguear el error pero no interrumpir la carga del panel
+            System.err.println("Error al obtener pedidos del usuario: " + e.getMessage());
+            e.printStackTrace(); // Añadir esto para ver el stacktrace completo
         }
-
+        
         return List.of();
     }
 
-    public List<Pedido> obtenerVentasDelUsuario() {
+    // Método auxiliar para convertir un Pedido a PedidoDTO
+    private PedidoDTO convertirPedidoADTO(Pedido pedido) {
+        return new PedidoDTO(
+            pedido.getId(),
+            pedido.getFechaPedido(),
+            pedido.getEstado(),
+            pedido.getTotal(),
+            pedido.getUsuario() != null ? pedido.getUsuario().getNombre() : "Usuario desconocido",
+            pedido.getUsuario() != null ? pedido.getUsuario().getId() : null,
+            pedido.getDetalles()
+        );
+    }
+    
+    public List<PedidoDTO> obtenerVentasDelUsuario() {
         // Obtener el usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
-            UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
+                UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // Aquí necesitarías una consulta personalizada que busque pedidos que contengan productos del vendedor
-            return pedidoRepository.findVentasByUsuario(usuario.getId());
+                // Obtener los pedidos que contienen productos del vendedor
+                List<Pedido> ventas = pedidoRepository.findVentasByUsuario(usuario.getId());
+                
+                // Convertir las entidades Pedido a DTOs para evitar problemas de serialización
+                return ventas.stream()
+                    .map(this::convertirPedidoADTO)
+                    .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            // Loguear el error pero no interrumpir la carga del panel
+            System.err.println("Error al obtener ventas del usuario: " + e.getMessage());
+            e.printStackTrace(); // Añadir esto para ver el stacktrace completo
         }
 
+        // Asegurarse de siempre devolver una lista vacía en caso de error
         return List.of();
     }
 }

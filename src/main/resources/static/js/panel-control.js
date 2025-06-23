@@ -103,7 +103,7 @@ function verDetallePedido(id) {
         .then(response => response.json())
         .then(pedido => {
             document.getElementById('pedidoId').textContent = pedido.id;
-            document.getElementById('pedidoFecha').textContent = new Date(pedido.fechaCreacion).toLocaleString();
+            document.getElementById('pedidoFecha').textContent = new Date(pedido.fechaPedido).toLocaleString();
             document.getElementById('pedidoTotal').textContent = `$${pedido.total}`;
             
             const estadoElement = document.getElementById('pedidoEstado');

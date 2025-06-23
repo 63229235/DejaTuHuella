@@ -1,6 +1,7 @@
 package com.proyecto.dejatuhuella.controller;
 
-import com.proyecto.dejatuhuella.dto.PedidoRequestDTO; // Asegúrate que es el DTO correcto
+import com.proyecto.dejatuhuella.dto.PedidoDTO;
+import com.proyecto.dejatuhuella.dto.PedidoRequestDTO;
 import com.proyecto.dejatuhuella.model.Pedido;
 import com.proyecto.dejatuhuella.model.enums.EstadoPedido;
 import com.proyecto.dejatuhuella.service.PedidoService;
@@ -26,15 +27,15 @@ public class PedidoController {
     // Obtener todos los pedidos (solo ADMINISTRADOR)
     @GetMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<Pedido>> obtenerTodosLosPedidos() {
-        return ResponseEntity.ok(pedidoService.obtenerTodosLosPedidos());
+    public ResponseEntity<List<PedidoDTO>> obtenerTodosLosPedidos() {
+        return ResponseEntity.ok(pedidoService.obtenerTodosLosPedidosDTO());
     }
 
     // Obtener un pedido por ID (ADMINISTRADOR o COMPRADOR propietario)
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR') or @seguridadService.esPropietarioDelPedido(#id)")
-    public ResponseEntity<Pedido> obtenerPedidoPorId(@PathVariable Long id) {
-        return pedidoService.obtenerPedidoPorId(id)
+    public ResponseEntity<?> obtenerPedidoPorId(@PathVariable Long id) {
+        return pedidoService.obtenerPedidoDTOPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -42,7 +43,7 @@ public class PedidoController {
     // Obtener pedidos de un comprador específico (ADMINISTRADOR o el mismo COMPRADOR)
     @GetMapping("/comprador/{compradorId}")
     @PreAuthorize("hasRole('ADMINISTRADOR') or @seguridadService.esUsuarioActual(#compradorId)")
-    public ResponseEntity<List<Pedido>> obtenerPedidosPorComprador(@PathVariable Long compradorId) {
+    public ResponseEntity<List<PedidoDTO>> obtenerPedidosPorComprador(@PathVariable Long compradorId) {
         return ResponseEntity.ok(pedidoService.obtenerPedidosPorComprador(compradorId));
     }
 
@@ -55,18 +56,22 @@ public class PedidoController {
         // Si es ADMIN, podría especificar el compradorId.
         try {
             Pedido nuevoPedido = pedidoService.crearPedido(pedidoRequestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido);
+            PedidoDTO pedidoDTO = pedidoService.obtenerPedidoDTOPorId(nuevoPedido.getId())
+                    .orElseThrow(() -> new RuntimeException("Error al obtener el pedido creado"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(pedidoDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}/estado")
-    @PreAuthorize("hasRole('USUARIO') or hasRole('VENDEDOR')")
+    @PreAuthorize("hasRole('USUARIO') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<?> actualizarEstadoPedido(@PathVariable Long id, @RequestParam EstadoPedido estado) {
         try {
             Pedido pedidoActualizado = pedidoService.actualizarEstadoPedido(id, estado);
-            return ResponseEntity.ok(pedidoActualizado);
+            PedidoDTO pedidoDTO = pedidoService.obtenerPedidoDTOPorId(pedidoActualizado.getId())
+                    .orElseThrow(() -> new RuntimeException("Error al obtener el pedido actualizado"));
+            return ResponseEntity.ok(pedidoDTO);
         } catch (RuntimeException e) {
             if (e.getMessage().contains("no encontrado")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

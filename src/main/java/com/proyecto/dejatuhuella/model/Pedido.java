@@ -1,6 +1,7 @@
 package com.proyecto.dejatuhuella.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.proyecto.dejatuhuella.model.enums.EstadoPedido;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "pedidos")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Pedido {
 
     @Id

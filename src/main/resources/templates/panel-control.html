@@ -116,8 +116,8 @@
                             <tbody>
                             <tr th:each="venta : ${ventas}">
                                 <td th:text="${venta.id}">1</td>
-                                <td th:text="${venta.comprador.nombre}">Nombre Comprador</td>
-                                <td th:text="${#temporals.format(venta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+                                <td th:text="${venta.nombreUsuario}">Nombre Comprador</td>
+                                <td th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
                                 <td th:text="${'S/ ' + venta.total}">S/ 150.00</td>
                                 <td>
                                     <span th:if="${venta.estado.name() == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
@@ -163,7 +163,7 @@
                             <tbody>
                             <tr th:each="pedido : ${pedidos}">
                                 <td th:text="${pedido.id}">1</td>
-                                <td th:text="${#temporals.format(pedido.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+                                <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
                                 <td th:text="${'S/ ' + pedido.total}">S/ 150.00</td>
                                 <td>
                                     <span th:if="${pedido.estado.name() == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>

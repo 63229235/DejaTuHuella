@@ -14,9 +14,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByUsuarioId(Long usuarioId);
     List<Pedido> findByUsuario(Usuario usuario);
 
-    @Query("SELECT DISTINCT p FROM Pedido p JOIN p.detalles d WHERE d.producto.usuario.id = :usuarioId")
+    @Query("SELECT DISTINCT p FROM Pedido p JOIN FETCH p.detalles d WHERE d.producto.usuario.id = :usuarioId")
     List<Pedido> findVentasByUsuario(@Param("usuarioId") Long usuarioId);
-    ;// Puedes añadir más métodos de búsqueda personalizados
 }
 
 

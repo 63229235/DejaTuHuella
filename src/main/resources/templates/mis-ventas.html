@@ -46,7 +46,7 @@
         <tr th:each="venta : ${ventas}">
           <td th:text="${venta.id}">123</td>
           <td th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
-          <td th:text="${venta.comprador.nombre + ' ' + venta.comprador.apellido}">Nombre Comprador</td>
+          <td th:text="${venta.nombreUsuario}">Nombre Comprador</td>
           <td>
             <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
                     th:data-bs-target="'#detallesVenta' + ${venta.id}" aria-expanded="false"

@@ -94,6 +94,13 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
+		
+		<!-- Soporte para serialización de proxies de Hibernate -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-hibernate5-jakarta</artifactId>
+			<version>2.16.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

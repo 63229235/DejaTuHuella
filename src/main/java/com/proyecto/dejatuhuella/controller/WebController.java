@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @Controller
 public class WebController {
 
@@ -65,17 +67,37 @@ public class WebController {
         // Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
-            // Cargar productos del usuario si es vendedor
-            model.addAttribute("productos", productoService.obtenerProductosDelVendedor());
+            try {
+                // Cargar productos del usuario si es vendedor
+                model.addAttribute("productos", productoService.obtenerProductosDelVendedor());
+            } catch (Exception e) {
+                model.addAttribute("errorProductos", "Error al cargar productos: " + e.getMessage());
+                model.addAttribute("productos", List.of());
+            }
 
-            // Cargar pedidos del usuario si es comprador
-            model.addAttribute("pedidos", pedidoService.obtenerPedidosDelUsuario());
+            try {
+                // Cargar pedidos del usuario si es comprador
+                model.addAttribute("pedidos", pedidoService.obtenerPedidosDelUsuario());
+            } catch (Exception e) {
+                model.addAttribute("errorPedidos", "Error al cargar pedidos: " + e.getMessage());
+                model.addAttribute("pedidos", List.of());
+            }
 
-            // Cargar ventas del usuario si es vendedor
-            model.addAttribute("ventas", pedidoService.obtenerVentasDelUsuario());
+            try {
+                // Cargar ventas del usuario si es vendedor
+                model.addAttribute("ventas", pedidoService.obtenerVentasDelUsuario());
+            } catch (Exception e) {
+                model.addAttribute("errorVentas", "Error al cargar ventas: " + e.getMessage());
+                model.addAttribute("ventas", List.of());
+            }
 
-            // Cargar categorías para el formulario de productos
-            model.addAttribute("categorias", categoriaService.obtenerTodasLasCategorias());
+            try {
+                // Cargar categorías para el formulario de productos
+                model.addAttribute("categorias", categoriaService.obtenerTodasLasCategorias());
+            } catch (Exception e) {
+                model.addAttribute("errorCategorias", "Error al cargar categorías: " + e.getMessage());
+                model.addAttribute("categorias", List.of());
+            }
         }
 
         return "panel-control"; // Devuelve el nombre de la plantilla HTML (panel-control.html)
