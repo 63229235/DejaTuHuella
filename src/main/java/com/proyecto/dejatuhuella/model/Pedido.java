@@ -2,7 +2,6 @@ package com.proyecto.dejatuhuella.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.proyecto.dejatuhuella.model.enums.EstadoPedido;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,8 +19,9 @@ public class Pedido {
 
     private LocalDateTime fechaPedido;
 
-    @Enumerated(EnumType.STRING)
-    private EstadoPedido estado;
+    @ManyToOne
+    @JoinColumn(name = "estado_id")
+    private EstadoPedidoEntity estado;
 
     private BigDecimal total;
 
@@ -36,7 +36,7 @@ public class Pedido {
     // Constructores
     public Pedido() {
         this.fechaPedido = LocalDateTime.now();
-        this.estado = EstadoPedido.PENDIENTE;
+        // El estado se establecerá después de obtenerlo del repositorio
     }
 
     // El constructor con parámetros se simplifica o se elimina,
@@ -63,11 +63,11 @@ public class Pedido {
         this.fechaPedido = fechaPedido;
     }
 
-    public EstadoPedido getEstado() {
+    public EstadoPedidoEntity getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoPedido estado) {
+    public void setEstado(EstadoPedidoEntity estado) {
         this.estado = estado;
     }
 

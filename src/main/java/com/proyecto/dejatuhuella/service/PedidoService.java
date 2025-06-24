@@ -4,10 +4,11 @@ import com.proyecto.dejatuhuella.dto.DetallePedidoRequestDTO;
 import com.proyecto.dejatuhuella.dto.PedidoDTO;
 import com.proyecto.dejatuhuella.dto.PedidoRequestDTO; // Importar
 import com.proyecto.dejatuhuella.model.DetallePedido; // Importar
+import com.proyecto.dejatuhuella.model.EstadoPedidoEntity;
 import com.proyecto.dejatuhuella.model.Pedido;
 import com.proyecto.dejatuhuella.model.Producto;
 import com.proyecto.dejatuhuella.model.Usuario;
-import com.proyecto.dejatuhuella.model.enums.EstadoPedido;
+import com.proyecto.dejatuhuella.repository.EstadoPedidoRepository;
 import com.proyecto.dejatuhuella.repository.PedidoRepository;
 import com.proyecto.dejatuhuella.repository.ProductoRepository;
 import com.proyecto.dejatuhuella.repository.UsuarioRepository;
@@ -40,6 +41,9 @@ public class PedidoService {
 
     @Autowired
     private ProductoRepository productoRepository;
+    
+    @Autowired
+    private EstadoPedidoRepository estadoPedidoRepository;
 
     @Transactional(readOnly = true)
     public List<Pedido> obtenerTodosLosPedidos() {
@@ -78,7 +82,13 @@ public class PedidoService {
 
         Pedido nuevoPedido = new Pedido(comprador);
         nuevoPedido.setFechaPedido(LocalDateTime.now());
-        nuevoPedido.setEstado(EstadoPedido.PENDIENTE);
+        
+        // Obtener el estado PENDIENTE de la base de datos
+        EstadoPedidoEntity estadoPendiente = estadoPedidoRepository.findByNombreEstado("PENDIENTE");
+        if (estadoPendiente == null) {
+            throw new RuntimeException("Estado PENDIENTE no encontrado en la base de datos");
+        }
+        nuevoPedido.setEstado(estadoPendiente);
 
         BigDecimal totalPedido = BigDecimal.ZERO;
         Set<DetallePedido> detallesDelPedido = new HashSet<>();
@@ -120,12 +130,17 @@ public class PedidoService {
     }
 
     @Transactional
-    public Pedido actualizarEstadoPedido(Long id, EstadoPedido nuevoEstado) {
+    public Pedido actualizarEstadoPedido(Long id, String nombreEstado) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
 
+        EstadoPedidoEntity nuevoEstado = estadoPedidoRepository.findByNombreEstado(nombreEstado);
+        if (nuevoEstado == null) {
+            throw new RuntimeException("Estado no válido: " + nombreEstado);
+        }
+
         // Lógica adicional si el estado cambia a CANCELADO (ej. reponer stock)
-        if (nuevoEstado == EstadoPedido.CANCELADO && pedido.getEstado() != EstadoPedido.CANCELADO) {
+        if ("CANCELADO".equals(nombreEstado) && !"CANCELADO".equals(pedido.getEstado().getNombreEstado())) {
             for (DetallePedido detalle : pedido.getDetalles()) {
                 Producto producto = detalle.getProducto();
                 producto.setStock(producto.getStock() + detalle.getCantidad());
@@ -144,7 +159,8 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
 
         // Si se elimina un pedido, considerar si se debe reponer el stock (si no fue cancelado antes)
-        if (pedido.getEstado() != EstadoPedido.CANCELADO && pedido.getEstado() != EstadoPedido.ENTREGADO /* u otros estados finales */) {
+        String estadoNombre = pedido.getEstado().getNombreEstado();
+        if (!"CANCELADO".equals(estadoNombre) && !"ENTREGADO".equals(estadoNombre) /* u otros estados finales */) {
             for (DetallePedido detalle : pedido.getDetalles()) {
                 Producto producto = detalle.getProducto();
                 producto.setStock(producto.getStock() + detalle.getCantidad());
@@ -186,7 +202,7 @@ public class PedidoService {
         return new PedidoDTO(
             pedido.getId(),
             pedido.getFechaPedido(),
-            pedido.getEstado(),
+            pedido.getEstado() != null ? pedido.getEstado().getNombreEstado() : "DESCONOCIDO",
             pedido.getTotal(),
             pedido.getUsuario() != null ? pedido.getUsuario().getNombre() : "Usuario desconocido",
             pedido.getUsuario() != null ? pedido.getUsuario().getId() : null,

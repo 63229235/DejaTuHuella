@@ -120,22 +120,22 @@
                                 <td th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
                                 <td th:text="${'S/ ' + venta.total}">S/ 150.00</td>
                                 <td>
-                                    <span th:if="${venta.estado.name() == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
-                                    <span th:if="${venta.estado.name() == 'PAGADO'}" class="badge bg-info">Pagado</span>
-                                    <span th:if="${venta.estado.name() == 'ENVIADO'}" class="badge bg-primary">Enviado</span>
-                                    <span th:if="${venta.estado.name() == 'ENTREGADO'}" class="badge bg-success">Entregado</span>
-                                    <span th:if="${venta.estado.name() == 'CANCELADO'}" class="badge bg-danger">Cancelado</span>
+                                    <span th:if="${venta.estado == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
+                                    <span th:if="${venta.estado == 'PAGADO'}" class="badge bg-info">Pagado</span>
+                                    <span th:if="${venta.estado == 'ENVIADO'}" class="badge bg-primary">Enviado</span>
+                                    <span th:if="${venta.estado == 'ENTREGADO'}" class="badge bg-success">Entregado</span>
+                                    <span th:if="${venta.estado == 'CANCELADO'}" class="badge bg-danger">Cancelado</span>
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-info" th:onclick="'verDetallePedido(' + ${venta.id} + ')'">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     <div sec:authorize="hasRole('USUARIO') or hasRole('ADMINISTRADOR')">
-                                        <button th:if="${venta.estado.name() == 'PENDIENTE'}" class="btn btn-sm btn-outline-success"
+                                        <button th:if="${venta.estado == 'PENDIENTE'}" class="btn btn-sm btn-outline-success"
                                                 th:onclick="'actualizarEstadoPedido(' + ${venta.id} + ', \'PAGADO\')'">
                                             <i class="fas fa-check"></i> Marcar Pagado
                                         </button>
-                                        <button th:if="${venta.estado.name() == 'PAGADO'}" class="btn btn-sm btn-outline-primary"
+                                        <button th:if="${venta.estado == 'PAGADO'}" class="btn btn-sm btn-outline-primary"
                                                 th:onclick="'actualizarEstadoPedido(' + ${venta.id} + ', \'ENVIADO\')'">
                                             <i class="fas fa-shipping-fast"></i> Marcar Enviado
                                         </button>
@@ -166,17 +166,17 @@
                                 <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
                                 <td th:text="${'S/ ' + pedido.total}">S/ 150.00</td>
                                 <td>
-                                    <span th:if="${pedido.estado.name() == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
-                                    <span th:if="${pedido.estado.name() == 'PAGADO'}" class="badge bg-info">Pagado</span>
-                                    <span th:if="${pedido.estado.name() == 'ENVIADO'}" class="badge bg-primary">Enviado</span>
-                                    <span th:if="${pedido.estado.name() == 'ENTREGADO'}" class="badge bg-success">Entregado</span>
-                                    <span th:if="${pedido.estado.name() == 'CANCELADO'}" class="badge bg-danger">Cancelado</span>
+                                    <span th:if="${pedido.estado == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
+                                    <span th:if="${pedido.estado == 'PAGADO'}" class="badge bg-info">Pagado</span>
+                                    <span th:if="${pedido.estado == 'ENVIADO'}" class="badge bg-primary">Enviado</span>
+                                    <span th:if="${pedido.estado == 'ENTREGADO'}" class="badge bg-success">Entregado</span>
+                                    <span th:if="${pedido.estado == 'CANCELADO'}" class="badge bg-danger">Cancelado</span>
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-info" th:onclick="'verDetallePedido(' + ${pedido.id} + ')'">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button th:if="${pedido.estado.name() == 'ENVIADO'}" class="btn btn-sm btn-outline-success"
+                                    <button th:if="${pedido.estado == 'ENVIADO'}" class="btn btn-sm btn-outline-success"
                                             th:onclick="'actualizarEstadoPedido(' + ${pedido.id} + ', \'ENTREGADO\')'">
                                         <i class="fas fa-check-circle"></i> Confirmar Recepción
                                     </button>

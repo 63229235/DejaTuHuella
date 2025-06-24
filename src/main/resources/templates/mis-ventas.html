@@ -56,10 +56,10 @@
           </td>
           <td th:text="'$' + ${venta.total}">$0.00</td>
           <td>
-              <span class="badge" th:classappend="${venta.estado.name() == 'PENDIENTE' ? 'bg-warning' :
-                                              (venta.estado.name() == 'PROCESANDO' ? 'bg-info' :
-                                              (venta.estado.name() == 'ENVIADO' ? 'bg-primary' :
-                                              (venta.estado.name() == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
+              <span class="badge" th:classappend="${venta.estado == 'PENDIENTE' ? 'bg-warning' :
+                                              (venta.estado == 'PROCESANDO' ? 'bg-info' :
+                                              (venta.estado == 'ENVIADO' ? 'bg-primary' :
+                                              (venta.estado == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
                     th:text="${venta.estado}">Estado</span>
           </td>
           <td>
@@ -69,25 +69,25 @@
                 Actualizar Estado
               </button>
               <ul class="dropdown-menu" th:aria-labelledby="'dropdownVenta' + ${venta.id}">
-                <li th:if="${venta.estado.name() != 'PROCESANDO' && venta.estado.name() != 'CANCELADO' && venta.estado.name() != 'ENTREGADO'}">
+                <li th:if="${venta.estado != 'PROCESANDO' && venta.estado != 'CANCELADO' && venta.estado != 'ENTREGADO'}">
                   <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
                     <input type="hidden" name="estado" value="PROCESANDO">
                     <button type="submit" class="dropdown-item">Procesando</button>
                   </form>
                 </li>
-                <li th:if="${venta.estado.name() != 'ENVIADO' && venta.estado.name() != 'CANCELADO' && venta.estado.name() != 'ENTREGADO'}">
+                <li th:if="${venta.estado != 'ENVIADO' && venta.estado != 'CANCELADO' && venta.estado != 'ENTREGADO'}">
                   <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
                     <input type="hidden" name="estado" value="ENVIADO">
                     <button type="submit" class="dropdown-item">Enviado</button>
                   </form>
                 </li>
-                <li th:if="${venta.estado.name() != 'ENTREGADO' && venta.estado.name() != 'CANCELADO'}">
+                <li th:if="${venta.estado != 'ENTREGADO' && venta.estado != 'CANCELADO'}">
                   <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
                     <input type="hidden" name="estado" value="ENTREGADO">
                     <button type="submit" class="dropdown-item">Entregado</button>
                   </form>
                 </li>
-                <li th:if="${venta.estado.name() != 'CANCELADO' && venta.estado.name() != 'ENTREGADO'}">
+                <li th:if="${venta.estado != 'CANCELADO' && venta.estado != 'ENTREGADO'}">
                   <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
                     <input type="hidden" name="estado" value="CANCELADO">
                     <button type="submit" class="dropdown-item text-danger">Cancelar</button>

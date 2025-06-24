@@ -41,10 +41,10 @@
                 <span class="ms-3 text-muted" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</span>
               </span>
               <span>
-                <span class="badge" th:classappend="${pedido.estado.name() == 'PENDIENTE' ? 'bg-warning' :
-                                                  (pedido.estado.name() == 'PROCESANDO' ? 'bg-info' :
-                                                  (pedido.estado.name() == 'ENVIADO' ? 'bg-primary' :
-                                                  (pedido.estado.name() == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
+                <span class="badge" th:classappend="${pedido.estado == 'PENDIENTE' ? 'bg-warning' :
+                                                  (pedido.estado == 'PROCESANDO' ? 'bg-info' :
+                                                  (pedido.estado == 'ENVIADO' ? 'bg-primary' :
+                                                  (pedido.estado == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
                       th:text="${pedido.estado}">Estado</span>
                 <span class="ms-3" th:text="'$' + ${pedido.total}">$0.00</span>
               </span>
@@ -87,7 +87,7 @@
             </table>
 
             <!-- Botón para cancelar pedido si está pendiente -->
-            <div th:if="${pedido.estado.name() == 'PENDIENTE'}" class="text-end mt-3">
+            <div th:if="${pedido.estado == 'PENDIENTE'}" class="text-end mt-3">
               <form th:action="@{'/api/pedidos/' + ${pedido.id} + '/cancelar'}" method="post">
                 <button type="submit" class="btn btn-danger">
                   <i class="fas fa-times"></i> Cancelar Pedido

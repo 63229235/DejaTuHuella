@@ -3,7 +3,6 @@ package com.proyecto.dejatuhuella.controller;
 import com.proyecto.dejatuhuella.dto.PedidoDTO;
 import com.proyecto.dejatuhuella.dto.PedidoRequestDTO;
 import com.proyecto.dejatuhuella.model.Pedido;
-import com.proyecto.dejatuhuella.model.enums.EstadoPedido;
 import com.proyecto.dejatuhuella.service.PedidoService;
 import jakarta.validation.Valid; // Para validar el DTO
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +65,7 @@ public class PedidoController {
 
     @PutMapping("/{id}/estado")
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> actualizarEstadoPedido(@PathVariable Long id, @RequestParam EstadoPedido estado) {
+    public ResponseEntity<?> actualizarEstadoPedido(@PathVariable Long id, @RequestParam String estado) {
         try {
             Pedido pedidoActualizado = pedidoService.actualizarEstadoPedido(id, estado);
             PedidoDTO pedidoDTO = pedidoService.obtenerPedidoDTOPorId(pedidoActualizado.getId())
@@ -98,7 +97,7 @@ public class PedidoController {
     @PreAuthorize("isAuthenticated() and @seguridadService.esPropietarioDelPedido(#id)")
     public String cancelarPedido(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            pedidoService.actualizarEstadoPedido(id, EstadoPedido.CANCELADO);
+            pedidoService.actualizarEstadoPedido(id, "CANCELADO");
             redirectAttributes.addFlashAttribute("mensaje", "Pedido cancelado con éxito");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al cancelar el pedido: " + e.getMessage());
@@ -108,7 +107,7 @@ public class PedidoController {
 
     @PostMapping("/{id}/estado")
     @PreAuthorize("isAuthenticated() and @seguridadService.esVendedorEnPedido(#id)")
-    public String actualizarEstadoPedido(@PathVariable Long id, @RequestParam EstadoPedido estado,
+    public String actualizarEstadoPedido(@PathVariable Long id, @RequestParam String estado,
                                          RedirectAttributes redirectAttributes) {
         try {
             pedidoService.actualizarEstadoPedido(id, estado);
