@@ -236,4 +236,14 @@ public class PedidoService {
         // Asegurarse de siempre devolver una lista vacía en caso de error
         return List.of();
     }
+    
+    /**
+     * Verifica si un pedido existe en la base de datos
+     * @param pedidoId ID del pedido a verificar
+     * @return true si el pedido existe, false en caso contrario
+     */
+    @Transactional(readOnly = true)
+    public boolean existePedido(Long pedidoId) {
+        return pedidoId != null && pedidoRepository.existsById(pedidoId);
+    }
 }
