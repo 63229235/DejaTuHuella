@@ -36,8 +36,8 @@
                 <span th:text="'Stock: ' + ${producto.stock}">Stock: 0</span>
             </p>
 
-            <!-- Formulario para añadir al carrito -->
-            <form th:action="@{/cart/add}" method="post" class="mt-4" th:if="${producto.stock > 0}">
+            <!-- Formulario para añadir al carrito para usuarios autenticados -->
+            <form th:action="@{/cart/add}" method="post" class="mt-4" th:if="${producto.stock > 0}" sec:authorize="isAuthenticated()">
                 <input type="hidden" name="productoId" th:value="${producto.id}">
                 <div class="row g-3 align-items-center">
                     <div class="col-auto">
@@ -53,6 +53,13 @@
                     </div>
                 </div>
             </form>
+            
+            <!-- Botón para iniciar sesión para usuarios no autenticados -->
+            <div class="mt-4" sec:authorize="!isAuthenticated()" th:if="${producto.stock > 0}">
+                <a th:href="@{/login}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Inicia sesión para comprar
+                </a>
+            </div>
 
             <!-- Mensaje de producto agotado -->
             <div class="alert alert-danger mt-4" th:if="${producto.stock == 0}">

@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/", "/home", "/registro", "/login", "/css/**", "/static/js/**", "/images/**").permitAll()
+                                .requestMatchers("/", "/home", "/registro", "/login", "/css/**", "/static/js/**", "/images/**", "/uploads/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Permite el registro público
                                 .requestMatchers("/api/public/**", "/api/categorias/**", "/api/productos/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")

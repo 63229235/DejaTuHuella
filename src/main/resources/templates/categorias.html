@@ -15,14 +15,20 @@
 
 <div class="container py-5">
     <h1 class="text-center mb-5">Categorías</h1>
+    
+    <!-- Mensaje de error si existe -->
+    <div class="alert alert-danger mb-4" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
     <div class="row g-4">
         <div class="col-md-4" th:each="categoria : ${categorias}">
-            <div class="card h-100">
-                <div class="card-body text-center">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <div class="icon-container">
+                        <i class="fas fa-tag fa-3x mb-3" aria-hidden="true"></i>
+                    </div>
                     <h3 class="card-title" th:text="${categoria.nombre}">Nombre Categoría</h3>
                     <p class="card-text" th:text="${categoria.descripcion}">Descripción de la categoría</p>
-                    <a th:href="@{'/categoria/' + ${categoria.id}}" class="btn btn-primary">Ver Productos</a>
+                    <a th:href="@{'/categoria/' + ${categoria.id}}" class="btn btn-primary mt-auto">Ver Productos</a>
                 </div>
             </div>
         </div>

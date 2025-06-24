@@ -20,6 +20,11 @@ import java.util.Optional;
 @Service
 public class ProductoService {
 
+    // Cache para productos destacados
+    private List<Producto> productosDestacadosCache;
+    private long ultimaActualizacionCache = 0;
+    private static final long INTERVALO_ACTUALIZACION_CACHE = 10 * 60 * 1000; // 10 minutos en milisegundos
+
     @Autowired
     private ProductoRepository productoRepository;
 
@@ -151,5 +156,35 @@ public class ProductoService {
         }
 
         return List.of();
+    }
+    
+    /**
+     * Obtiene una lista de productos destacados aleatorios.
+     * Los productos se actualizan cada 10 minutos para mantener la frescura del contenido.
+     * @return Lista de productos destacados aleatorios
+     */
+    @Transactional(readOnly = true)
+    public List<Producto> obtenerProductosDestacadosAleatorios() {
+        long tiempoActual = System.currentTimeMillis();
+        
+        // Si el cache está vacío o ha pasado el tiempo de actualización, regeneramos la lista
+        if (productosDestacadosCache == null || 
+            tiempoActual - ultimaActualizacionCache > INTERVALO_ACTUALIZACION_CACHE) {
+            
+            // Obtener todos los productos
+            List<Producto> todosLosProductos = productoRepository.findAll();
+            
+            // Mezclar la lista para obtener productos aleatorios
+            java.util.Collections.shuffle(todosLosProductos);
+            
+            // Tomar los primeros 8 productos (o menos si no hay suficientes)
+            int cantidadProductos = Math.min(8, todosLosProductos.size());
+            productosDestacadosCache = todosLosProductos.subList(0, cantidadProductos);
+            
+            // Actualizar el tiempo de la última actualización
+            ultimaActualizacionCache = tiempoActual;
+        }
+        
+        return productosDestacadosCache;
     }
 }

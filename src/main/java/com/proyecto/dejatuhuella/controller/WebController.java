@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -48,7 +49,13 @@ public class WebController {
     }
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        // Cargar categorías destacadas
+        model.addAttribute("categoriasDestacadas", categoriaService.obtenerTodasLasCategorias());
+        
+        // Cargar productos destacados aleatorios
+        model.addAttribute("productosDestacados", productoService.obtenerProductosDestacadosAleatorios());
+        
         return "home"; // Devuelve el nombre de la plantilla HTML (home.html)
     }
 
@@ -110,16 +117,32 @@ public class WebController {
     }
 
     @GetMapping("/categoria/{id}")
-    public String productosPorCategoria(@PathVariable Long id, Model model) {
-        model.addAttribute("categoria", categoriaService.obtenerCategoriaPorId(id).orElse(null));
+    public String productosPorCategoria(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        // Obtener la categoría y verificar si existe
+        var categoriaOptional = categoriaService.obtenerCategoriaPorId(id);
+        if (categoriaOptional.isEmpty()) {
+            // Si la categoría no existe, redirigir a la página de categorías con un mensaje
+            redirectAttributes.addFlashAttribute("errorMessage", "La categoría solicitada no existe");
+            return "redirect:/categorias";
+        }
+        
+        // Si la categoría existe, mostrar sus productos
+        model.addAttribute("categoria", categoriaOptional.get());
         model.addAttribute("productos", productoService.obtenerProductosPorCategoria(id));
         return "productos-categoria";
     }
 
     @GetMapping("/productos/{id}")
-    public String detalleProducto(@PathVariable Long id, Model model) {
-        productoService.obtenerProductoPorId(id)
-                .ifPresent(producto -> model.addAttribute("producto", producto));
+    public String detalleProducto(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        var productoOptional = productoService.obtenerProductoPorId(id);
+        if (productoOptional.isEmpty()) {
+            // Si el producto no existe, redirigir a la página principal con un mensaje
+            redirectAttributes.addFlashAttribute("errorMessage", "El producto solicitado no existe");
+            return "redirect:/";
+        }
+        
+        // Si el producto existe, mostrar sus detalles
+        model.addAttribute("producto", productoOptional.get());
         return "producto-detalle";
     }
 
