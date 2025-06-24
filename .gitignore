@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+*.log
+logs/
+
+### OS specific files ###
+.DS_Store
+Thumbs.db
+
+### Application specific ###
+src/main/resources/static/uploads/
+application-dev.properties
+application-prod.properties

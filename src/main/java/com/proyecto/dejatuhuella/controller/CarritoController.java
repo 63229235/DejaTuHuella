@@ -95,8 +95,8 @@ public class CarritoController {
             // Vaciar el carrito después de la compra exitosa
             carritoService.vaciarCarrito();
 
-            redirectAttributes.addFlashAttribute("mensaje", "¡Compra realizada con éxito! Pedido #" + nuevoPedido.getId());
-            return "redirect:/mis-compras";
+            // Redirigir al usuario a la página de pago
+            return "redirect:/pagos/procesar/" + nuevoPedido.getId();
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al procesar la compra: " + e.getMessage());
