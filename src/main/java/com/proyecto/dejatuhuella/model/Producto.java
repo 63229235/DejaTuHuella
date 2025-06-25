@@ -31,6 +31,10 @@ public class Producto {
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetallePedido> detallesPedido = new HashSet<>();
+    
+    @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Resena> resenas = new HashSet<>();
 
     // Constructores
     public Producto() {
@@ -125,5 +129,13 @@ public class Producto {
 
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+    
+    public Set<Resena> getResenas() {
+        return resenas;
+    }
+
+    public void setResenas(Set<Resena> resenas) {
+        this.resenas = resenas;
     }
 }

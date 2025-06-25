@@ -5,6 +5,7 @@ import com.proyecto.dejatuhuella.service.CarritoService;
 import com.proyecto.dejatuhuella.service.CategoriaService;
 import com.proyecto.dejatuhuella.service.PedidoService;
 import com.proyecto.dejatuhuella.service.ProductoService;
+import com.proyecto.dejatuhuella.service.ResenaService;
 import com.proyecto.dejatuhuella.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class WebController {
 
     @Autowired
     private ProductoService productoService;
+    
+    @Autowired
+    private ResenaService resenaService;
 
     @Autowired
     private CarritoService carritoService;
@@ -143,6 +147,13 @@ public class WebController {
         
         // Si el producto existe, mostrar sus detalles
         model.addAttribute("producto", productoOptional.get());
+        
+        // Obtener las reseñas del producto
+        model.addAttribute("resenas", resenaService.obtenerResenasPorProducto(id));
+        
+        // Verificar si el usuario ya dejó una reseña
+        model.addAttribute("yaDejoResena", resenaService.usuarioYaDejoResena(id));
+        
         return "producto-detalle";
     }
 

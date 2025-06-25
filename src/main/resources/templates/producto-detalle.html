@@ -25,7 +25,7 @@
         <div class="col-md-7">
             <h1 th:text="${producto.nombre}">Nombre del Producto</h1>
             <p class="text-muted" th:text="'Categoría: ' + ${producto.categoria != null ? producto.categoria.nombre : 'Sin categoría'}"></p>
-            <p class="text-muted" th:text="'Vendedor: ' + ${producto.vendedor.nombre + ' ' + producto.vendedor.apellido}"></p>
+            <p class="text-muted" th:text="'Vendedor: ' + ${producto.usuario.nombre + ' ' + producto.usuario.apellido}"></p>
 
             <h3 class="mt-3" th:text="'$' + ${producto.precio}">$0.00</h3>
 
@@ -102,10 +102,119 @@
     </div>
 </div>
 
+<!-- Sección de Reseñas -->
+<div class="container mt-5">
+    <h3 class="mb-4">Reseñas y Calificaciones</h3>
+    
+    <!-- Formulario para agregar reseña (solo para usuarios autenticados que no han dejado reseña) -->
+    <div class="card mb-4" sec:authorize="isAuthenticated()" th:if="${!yaDejoResena}">
+        <div class="card-body">
+            <h5 class="card-title">Deja tu opinión</h5>
+            <form id="resenaForm">
+                <input type="hidden" id="productoId" th:value="${producto.id}">
+                <div class="mb-3">
+                    <label for="calificacion" class="form-label">Calificación</label>
+                    <div class="rating">
+                        <input type="radio" id="star5" name="calificacion" value="5" /><label for="star5"></label>
+                        <input type="radio" id="star4" name="calificacion" value="4" /><label for="star4"></label>
+                        <input type="radio" id="star3" name="calificacion" value="3" /><label for="star3"></label>
+                        <input type="radio" id="star2" name="calificacion" value="2" /><label for="star2"></label>
+                        <input type="radio" id="star1" name="calificacion" value="1" /><label for="star1"></label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="comentario" class="form-label">Comentario</label>
+                    <textarea class="form-control" id="comentario" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Reseña</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Mensaje para usuarios que ya dejaron reseña -->
+    <div class="alert alert-info mb-4" sec:authorize="isAuthenticated()" th:if="${yaDejoResena}">
+        Ya has dejado una reseña para este producto. ¡Gracias por tu opinión!
+    </div>
+    
+    <!-- Mensaje para usuarios no autenticados -->
+    <div class="alert alert-secondary mb-4" sec:authorize="!isAuthenticated()">
+        <a th:href="@{/login}">Inicia sesión</a> para dejar tu reseña sobre este producto.
+    </div>
+    
+    <!-- Lista de reseñas -->
+    <div class="row">
+        <div class="col-md-12">
+            <div th:if="${#lists.isEmpty(resenas)}" class="alert alert-light text-center">
+                Este producto aún no tiene reseñas. ¡Sé el primero en opinar!
+            </div>
+            
+            <div th:each="resena : ${resenas}" class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title" th:text="${resena.usuario.nombre + ' ' + resena.usuario.apellido}">Usuario</h5>
+                        <div class="stars-display">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i class="fas" th:classappend="${i <= resena.calificacion ? 'fa-star text-warning' : 'fa-star-o text-muted'}"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <p class="card-text" th:text="${resena.comentario}">Comentario de la reseña</p>
+                    <p class="card-text"><small class="text-muted" th:text="${#temporals.format(resena.fechaCreacion, 'dd/MM/yyyy HH:mm')}">Fecha</small></p>
+                    
+                    <!-- Botón para eliminar (solo visible para el autor o administradores) -->
+                    <button th:if="${#authentication.principal.username == resena.usuario.email or #authorization.expression('hasRole(\'ADMINISTRADOR\')')}" 
+                            class="btn btn-sm btn-outline-danger eliminar-resena" 
+                            th:data-resena-id="${resena.id}">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/resenas.js}"></script>
+
+<style>
+    /* Estilos para el sistema de calificación con estrellas */
+    .rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+    
+    .rating input {
+        display: none;
+    }
+    
+    .rating label {
+        cursor: pointer;
+        width: 25px;
+        height: 25px;
+        margin-right: 5px;
+        position: relative;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" fill="%23e4e5e9"/></svg>') no-repeat;
+    }
+    
+    .rating label:hover,
+    .rating label:hover ~ label,
+    .rating input:checked ~ label {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" fill="%23ff9900"/></svg>') no-repeat;
+    }
+    
+    /* Estilos para la visualización de estrellas en las reseñas */
+    .stars-display .fa-star {
+        color: #ff9900;
+    }
+    
+    .stars-display .fa-star-o {
+        color: #e4e5e9;
+    }
+</style>
 </body>
 </html>
