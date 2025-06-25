@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesar Pago - Deja Tu Huella</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/pago.css}">
+
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center mb-4">Procesar Pago</h2>
+                
+                <!-- Alerta de error -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                </div>
+                
+                <div class="payment-form">
+                    <!-- Encabezado del formulario de pago -->
+                    <div class="payment-header text-center">
+                        <h3><i class="fas fa-lock"></i> Pago Seguro</h3>
+                        <p class="mb-0">Tus datos están protegidos con encriptación SSL</p>
+                    </div>
+                    
+                    <!-- Resumen del pedido -->
+                    <div class="payment-summary">
+                        <h4>Resumen del Pedido #<span th:text="${pedido.id}"></span></h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Fecha:</strong> <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <p><strong>Total a Pagar:</strong> <span th:text="'S/ ' + ${pedido.total}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Selector de método de pago -->
+                    <div class="payment-method-selector">
+                        <div class="payment-method-option selected" data-method="TARJETA_CREDITO">
+                            <i class="fas fa-credit-card card-icon"></i>
+                            <p>Tarjeta de Crédito</p>
+                        </div>
+                        <div class="payment-method-option" data-method="TARJETA_DEBITO">
+                            <i class="fas fa-credit-card card-icon"></i>
+                            <p>Tarjeta de Débito</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulario de pago -->
+                    <form th:action="@{/pagos/procesar/{id}(id=${pedido.id})}" method="post" th:object="${pagoRequest}">
+                        <input type="hidden" th:field="*{metodoPago}" id="metodoPago" value="TARJETA_CREDITO">
+                        
+                        <div class="form-group">
+                            <label for="numeroTarjeta">Número de Tarjeta</label>
+                            <div class="card-input-container">
+                                <input type="text" class="form-control" id="numeroTarjeta" th:field="*{numeroTarjeta}" 
+                                       placeholder="1234 5678 9012 3456" maxlength="16" required>
+                                <div class="card-type-icon">
+                                    <i class="fab fa-cc-visa" id="cardIcon"></i>
+                                </div>
+                            </div>
+                            <div class="error-message" th:if="${#fields.hasErrors('numeroTarjeta')}" th:errors="*{numeroTarjeta}"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nombreTitular">Nombre del Titular</label>
+                            <input type="text" class="form-control" id="nombreTitular" th:field="*{nombreTitular}" 
+                                   placeholder="Como aparece en la tarjeta" required>
+                            <div class="error-message" th:if="${#fields.hasErrors('nombreTitular')}" th:errors="*{nombreTitular}"></div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fechaVencimiento">Fecha de Vencimiento (MM/YY)</label>
+                                    <input type="text" class="form-control" id="fechaVencimiento" th:field="*{fechaVencimiento}" 
+                                           placeholder="MM/YY" maxlength="5" required>
+                                    <div class="error-message" th:if="${#fields.hasErrors('fechaVencimiento')}" th:errors="*{fechaVencimiento}"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigoSeguridad">Código de Seguridad (CVV)</label>
+                                    <input type="password" class="form-control" id="codigoSeguridad" th:field="*{codigoSeguridad}" 
+                                           placeholder="123" maxlength="4" required>
+                                    <div class="error-message" th:if="${#fields.hasErrors('codigoSeguridad')}" th:errors="*{codigoSeguridad}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn-pay">
+                                <i class="fas fa-lock"></i> Pagar Ahora S/ <span th:text="${pedido.total}"></span>
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_mc_vs_dc_ae.jpg" 
+                                 alt="Métodos de pago aceptados" style="max-width: 200px;">
+                            <p class="mt-2 text-muted">Al realizar el pago, aceptas nuestros <a href="#">Términos y Condiciones</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/pago.js}"></script>
+</body>
+</html>
