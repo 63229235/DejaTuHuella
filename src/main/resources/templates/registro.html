@@ -2,76 +2,67 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Usuario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario - DejaTuHuella</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<h2>Formulario de Registro</h2>
-<!-- El action apuntará a un endpoint en tu UsuarioController que maneje el POST -->
-<form th:action="@{/api/usuarios}" method="post">
-    <div>
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Formulario de Registro</h2>
+                    <!-- El action apuntará a un endpoint en tu UsuarioController que maneje el POST -->
+                    <form th:action="@{/api/usuarios}" method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apellido" class="form-label">Apellido:</label>
+                            <input type="text" class="form-control" id="apellido" name="apellido" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña:</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rol" class="form-label">Rol:</label>
+                            <select class="form-select" id="rol" name="rol">
+                                <option value="USUARIO">Usuario</option>
+                                <!-- El rol de ADMINISTRADOR se asigna manualmente por seguridad -->
+                            </select>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a th:href="@{/login}" class="text-decoration-none">¿Ya tienes cuenta? Inicia sesión</a>
+                        </div>
+                        <div class="text-center mt-2">
+                            <a th:href="@{/}" class="text-decoration-none">Volver al inicio</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label for="apellido">Apellido:</label>
-        <input type="text" id="apellido" name="apellido" required>
-    </div>
-    <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    <div>
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <div>
-        <label for="rol">Rol:</label>
-        <select id="rol" name="rol">
-            <option value="USUARIO">Usuario</option>
-            <!-- El rol de ADMINISTRADOR se asigna manualmente por seguridad -->
-        </select>
-    </div>
-    <button type="submit">Registrarse</button>
-</form>
-<p><a th:href="@{/}">Volver al inicio</a></p>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const userData = {
-                nombre: document.getElementById('nombre').value,
-                apellido: document.getElementById('apellido').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                rol: document.getElementById('rol').value
-            };
-            
-            fetch('/api/usuarios', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Usuario registrado correctamente');
-                    window.location.href = '/login';
-                } else {
-                    return response.text().then(text => {
-                        throw new Error(text || 'Error al registrar usuario');
-                    });
-                }
-            })
-            .catch(error => {
-                alert('Error: ' + error.message);
-            });
-        });
-    });
-    </script>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/registro.js}"></script>
 </body>
 </html>

@@ -1,0 +1,150 @@
+.confirmation-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .confirmation-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .confirmation-details {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .confirmation-icon {
+            font-size: 5rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .order-summary {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .btn-continue {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-continue:hover {
+            background-color: #45a049;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-pagado {
+            background-color: #28a745;
+            color: white;
+        }
+        .product-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        .thank-you-message {
+            background-color: #fff8e1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #ffc107;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .thank-you-message h4 {
+            color: #ff6f00;
+            margin-bottom: 10px;
+        }
+        .thank-you-message p {
+            color: #5d4037;
+            margin-bottom: 0;
+        }
+
+        .payment-form {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                }
+        .card-icon {
+                    font-size: 2rem;
+                    margin-right: 10px;
+                }
+                .payment-header {
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 15px;
+                    border-radius: 10px 10px 0 0;
+                    margin-bottom: 20px;
+                }
+                .payment-summary {
+                    background-color: #f1f1f1;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin-bottom: 20px;
+                }
+                .form-group {
+                    margin-bottom: 20px;
+                }
+                .btn-pay {
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    width: 100%;
+                }
+                .btn-pay:hover {
+                    background-color: #45a049;
+                }
+                .payment-method-selector {
+                    display: flex;
+                    justify-content: space-around;
+                    margin-bottom: 20px;
+                }
+                .payment-method-option {
+                    text-align: center;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                .payment-method-option.selected {
+                    border-color: #4CAF50;
+                    background-color: #e8f5e9;
+                }
+                .card-input-container {
+                    position: relative;
+                }
+                .card-type-icon {
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    font-size: 1.5rem;
+                }
+                .error-message {
+                    color: #dc3545;
+                    font-size: 0.875rem;
+                    margin-top: 5px;
+                }

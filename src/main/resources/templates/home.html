@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DejaTuHuella - Marketplace Estudiantil</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <!-- Bootstrap CSS -->
@@ -15,8 +16,8 @@
     <div class="container-fluid p-0 mb-4">
         <div class="position-relative">
             <!-- Banner de fondo que abarca todo el ancho -->
-            <div class="banner-background bg-primary" style="height: 400px; overflow: hidden;">
-                <img th:src="@{/images/Banner.png}" class="w-100 h-100" style="object-fit: cover;" alt="Banner">
+            <div class="banner-background" style="height: 400px; overflow: hidden;">
+                <img th:src="@{/images/Banner.png}" class="w-100 h-100" style="object-fit: contain; object-position: center;" alt="Banner">
             </div>
             
             <!-- Contenido del banner superpuesto -->
@@ -106,60 +107,6 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Función para agregar productos al carrito
-        function agregarAlCarrito(productoId) {
-            fetch('/api/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    productoId: productoId,
-                    cantidad: 1
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Actualizar el contador del carrito
-                    document.querySelector('.badge').textContent = data.cartCount;
-                    alert('Producto agregado al carrito');
-                } else {
-                    alert('Error al agregar al carrito: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al agregar al carrito');
-            });
-        }
-        
-        // Función para actualizar los productos destacados
-        function actualizarProductosDestacados() {
-            fetch(window.location.pathname)
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const nuevosProductos = doc.querySelector('.row.g-4');
-                    
-                    if (nuevosProductos) {
-                        // Actualizar solo la sección de productos destacados
-                        const productosActuales = document.querySelector('.container.mb-5:nth-of-type(2) .row.g-4');
-                        if (productosActuales) {
-                            productosActuales.innerHTML = nuevosProductos.innerHTML;
-                            console.log('Productos destacados actualizados');
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al actualizar productos destacados:', error);
-                });
-        }
-        
-        // Actualizar productos destacados cada 15 minutos (900000 ms)
-        setInterval(actualizarProductosDestacados, 900000);
-    </script>
+    <script th:src="@{/js/home.js}"></script>
 </body>
 </html>

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<link rel="stylesheet" th:href="@{/css/narvar.css}">
 <body>
 <!-- Fragmento de la barra de navegación -->
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">
-            <img th:src="@{/images/logo.png}" alt="Logo" width="30" height="30" class="d-inline-block align-text-top" onerror="this.style.display='none'">
-            DejaTuHuella
+            <img th:src="@{/images/logo.png}" alt="Logo" width="30" height="30" class="d-inline-block" onerror="this.style.display='none'">
+            <span>DejaTuHuella</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -19,41 +20,31 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/categorias}">Categorías</a>
                 </li>
-                <!--  <li class="nav-item" sec:authorize="isAuthenticated()">
-                     <a class="nav-link" th:href="@{/mis-compras}">Mis Compras</a>
-                 </li>-->
-            <!--    <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/panel-control}">Panel de Control</a>
-                </li>-->
             </ul>
-            <!-- Barra de búsqueda
-            <form class="d-flex mx-3" th:action="@{/search}" method="get">
-                <input class="form-control me-2" type="search" placeholder="Buscar productos..." name="query">
-                <button class="btn btn-outline-primary" type="submit">Buscar</button>
-            </form>-->
+            
             <!-- Botones de usuario -->
-            <div class="d-flex">
-                <div sec:authorize="!isAuthenticated()">
-                    <a th:href="@{/login}" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
-                    <a th:href="@{/registro}" class="btn btn-primary">Registrarse</a>
+            <div class="d-flex align-items-center">
+                <div sec:authorize="!isAuthenticated()" class="d-flex gap-2">
+                    <a th:href="@{/login}" class="btn btn-custom-outline">Iniciar Sesión</a>
+                    <a th:href="@{/registro}" class="btn btn-custom-primary">Registrarse</a>
                 </div>
-                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
-                    <a th:href="@{/cart}" class="btn btn-outline-primary me-2">
+                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
+                    <a th:href="@{/cart}" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="badge bg-primary" th:text="${cartCount}">0</span>
+                        <span class="cart-badge" th:text="${cartCount}">0</span>
                     </a>
                     <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                        <button class="user-dropdown dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user"></i>
                             <span sec:authentication="name">Usuario</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" th:href="@{/panel-control}">Panel de Control</a></li>
-                            <li><a class="dropdown-item" th:href="@{/mis-compras}">Mis Compras</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" th:href="@{/panel-control}"><i class="fas fa-tachometer-alt me-2"></i>Panel de Control</a></li>
+                            <li><a class="dropdown-item" th:href="@{/mis-compras}"><i class="fas fa-shopping-bag me-2"></i>Mis Compras</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form th:action="@{/logout}" method="post">
-                                    <button class="dropdown-item" type="submit">Cerrar Sesión</button>
+                                    <button class="dropdown-item" type="submit"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</button>
                                 </form>
                             </li>
                         </ul>
@@ -63,5 +54,6 @@
         </div>
     </div>
 </nav>
+<script th:src="@{/js/narvar.js}"></script>
 </body>
 </html>

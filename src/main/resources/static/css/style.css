@@ -65,13 +65,52 @@ ul li {
     position: relative;
     width: 100%;
     overflow: hidden;
+    background-color: transparent;
 }
 
 .banner-background img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .banner-background {
+        height: 300px !important;
+    }
+    
+    .banner-background img {
+        object-fit: contain;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .banner-background {
+        height: 200px !important;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    footer h5 {
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+    
+    footer p, footer li {
+        font-size: 0.8rem;
+    }
 }
 
 /* Estilos para las tarjetas de productos y categorías */
@@ -133,6 +172,20 @@ ul li {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+@media (max-width: 767px) {
+    .product-card {
+        height: 350px;
+    }
+    
+    .img-container {
+        height: 150px;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
 }
 
 .img-container {
