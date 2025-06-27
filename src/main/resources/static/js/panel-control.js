@@ -29,7 +29,11 @@ function eliminarProducto(id) {
         })
         .then(response => {
             if (response.ok) {
-                window.location.reload();
+                // Eliminar la fila de la tabla dinámicamente
+                const filaProducto = document.querySelector(`tr[data-producto-id="${id}"]`);
+                if (filaProducto) {
+                    filaProducto.remove();
+                }
             } else {
                 return response.text().then(text => { throw new Error(text) });
             }
@@ -48,9 +52,28 @@ function cambiarEstadoProducto(id, nuevoEstado) {
     })
     .then(response => {
         if (response.ok) {
-            window.location.reload();
+            return response.json();
         } else {
             return response.text().then(text => { throw new Error(text) });
+        }
+    })
+    .then(productoActualizado => {
+        // Actualizar el estado del producto en la interfaz
+        const filaProducto = document.querySelector(`tr[data-producto-id="${id}"]`);
+        if (filaProducto) {
+            // Actualizar el badge de estado
+            const estadoCell = filaProducto.querySelector('td:nth-child(5)');
+            if (estadoCell) {
+                estadoCell.innerHTML = productoActualizado.activo ? 
+                    '<span class="badge bg-success">Activo</span>' : 
+                    '<span class="badge bg-danger">Inactivo</span>';
+            }
+            
+            // Actualizar el botón de cambio de estado
+            const toggleButton = filaProducto.querySelector('button.btn-outline-warning');
+            if (toggleButton) {
+                toggleButton.setAttribute('onclick', `cambiarEstadoProducto(${id}, ${!productoActualizado.activo})`);
+            }
         }
     })
     .catch(error => alert('Error al cambiar el estado del producto: ' + error));
@@ -85,16 +108,76 @@ function guardarProducto() {
             if (modal) {
                 modal.hide();
             }
-            // Recargar la página para mostrar los cambios
-            window.location.reload();
+            
+            // En lugar de recargar la página, actualizar la tabla dinámicamente
+            return response.json();
         } else {
             return response.text().then(text => { throw new Error(text) });
         }
+    })
+    .then(nuevoProducto => {
+        console.log('Producto guardado:', nuevoProducto);
+        // Actualizar la tabla de productos dinámicamente
+        actualizarTablaProductos(nuevoProducto);
     })
     .catch(error => {
         console.error('Error al guardar el producto:', error);
         alert('Error al guardar el producto: ' + error);
     });
+}
+
+// Función para actualizar la tabla de productos dinámicamente
+function actualizarTablaProductos(nuevoProducto) {
+    // Si es una edición, actualizar la fila existente
+    const filaExistente = document.querySelector(`tr[data-producto-id="${nuevoProducto.id}"]`);
+    
+    if (filaExistente) {
+        // Actualizar la fila existente
+        filaExistente.innerHTML = crearFilaProducto(nuevoProducto);
+    } else {
+        // Agregar una nueva fila a la tabla
+        // Seleccionar específicamente la tabla en la pestaña de productos
+        const tablaProductos = document.querySelector('#productos table tbody');
+        if (tablaProductos) {
+            const nuevaFila = document.createElement('tr');
+            nuevaFila.setAttribute('data-producto-id', nuevoProducto.id);
+            nuevaFila.innerHTML = crearFilaProducto(nuevoProducto);
+            tablaProductos.prepend(nuevaFila); // Agregar al principio de la tabla
+            console.log('Fila agregada a la tabla de productos');
+        } else {
+            console.error('No se encontró la tabla de productos');
+        }
+    }
+}
+
+// Función para crear el HTML de una fila de producto
+function crearFilaProducto(producto) {
+    const estadoBadge = producto.activo ? 
+        '<span class="badge bg-success">Activo</span>' : 
+        '<span class="badge bg-danger">Inactivo</span>';
+    
+    return `
+        <td>
+            <img src="${producto.imagenUrl}" alt="Producto" class="img-thumbnail" style="width: 50px;">
+        </td>
+        <td>${producto.nombre}</td>
+        <td>S/ ${producto.precio}</td>
+        <td>${producto.stock}</td>
+        <td>
+            ${estadoBadge}
+        </td>
+        <td>
+            <button class="btn btn-sm btn-outline-primary" onclick="editarProducto(${producto.id})">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${producto.id})">
+                <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-warning" onclick="cambiarEstadoProducto(${producto.id}, ${!producto.activo})">
+                <i class="fas fa-toggle-on"></i>
+            </button>
+        </td>
+    `;
 }
 
 // Funciones para pedidos
