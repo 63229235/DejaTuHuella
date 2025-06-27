@@ -1,6 +1,6 @@
 // Función para agregar productos al carrito
         function agregarAlCarrito(productoId) {
-            fetch('/api/cart/add', {
+            fetch('/api/carrito/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -14,7 +14,7 @@
             .then(data => {
                 if (data.success) {
                     // Actualizar el contador del carrito
-                    document.querySelector('.badge').textContent = data.cartCount;
+                    document.querySelector('.cart-badge').textContent = data.cartCount;
                     alert('Producto agregado al carrito');
                 } else {
                     alert('Error al agregar al carrito: ' + data.message);

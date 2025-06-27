@@ -13,9 +13,14 @@ import java.util.Map;
 @RequestMapping("/api/cart")
 @CrossOrigin(origins = "*")
 public class CarritoRestController {
+    // Este controlador está obsoleto, se mantiene para compatibilidad
+    // Usar CarritoPersistenteRestController con la ruta /api/carrito en su lugar
 
     @Autowired
     private CarritoService carritoService;
+    
+    @Autowired
+    private com.proyecto.dejatuhuella.service.CarritoPersistentService carritoPersistentService;
 
     @PostMapping("/add")
     @PreAuthorize("isAuthenticated()")
@@ -24,11 +29,12 @@ public class CarritoRestController {
         Integer cantidad = Integer.valueOf(request.get("cantidad").toString());
         
         try {
-            carritoService.agregarProducto(productoId, cantidad);
+            // Usar el servicio de carrito persistente en lugar del servicio de sesión
+            carritoPersistentService.agregarProducto(productoId, cantidad);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("cartCount", carritoService.getCantidadTotal());
+            response.put("cartCount", carritoPersistentService.getCantidadTotal());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();

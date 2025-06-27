@@ -29,7 +29,7 @@
                     <a th:href="@{/registro}" class="btn btn-custom-primary">Registrarse</a>
                 </div>
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
-                    <a th:href="@{/cart}" class="cart-icon">
+                    <a th:href="@{/carrito}" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-badge" th:text="${cartCount}">0</span>
                     </a>

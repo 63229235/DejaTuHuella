@@ -35,6 +35,9 @@ public class WebController {
 
     @Autowired
     private CarritoService carritoService;
+    
+    @Autowired
+    private com.proyecto.dejatuhuella.service.CarritoPersistentService carritoPersistentService;
 
     @Autowired
     private PedidoService pedidoService;
@@ -47,7 +50,8 @@ public class WebController {
         // Solo contamos si el usuario está autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
-            return carritoService.getCantidadTotal();
+            // Usar el servicio de carrito persistente en lugar del servicio de sesión
+            return carritoPersistentService.getCantidadTotal();
         }
         return 0;
     }

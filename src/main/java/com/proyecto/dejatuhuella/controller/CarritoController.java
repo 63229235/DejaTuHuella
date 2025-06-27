@@ -25,10 +25,9 @@ public class CarritoController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public String verCarrito(Model model) {
-        model.addAttribute("items", carritoService.getItemsDetallados());
-        model.addAttribute("total", carritoService.getTotal());
-        return "carrito";
+    public String verCarrito() {
+        // Redirigir a la nueva ruta del carrito persistente
+        return "redirect:/carrito";
     }
 
     @PostMapping("/add")
@@ -38,9 +37,8 @@ public class CarritoController {
             @RequestParam Integer cantidad,
             RedirectAttributes redirectAttributes) {
 
-        carritoService.agregarProducto(productoId, cantidad);
-        redirectAttributes.addFlashAttribute("mensaje", "Producto añadido al carrito");
-        return "redirect:/cart";
+        // Redirigir a la nueva ruta del carrito persistente
+        return "redirect:/carrito/add?productoId=" + productoId + "&cantidad=" + cantidad;
     }
 
     @PostMapping("/update")
@@ -49,58 +47,28 @@ public class CarritoController {
             @RequestParam Long productoId,
             @RequestParam Integer cantidad) {
 
-        carritoService.actualizarCantidad(productoId, cantidad);
-        return "redirect:/cart";
+        // Redirigir a la nueva ruta del carrito persistente
+        return "redirect:/carrito/update?productoId=" + productoId + "&cantidad=" + cantidad;
     }
 
     @PostMapping("/remove")
     @PreAuthorize("isAuthenticated()")
     public String eliminarDelCarrito(@RequestParam Long productoId) {
-        carritoService.eliminarProducto(productoId);
-        return "redirect:/cart";
+        // Redirigir a la nueva ruta del carrito persistente
+        return "redirect:/carrito/remove?productoId=" + productoId;
     }
 
     @PostMapping("/clear")
     @PreAuthorize("isAuthenticated()")
     public String vaciarCarrito() {
-        carritoService.vaciarCarrito();
-        return "redirect:/cart";
+        // Redirigir a la nueva ruta del carrito persistente
+        return "redirect:/carrito/clear";
     }
 
     @PostMapping("/checkout")
     @PreAuthorize("isAuthenticated()")
-    public String procesarCompra(RedirectAttributes redirectAttributes) {
-        // Verificar stock antes de procesar
-        if (!carritoService.verificarStock()) {
-            redirectAttributes.addFlashAttribute("error", "Algunos productos no tienen suficiente stock");
-            return "redirect:/cart";
-        }
-
-        try {
-            // Obtener el ID del usuario autenticado
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            org.springframework.security.core.userdetails.UserDetails userDetails =
-                    (org.springframework.security.core.userdetails.UserDetails) auth.getPrincipal();
-
-            // Buscar el usuario por su nombre de usuario (email)
-            com.proyecto.dejatuhuella.model.Usuario usuario =
-                    ((com.proyecto.dejatuhuella.security.CustomUserDetails)
-                            org.springframework.security.core.context.SecurityContextHolder
-                                    .getContext().getAuthentication().getPrincipal()).getUsuario();
-
-            // Generar el pedido
-            PedidoRequestDTO pedidoRequest = carritoService.generarPedidoRequest(usuario.getId());
-            Pedido nuevoPedido = pedidoService.crearPedido(pedidoRequest);
-
-            // Vaciar el carrito después de la compra exitosa
-            carritoService.vaciarCarrito();
-
-            // Redirigir al usuario a la página de pago
-            return "redirect:/pagos/procesar/" + nuevoPedido.getId();
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al procesar la compra: " + e.getMessage());
-            return "redirect:/cart";
-        }
+    public String procesarCompra() {
+        // Redirigir a la nueva ruta del carrito persistente
+        return "redirect:/carrito/checkout";
     }
 }
