@@ -20,7 +20,7 @@ public class Producto {
     private Boolean activo = true;
     private String imagenUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 

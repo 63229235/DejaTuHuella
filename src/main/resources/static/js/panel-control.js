@@ -456,6 +456,119 @@ function cambiarEstadoUsuario(id, nuevoEstado) {
     .catch(error => alert('Error al cambiar el estado del usuario: ' + error));
 }
 
+// Funciones para gestión de productos (administrador)
+function cargarTodosLosProductos() {
+    const todosProductosTableBody = document.getElementById('todosProductosTableBody');
+    if (todosProductosTableBody) {
+        console.log('Cargando todos los productos...');
+        fetch('/api/productos')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al cargar productos: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(productos => {
+                console.log('Productos cargados:', productos);
+                todosProductosTableBody.innerHTML = '';
+                productos.forEach(producto => {
+                    console.log('Producto:', producto);
+                    console.log('Usuario del producto:', producto.usuario);
+                    
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-producto-id', producto.id);
+                    
+                    // Formatear el correo del vendedor
+                    const nombreVendedor = producto.usuario ? 
+                        `${producto.usuario.email}` : 'Desconocido';
+                    console.log('Email del vendedor:', nombreVendedor);
+                    
+                    // Formatear el nombre de la categoría
+                    const nombreCategoria = producto.categoria ? producto.categoria.nombre : 'Sin categoría';
+                    
+                    // Crear el badge de estado
+                    const estadoBadge = producto.activo ? 
+                        '<span class="badge bg-success">Activo</span>' : 
+                        '<span class="badge bg-danger">Inactivo</span>';
+                    
+                    row.innerHTML = `
+                        <td>
+                            <img src="${producto.imagenUrl}" alt="${producto.nombre}" class="img-thumbnail" style="width: 50px;">
+                        </td>
+                        <td>${producto.nombre}</td>
+                        <td>${nombreVendedor}</td>
+                        <td>${nombreCategoria}</td>
+                        <td>S/ ${producto.precio}</td>
+                        <td>${producto.stock}</td>
+                        <td>${estadoBadge}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editarProducto(${producto.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarProductoAdmin(${producto.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="cambiarEstadoProducto(${producto.id}, ${!producto.activo})">
+                                <i class="fas fa-toggle-on"></i>
+                            </button>
+                        </td>
+                    `;
+                    todosProductosTableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                todosProductosTableBody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error al cargar productos: ${error.message}</td></tr>`;
+            });
+    }
+}
+
+function eliminarProductoAdmin(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.')) {
+        fetch(`/api/productos/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Eliminar la fila de la tabla dinámicamente
+                const filaProducto = document.querySelector(`tr[data-producto-id="${id}"]`);
+                if (filaProducto) {
+                    filaProducto.remove();
+                }
+                alert('Producto eliminado con éxito');
+            } else {
+                return response.text().then(text => { throw new Error(text) });
+            }
+        })
+        .catch(error => alert('Error al eliminar el producto: ' + error));
+    }
+}
+
+function filtrarProductosAdmin() {
+    const filtro = document.getElementById('filtroProductos').value.toLowerCase();
+    const todosProductosTableBody = document.getElementById('todosProductosTableBody');
+    
+    if (todosProductosTableBody) {
+        const filas = todosProductosTableBody.querySelectorAll('tr');
+        
+        filas.forEach(fila => {
+            const nombre = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const correoVendedor = fila.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const categoria = fila.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            
+            // Mostrar u ocultar la fila según si coincide con el filtro
+            if (nombre.includes(filtro) || correoVendedor.includes(filtro) || categoria.includes(filtro)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    }
+}
+
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
     // Resetear formulario al abrir modal de producto
@@ -477,34 +590,60 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Cargar usuarios si es administrador
-        const usuariosTab = document.getElementById('usuarios');
-        if (usuariosTab) {
-            console.log('Tab de usuarios encontrado, cargando usuarios...');
+    const usuariosTab = document.getElementById('usuarios');
+    if (usuariosTab) {
+        console.log('Tab de usuarios encontrado, cargando usuarios...');
+        cargarUsuarios();
+
+        // También cargar usuarios cuando se haga clic en la pestaña
+        document.querySelector('a[data-bs-target="#usuarios"]')?.addEventListener('click', function() {
+            console.log('Clic en pestaña de usuarios, recargando...');
             cargarUsuarios();
-
-            // También cargar usuarios cuando se haga clic en la pestaña
-            document.querySelector('a[data-bs-target="#usuarios"]')?.addEventListener('click', function() {
-                console.log('Clic en pestaña de usuarios, recargando...');
-                cargarUsuarios();
-            });
-        }
-    });
-
-    // Evento para cargar usuarios cuando se activa la pestaña
-    document.addEventListener('DOMContentLoaded', function() {
-        // Detectar cambio de pestaña para cargar datos específicos
-        const tabLinks = document.querySelectorAll('[data-bs-toggle="list"]');
-        tabLinks.forEach(tabLink => {
-            tabLink.addEventListener('shown.bs.tab', function(event) {
-                const targetId = event.target.getAttribute('data-bs-target');
-                if (targetId === '#usuarios') {
-                    cargarUsuarios();
-                }
-            });
         });
+    }
+    
+    // Cargar todos los productos si es administrador
+    const gestionProductosTab = document.getElementById('gestion-productos');
+    if (gestionProductosTab) {
+        console.log('Tab de gestión de productos encontrado, cargando productos...');
+        cargarTodosLosProductos();
 
-        // Cargar usuarios si la pestaña está activa al cargar la página
-        if (document.querySelector('[data-bs-target="#usuarios"].active')) {
-            cargarUsuarios();
-        }
+        // También cargar productos cuando se haga clic en la pestaña
+        document.querySelector('a[data-bs-target="#gestion-productos"]')?.addEventListener('click', function() {
+            console.log('Clic en pestaña de gestión de productos, recargando...');
+            cargarTodosLosProductos();
+        });
+    }
+});
+
+// Evento para cargar datos específicos cuando se activa una pestaña
+document.addEventListener('DOMContentLoaded', function() {
+    // Detectar cambio de pestaña para cargar datos específicos
+    const tabLinks = document.querySelectorAll('[data-bs-toggle="list"]');
+    tabLinks.forEach(tabLink => {
+        tabLink.addEventListener('shown.bs.tab', function(event) {
+            const targetId = event.target.getAttribute('data-bs-target');
+            if (targetId === '#usuarios') {
+                cargarUsuarios();
+            } else if (targetId === '#gestion-productos') {
+                cargarTodosLosProductos();
+            }
+        });
     });
+
+    // Cargar datos si la pestaña correspondiente está activa al cargar la página
+    if (document.querySelector('[data-bs-target="#usuarios"].active')) {
+        cargarUsuarios();
+    }
+    if (document.querySelector('[data-bs-target="#gestion-productos"].active')) {
+        cargarTodosLosProductos();
+    }
+    
+    // Configurar el evento para el filtro de productos
+    const filtroProductos = document.getElementById('filtroProductos');
+    if (filtroProductos) {
+        filtroProductos.addEventListener('input', function() {
+            filtrarProductosAdmin();
+        });
+    }
+});
