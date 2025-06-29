@@ -81,7 +81,7 @@ public class PagoController {
                 // Actualizar el estado del pedido a PAGADO
                 pedidoService.actualizarEstadoPedido(pedidoId, "PAGADO");
                 redirectAttributes.addFlashAttribute("mensaje", "¡Pago realizado con éxito!");
-                return "redirect:/pagos/confirmacion/" + pedidoId;
+                return "redirect:/pagos/agradecimiento";
             } else {
                 redirectAttributes.addFlashAttribute("error", "Error al procesar el pago. Por favor, intente nuevamente.");
                 return "redirect:/pagos/procesar/" + pedidoId;
@@ -109,8 +109,7 @@ public class PagoController {
             return "redirect:/mis-compras?error=No tienes permiso para ver este pedido";
         }
         
-        model.addAttribute("pedido", pedido);
-        
-        return "pago/confirmacion";
+        // Redirigir a la página de agradecimiento en lugar de mostrar la confirmación
+        return "redirect:/pagos/agradecimiento";
     }
 }
