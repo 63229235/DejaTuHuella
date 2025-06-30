@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Transactional 
 public class CarritoPersistentService {
 
     @Autowired
@@ -45,14 +46,28 @@ public class CarritoPersistentService {
     public Carrito obtenerCarritoUsuarioActual() {
         Usuario usuario = obtenerUsuarioActual();
         if (usuario == null) {
-            throw new RuntimeException("Usuario no autenticado");
+            // En lugar de lanzar una excepción, registrar el evento y devolver null
+            System.err.println("Advertencia: Intentando obtener carrito para usuario no autenticado");
+            return null;
         }
-        
-        return carritoRepository.findByUsuario(usuario)
-                .orElseGet(() -> {
-                    Carrito nuevoCarrito = new Carrito(usuario);
-                    return carritoRepository.save(nuevoCarrito);
-                });
+
+        try {
+            return carritoRepository.findByUsuario(usuario)
+                    .orElseGet(() -> {
+                        try {
+                            Carrito nuevoCarrito = new Carrito(usuario);
+                            return carritoRepository.save(nuevoCarrito);
+                        } catch (Exception e) {
+                            System.err.println("Error al crear nuevo carrito: " + e.getMessage());
+                            e.printStackTrace();
+                            throw new RuntimeException("Error al crear carrito: " + e.getMessage(), e);
+                        }
+                    });
+        } catch (Exception e) {
+            System.err.println("Error al obtener carrito: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al obtener carrito: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -68,9 +83,9 @@ public class CarritoPersistentService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         Carrito carrito = obtenerCarritoUsuarioActual();
-        
+
         Optional<CarritoItem> itemExistente = carritoItemRepository.findByCarritoAndProducto(carrito, producto);
-        
+
         if (itemExistente.isPresent()) {
             // Si el producto ya está en el carrito, actualizar la cantidad
             CarritoItem item = itemExistente.get();
@@ -91,9 +106,9 @@ public class CarritoPersistentService {
         Carrito carrito = obtenerCarritoUsuarioActual();
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        
+
         Optional<CarritoItem> itemOpt = carritoItemRepository.findByCarritoAndProducto(carrito, producto);
-        
+
         if (itemOpt.isPresent()) {
             if (cantidad <= 0) {
                 // Si la cantidad es 0 o negativa, eliminar el item
@@ -115,9 +130,9 @@ public class CarritoPersistentService {
         Carrito carrito = obtenerCarritoUsuarioActual();
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        
+
         Optional<CarritoItem> itemOpt = carritoItemRepository.findByCarritoAndProducto(carrito, producto);
-        
+
         itemOpt.ifPresent(carritoItemRepository::delete);
     }
 
@@ -157,7 +172,7 @@ public class CarritoPersistentService {
     public BigDecimal getTotal() {
         Carrito carrito = obtenerCarritoUsuarioActual();
         List<CarritoItem> items = carritoItemRepository.findByCarrito(carrito);
-        
+
         return items.stream()
                 .map(CarritoItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -170,14 +185,14 @@ public class CarritoPersistentService {
     public boolean verificarStock() {
         Carrito carrito = obtenerCarritoUsuarioActual();
         List<CarritoItem> items = carritoItemRepository.findByCarrito(carrito);
-        
+
         for (CarritoItem item : items) {
             Producto producto = item.getProducto();
             if (producto.getStock() < item.getCantidad()) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -188,10 +203,10 @@ public class CarritoPersistentService {
     public PedidoRequestDTO generarPedidoRequest(Long usuarioId) {
         Carrito carrito = obtenerCarritoUsuarioActual();
         List<CarritoItem> items = carritoItemRepository.findByCarrito(carrito);
-        
+
         PedidoRequestDTO pedidoRequest = new PedidoRequestDTO();
         pedidoRequest.setUsuarioId(usuarioId);
-        
+
         List<DetallePedidoRequestDTO> detalles = new ArrayList<>();
         for (CarritoItem item : items) {
             DetallePedidoRequestDTO detalle = new DetallePedidoRequestDTO();
@@ -199,7 +214,7 @@ public class CarritoPersistentService {
             detalle.setCantidad(item.getCantidad());
             detalles.add(detalle);
         }
-        
+
         pedidoRequest.setDetalles(detalles);
         return pedidoRequest;
     }
@@ -209,15 +224,18 @@ public class CarritoPersistentService {
      */
     private Usuario obtenerUsuarioActual() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return null;
         }
-        
+
         try {
-            com.proyecto.dejatuhuella.security.CustomUserDetails userDetails = 
-                    (com.proyecto.dejatuhuella.security.CustomUserDetails) auth.getPrincipal();
+            com.proyecto.dejatuhuella.security.CustomUserDetails userDetails
+                    = (com.proyecto.dejatuhuella.security.CustomUserDetails) auth.getPrincipal();
             return userDetails.getUsuario();
         } catch (ClassCastException e) {
+            // Log the error for debugging
+            System.err.println("Error al obtener usuario actual: " + e.getMessage());
+            System.err.println("Tipo de principal: " + auth.getPrincipal().getClass().getName());
             return null;
         }
     }
@@ -227,11 +245,24 @@ public class CarritoPersistentService {
      */
     @Transactional(readOnly = true)
     public int getCantidadTotal() {
-        Carrito carrito = obtenerCarritoUsuarioActual();
-        List<CarritoItem> items = carritoItemRepository.findByCarrito(carrito);
-        
-        return items.stream()
-                .mapToInt(CarritoItem::getCantidad)
-                .sum();
+        try {
+            Usuario usuario = obtenerUsuarioActual();
+            if (usuario == null) {
+                return 0; // Si no hay usuario autenticado, retornar 0
+            }
+
+            Optional<Carrito> carritoOpt = carritoRepository.findByUsuario(usuario);
+            if (carritoOpt.isEmpty()) {
+                return 0; // Si el usuario no tiene carrito, retornar 0
+            }
+
+            List<CarritoItem> items = carritoItemRepository.findByCarrito(carritoOpt.get());
+            return items.stream()
+                    .mapToInt(CarritoItem::getCantidad)
+                    .sum();
+        } catch (Exception e) {
+            System.err.println("Error al obtener cantidad total del carrito: " + e.getMessage());
+            return 0;
+        }
     }
 }

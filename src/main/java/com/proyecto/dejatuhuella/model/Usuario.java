@@ -35,9 +35,13 @@ public class Usuario {
     @JsonIgnore
     private Set<Pedido> pedidosRealizados = new HashSet<>();
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Carrito carrito;
 
     // Constructor vacío
-    public Usuario() {}
+    public Usuario() {
+    }
 
     // Constructor con parámetros
     public Usuario(String nombre, String apellido, String email, String password, Rol rol) {

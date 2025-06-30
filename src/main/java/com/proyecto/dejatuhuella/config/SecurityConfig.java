@@ -56,7 +56,8 @@ public class SecurityConfig {
                 .formLogin(formLogin ->
                         formLogin
                                 .loginPage("/login")
-                                .defaultSuccessUrl("/", true) // Añadir esta línea
+                                .defaultSuccessUrl("/", true) // Redirigir al home después del login
+                                .failureUrl("/login?error=true") // URL en caso de error de autenticación
                                 .permitAll()
                 )
                 .logout(logout ->

@@ -4,6 +4,10 @@ import com.proyecto.dejatuhuella.dto.PedidoRequestDTO;
 import com.proyecto.dejatuhuella.model.Pedido;
 import com.proyecto.dejatuhuella.service.CarritoPersistentService;
 import com.proyecto.dejatuhuella.service.PedidoService;
+
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -26,8 +30,14 @@ public class CarritoPersistenteController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public String verCarrito(Model model) {
-        model.addAttribute("items", carritoPersistentService.getItemsDetallados());
-        model.addAttribute("total", carritoPersistentService.getTotal());
+        try {
+            model.addAttribute("items", carritoPersistentService.getItemsDetallados());
+            model.addAttribute("total", carritoPersistentService.getTotal());
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al cargar el carrito: " + e.getMessage());
+            model.addAttribute("items", List.of());
+            model.addAttribute("total", BigDecimal.ZERO);
+        }
         return "carrito";
     }
 
@@ -95,8 +105,8 @@ public class CarritoPersistenteController {
         try {
             // Obtener el usuario autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            com.proyecto.dejatuhuella.security.CustomUserDetails userDetails =
-                    (com.proyecto.dejatuhuella.security.CustomUserDetails) auth.getPrincipal();
+            com.proyecto.dejatuhuella.security.CustomUserDetails userDetails
+                    = (com.proyecto.dejatuhuella.security.CustomUserDetails) auth.getPrincipal();
             com.proyecto.dejatuhuella.model.Usuario usuario = userDetails.getUsuario();
 
             // Generar el pedido

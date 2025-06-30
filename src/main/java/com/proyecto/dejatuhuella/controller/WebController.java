@@ -29,13 +29,13 @@ public class WebController {
 
     @Autowired
     private ProductoService productoService;
-    
+
     @Autowired
     private ResenaService resenaService;
 
     @Autowired
     private CarritoService carritoService;
-    
+
     @Autowired
     private com.proyecto.dejatuhuella.service.CarritoPersistentService carritoPersistentService;
 
@@ -49,9 +49,13 @@ public class WebController {
     public Integer cartCount() {
         // Solo contamos si el usuario está autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
-            // Usar el servicio de carrito persistente en lugar del servicio de sesión
-            return carritoPersistentService.getCantidadTotal();
+        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String) && !"anonymousUser".equals(auth.getPrincipal())) {
+            try {
+                // Usar el servicio de carrito persistente en lugar del servicio de sesión
+                return carritoPersistentService.getCantidadTotal();
+            } catch (Exception e) {
+                System.err.println("Error al obtener cantidad del carrito: " + e.getMessage());
+            }
         }
         return 0;
     }
@@ -60,10 +64,10 @@ public class WebController {
     public String home(Model model) {
         // Cargar categorías destacadas
         model.addAttribute("categoriasDestacadas", categoriaService.obtenerTodasLasCategorias());
-        
+
         // Cargar productos destacados aleatorios
         model.addAttribute("productosDestacados", productoService.obtenerProductosDestacadosAleatorios());
-        
+
         return "home"; // Devuelve el nombre de la plantilla HTML (home.html)
     }
 
@@ -94,6 +98,8 @@ public class WebController {
                 // Cargar pedidos del usuario si es comprador
                 model.addAttribute("pedidos", pedidoService.obtenerPedidosDelUsuario());
             } catch (Exception e) {
+                System.err.println("Error al cargar pedidos: " + e.getMessage());
+                e.printStackTrace();
                 model.addAttribute("errorPedidos", "Error al cargar pedidos: " + e.getMessage());
                 model.addAttribute("pedidos", List.of());
             }
@@ -133,7 +139,7 @@ public class WebController {
             redirectAttributes.addFlashAttribute("errorMessage", "La categoría solicitada no existe");
             return "redirect:/categorias";
         }
-        
+
         // Si la categoría existe, mostrar sus productos
         model.addAttribute("categoria", categoriaOptional.get());
         model.addAttribute("productos", productoService.obtenerProductosPorCategoria(id));
@@ -148,16 +154,16 @@ public class WebController {
             redirectAttributes.addFlashAttribute("errorMessage", "El producto solicitado no existe");
             return "redirect:/";
         }
-        
+
         // Si el producto existe, mostrar sus detalles
         model.addAttribute("producto", productoOptional.get());
-        
+
         // Obtener las reseñas del producto
         model.addAttribute("resenas", resenaService.obtenerResenasPorProducto(id));
-        
+
         // Verificar si el usuario ya dejó una reseña
         model.addAttribute("yaDejoResena", resenaService.usuarioYaDejoResena(id));
-        
+
         return "producto-detalle";
     }
 
