@@ -1,0 +1,187 @@
+/* Estilos personalizados para el navbar */
+        .navbar-custom {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.5rem 1rem;
+            transition: transform 0.3s ease;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1030;
+        }
+
+        /* Clase para ocultar el navbar al hacer scroll hacia abajo */
+        .navbar-hidden {
+            transform: translateY(-100%);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: #555 !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #007bff !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #007bff;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 70%;
+        }
+
+        .btn-custom-outline {
+            border: 1.5px solid #007bff;
+            color: #007bff;
+            background: transparent;
+            border-radius: 20px;
+            padding: 0.375rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom-outline:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-custom-primary {
+            background-color: #007bff;
+            border: 1.5px solid #007bff;
+            color: white;
+            border-radius: 20px;
+            padding: 0.375rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom-primary:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+        }
+
+        .cart-icon {
+            position: relative;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .cart-icon:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .user-dropdown {
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .user-dropdown:hover {
+            color: #007bff;
+        }
+
+        .dropdown-menu {
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            color: #555;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .navbar-collapse {
+                background-color: white;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 0.5rem;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+            .nav-link::after {
+                display: none;
+            }
+
+            .navbar-nav {
+                margin-bottom: 1rem;
+            }
+
+            .d-flex.gap-2, .d-flex.gap-3 {
+                flex-direction: column;
+                width: 100%;
+                align-items: stretch !important;
+            }
+
+            .btn-custom-outline, .btn-custom-primary {
+                margin-bottom: 0.5rem;
+                text-align: center;
+            }
+
+            .cart-icon {
+                margin-bottom: 0.5rem;
+                display: inline-flex;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand span {
+                font-size: 0.9rem;
+            }
+
+            .navbar-custom {
+                padding: 0.3rem 0.5rem;
+            }
+
+            .dropdown-item {
+                font-size: 0.9rem;
+                padding: 0.4rem 1rem;
+            }
+        }

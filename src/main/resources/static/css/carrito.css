@@ -1,0 +1,77 @@
+.checkout-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    .checkout-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 1;
+    }
+    .step {
+      position: relative;
+      z-index: 2;
+      background: white;
+    }
+
+    /* Estilos responsivos para móviles */
+    @media (max-width: 767px) {
+      .checkout-steps {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .checkout-steps::before {
+        display: none;
+      }
+      .step {
+        margin-bottom: 15px;
+        width: 100%;
+      }
+      .cart-item-image {
+        max-width: 80px;
+      }
+      .cart-item-details h5 {
+        font-size: 0.9rem;
+      }
+      .cart-item-details p {
+        font-size: 0.8rem;
+      }
+      .cart-summary {
+        padding: 15px;
+      }
+      .payment-method-icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      color: #6c757d;
+    }
+    .step.active .step-icon {
+      background: #28a745;
+      color: white;
+    }
+    .payment-methods {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .payment-method-icon {
+      font-size: 2rem;
+      color: #6c757d;
+    }

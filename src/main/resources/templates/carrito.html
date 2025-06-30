@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito de Compras - DejaTuHuella</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome para iconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/carrito.css}">
+</head>
+<body>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+  <h1 class="mb-4">Carrito de Compras</h1>
+  
+  <!-- Pasos del proceso de compra -->
+  <div class="checkout-steps">
+    <div class="step active">
+      <div class="step-icon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <div class="step-text">Carrito</div>
+    </div>
+    <div class="step">
+      <div class="step-icon">
+        <i class="fas fa-credit-card"></i>
+      </div>
+      <div class="step-text">Pago</div>
+    </div>
+    <div class="step">
+      <div class="step-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <div class="step-text">Confirmación</div>
+    </div>
+  </div>
+
+  <!-- Mensajes de alerta -->
+  <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+  <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+  <!-- Carrito vacío -->
+  <div class="alert alert-info" th:if="${#lists.isEmpty(items)}">
+    <h4>Tu carrito está vacío</h4>
+    <p>Explora nuestros productos y añade algunos a tu carrito.</p>
+    <a th:href="@{/categorias}" class="btn btn-primary">Ver Categorías</a>
+  </div>
+
+  <!-- Carrito con productos -->
+  <div th:if="${!#lists.isEmpty(items)}">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+          <td>
+            <div class="d-flex align-items-center">
+              <div>
+                <h6 th:text="${item.producto.nombre}">Nombre Producto</h6>
+                <small class="text-muted" th:text="${item.producto.descripcion}">Descripción</small>
+              </div>
+            </div>
+          </td>
+          <td th:text="'$' + ${item.producto.precio}">$0.00</td>
+          <td>
+            <form th:action="@{/carrito/update}" method="post" class="d-flex align-items-center">
+              <input type="hidden" name="productoId" th:value="${item.producto.id}">
+              <input type="number" name="cantidad" class="form-control" style="width: 70px;"
+                     th:value="${item.cantidad}" min="1" th:max="${item.producto.stock}">
+              <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </form>
+          </td>
+          <td th:text="'$' + ${item.subtotal}">$0.00</td>
+          <td>
+            <form th:action="@{/carrito/remove}" method="post">
+              <input type="hidden" name="productoId" th:value="${item.producto.id}">
+              <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+          <td colspan="3" class="text-end fw-bold">Total:</td>
+          <td th:text="'$' + ${total}" class="fw-bold">$0.00</td>
+          <td></td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <form th:action="@{/carrito/clear}" method="post">
+        <button type="submit" class="btn btn-outline-danger">
+          <i class="fas fa-trash"></i> Vaciar Carrito
+        </button>
+      </form>
+
+      <form th:action="@{/carrito/checkout}" method="post">
+        <button type="submit" class="btn btn-success btn-lg">
+          <i class="fas fa-credit-card"></i> Proceder al Pago
+        </button>
+      </form>
+    </div>
+    
+    <!-- Información de pago seguro -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title"><i class="fas fa-lock"></i> Pago Seguro</h5>
+        <p class="card-text">Al finalizar tu compra, serás redirigido a nuestra pasarela de pago seguro donde podrás completar tu transacción.</p>
+        
+        <div class="payment-methods">
+          <i class="fab fa-cc-visa payment-method-icon"></i>
+          <i class="fab fa-cc-mastercard payment-method-icon"></i>
+          <i class="fab fa-cc-amex payment-method-icon"></i>
+          <i class="fab fa-cc-discover payment-method-icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Incluir el footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

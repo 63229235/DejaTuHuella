@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Deja Tu Huella</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin: 50px auto;
+            max-width: 800px;
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-title {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .btn-home {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-home:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="error-container">
+                    <i class="fas fa-exclamation-circle error-icon"></i>
+                    <h1 class="error-title">¡Ups! Algo salió mal</h1>
+                    <p class="error-message">Estamos trabajando para solucionar este problema.<br>Por favor, intenta nuevamente más tarde.</p>
+                    
+                    <div class="mt-5">
+                        <a th:href="@{/}" class="btn btn-home">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

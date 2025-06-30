@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Ventas - DejaTuHuella</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome para iconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Incluir la barra de navegación -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+  <h1 class="mb-4">Mis Ventas</h1>
+
+  <!-- Mensajes de alerta -->
+  <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+  <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+  
+  <!-- Información sobre estados de ventas -->
+  <div class="card mb-4 info-card">
+    <div class="card-header bg-light">
+      <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información sobre tus ventas</h5>
+    </div>
+    <div class="card-body">
+      <p>Aquí puedes ver el historial de tus ventas y gestionar su estado. El flujo de una venta sigue estos pasos:</p>
+      
+      <div class="d-flex flex-wrap gap-3 mb-3">
+        <div class="estado-info">
+          <span class="badge estado-badge estado-pendiente">PENDIENTE</span>
+          <span class="ms-2">El comprador aún no ha pagado</span>
+        </div>
+        <div class="estado-info">
+          <span class="badge estado-badge estado-pagado">PAGADO</span>
+          <span class="ms-2">Pago confirmado, listo para enviar</span>
+        </div>
+        <div class="estado-info">
+          <span class="badge estado-badge estado-enviado">ENVIADO</span>
+          <span class="ms-2">Producto en camino al comprador</span>
+        </div>
+        <div class="estado-info">
+          <span class="badge estado-badge estado-entregado">ENTREGADO</span>
+          <span class="ms-2">Producto entregado al comprador</span>
+        </div>
+        <div class="estado-info">
+          <span class="badge estado-badge estado-cancelado">CANCELADO</span>
+          <span class="ms-2">Venta cancelada</span>
+        </div>
+      </div>
+      
+      <p class="mb-0"><i class="fas fa-tasks me-2"></i>Utiliza el menú <strong>"Actualizar Estado"</strong> para gestionar el progreso de tus ventas según corresponda.</p>
+    </div>
+  </div>
+
+  <!-- Sin ventas -->
+  <div class="alert alert-info" th:if="${#lists.isEmpty(ventas)}">
+    <h4>No has realizado ninguna venta todavía</h4>
+    <p>Publica productos para empezar a vender.</p>
+    <a th:href="@{/panel-control}" class="btn btn-primary">Ir al Panel de Control</a>
+  </div>
+
+  <!-- Lista de ventas -->
+  <div th:if="${!#lists.isEmpty(ventas)}">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>Pedido #</th>
+          <th>Fecha</th>
+          <th>Comprador</th>
+          <th>Productos</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="venta : ${ventas}">
+          <td th:text="${venta.id}">123</td>
+          <td th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+          <td th:text="${venta.nombreUsuario}">Nombre Comprador</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
+                    th:data-bs-target="'#detallesVenta' + ${venta.id}" aria-expanded="false"
+                    th:aria-controls="'detallesVenta' + ${venta.id}">
+              Ver Productos
+            </button>
+          </td>
+          <td th:text="'$' + ${venta.total}">$0.00</td>
+          <td>
+              <span class="badge estado-badge" th:classappend="${venta.estado == 'PENDIENTE' ? 'estado-pendiente' :
+                                              (venta.estado == 'PAGADO' ? 'estado-pagado' :
+                                              (venta.estado == 'ENVIADO' ? 'estado-enviado' :
+                                              (venta.estado == 'ENTREGADO' ? 'estado-entregado' : 'estado-cancelado')))}"
+                    th:text="${venta.estado}">Estado</span>
+          </td>
+          <td>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                      th:id="'dropdownVenta' + ${venta.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                Actualizar Estado
+              </button>
+              <ul class="dropdown-menu" th:aria-labelledby="'dropdownVenta' + ${venta.id}">
+                <!-- Opción para marcar como enviado (solo si está PAGADO) -->
+                <li th:if="${venta.estado == 'PAGADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="ENVIADO">
+                    <button type="submit" class="dropdown-item">
+                      <i class="fas fa-shipping-fast me-2"></i>Marcar como Enviado
+                    </button>
+                  </form>
+                </li>
+                
+                <!-- Opción para marcar como entregado (solo si está ENVIADO) -->
+                <li th:if="${venta.estado == 'ENVIADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="ENTREGADO">
+                    <button type="submit" class="dropdown-item">
+                      <i class="fas fa-check-circle me-2"></i>Marcar como Entregado
+                    </button>
+                  </form>
+                </li>
+                
+                <!-- Opción para cancelar (solo si no está ENTREGADO o CANCELADO) -->
+                <li th:if="${venta.estado != 'CANCELADO' && venta.estado != 'ENTREGADO'}">
+                  <form th:action="@{'/api/pedidos/' + ${venta.id} + '/estado'}" method="post">
+                    <input type="hidden" name="estado" value="CANCELADO">
+                    <button type="submit" class="dropdown-item text-danger">
+                      <i class="fas fa-times-circle me-2"></i>Cancelar Pedido
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <!-- Detalles colapsables de cada venta -->
+        <tr th:each="venta : ${ventas}" class="collapse" th:id="'detallesVenta' + ${venta.id}">
+          <td colspan="7">
+            <div class="card card-body">
+              <table class="table table-sm">
+                <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Precio Unitario</th>
+                  <th>Cantidad</th>
+                  <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="detalle : ${venta.detalles}" th:if="${detalle.producto.vendedor.id == #authentication.principal.usuario.id}">
+                  <td th:text="${detalle.producto.nombre}">Nombre Producto</td>
+                  <td th:text="'$' + ${detalle.precioUnitarioAlComprar}">$0.00</td>
+                  <td th:text="${detalle.cantidad}">1</td>
+                  <td th:text="'$' + ${detalle.precioUnitarioAlComprar.multiply(new java.math.BigDecimal(detalle.cantidad))}">$0.00</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/pedidos.js}"></script>
+</body>
+</html>
