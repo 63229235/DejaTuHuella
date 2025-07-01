@@ -2,7 +2,7 @@
 
 ## Descripción
 
-DejaTuHuella es una plataforma de comercio electrónico que permite a los usuarios comprar y vender productos de manera sencilla y segura. La plataforma incluye funcionalidades como gestión de productos, carrito de compras, procesamiento de pagos, seguimiento de pedidos y más.
+DejaTuHuella es una plataforma de ecommerce que permite a los usuarios comprar y vender productos de manera sencilla y segura. La plataforma incluye funcionalidades como gestión de productos, carrito de compras, procesamiento de pagos, seguimiento de pedidos y más.
 
 ## Características Principales
 
