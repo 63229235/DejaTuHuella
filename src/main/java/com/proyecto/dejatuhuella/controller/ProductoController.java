@@ -52,12 +52,12 @@ public class ProductoController {
     @PostMapping
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<?> crearProducto(
-            @RequestParam("nombre") String nombre,
-            @RequestParam("descripcion") String descripcion,
-            @RequestParam("precio") BigDecimal precio,
-            @RequestParam("stock") Integer stock,
-            @RequestParam(value = "categoriaId", required = false) Long categoriaId,
-            @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestParam String nombre,
+            @RequestParam String descripcion,
+            @RequestParam BigDecimal precio,
+            @RequestParam Integer stock,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) MultipartFile imagen) {
         try {
             // Obtener el usuario autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -95,12 +95,12 @@ public class ProductoController {
     @PreAuthorize("hasRole('ADMINISTRADOR') or (hasRole('USUARIO') and @seguridadService.esPropietarioDelProducto(#id))")
     public ResponseEntity<?> actualizarProducto(
             @PathVariable Long id,
-            @RequestParam("nombre") String nombre,
-            @RequestParam("descripcion") String descripcion,
-            @RequestParam("precio") BigDecimal precio,
-            @RequestParam("stock") Integer stock,
-            @RequestParam(value = "categoriaId", required = false) Long categoriaId,
-            @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestParam String nombre,
+            @RequestParam String descripcion,
+            @RequestParam BigDecimal precio,
+            @RequestParam Integer stock,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) MultipartFile imagen) {
         try {
             // Obtener el producto existente
             Producto productoExistente = productoService.obtenerProductoPorId(id)

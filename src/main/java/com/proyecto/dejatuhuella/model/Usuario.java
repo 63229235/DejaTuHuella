@@ -22,6 +22,9 @@ public class Usuario {
     private String password;
     private String telefono;
     private String direccion;
+    private String providerId; // Para identificar el proveedor de autenticación (google, facebook, etc)
+    private String providerUserId; // ID único del usuario en el proveedor
+    private String imageUrl; // URL de la imagen de perfil del usuario
     private Boolean activo = true; // Agregar este campo
 
     @Enumerated(EnumType.STRING)
@@ -50,6 +53,18 @@ public class Usuario {
         this.email = email;
         this.password = password;
         this.rol = rol;
+    }
+    
+    // Constructor para OAuth2
+    public Usuario(String nombre, String apellido, String email, String password, Rol rol, String providerId, String providerUserId, String imageUrl) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.password = password;
+        this.rol = rol;
+        this.providerId = providerId;
+        this.providerUserId = providerUserId;
+        this.imageUrl = imageUrl;
     }
 
     // Getters y Setters
@@ -139,5 +154,29 @@ public class Usuario {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+    
+    public String getProviderId() {
+        return providerId;
+    }
+    
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+    
+    public String getProviderUserId() {
+        return providerUserId;
+    }
+    
+    public void setProviderUserId(String providerUserId) {
+        this.providerUserId = providerUserId;
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -16,11 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class FileStorageServiceTest {
@@ -59,7 +55,7 @@ public class FileStorageServiceTest {
 
         // Verificar que el archivo se haya creado físicamente
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-        Path filePath = Paths.get(tempDir.toString(), fileName);
+        Path filePath = Path.of(tempDir.toString(), fileName);
         assertTrue(Files.exists(filePath));
 
         // Verificar el contenido del archivo
@@ -98,7 +94,7 @@ public class FileStorageServiceTest {
 
         // Verificar que el archivo se haya creado con un nombre seguro
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-        Path filePath = Paths.get(tempDir.toString(), fileName);
+        Path filePath = Path.of(tempDir.toString(), fileName);
         assertTrue(Files.exists(filePath));
     }
 
