@@ -20,7 +20,13 @@ function editarProducto(id) {
 }
 
 function eliminarProducto(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+    showConfirm(
+        '¿Eliminar producto?',
+        '¿Estás seguro de que deseas eliminar este producto?',
+        'Sí, eliminar',
+        'Cancelar'
+    ).then((result) => {
+        if (result.isConfirmed) {
         fetch(`/api/productos/${id}`, {
             method: 'DELETE',
             headers: {
@@ -38,8 +44,9 @@ function eliminarProducto(id) {
                 return response.text().then(text => { throw new Error(text) });
             }
         })
-        .catch(error => alert('Error al eliminar el producto: ' + error));
-    }
+        .catch(error => showToastError('Error al eliminar el producto: ' + error));
+        }
+    });
 }
 
 function cambiarEstadoProducto(id, nuevoEstado) {
@@ -76,7 +83,7 @@ function cambiarEstadoProducto(id, nuevoEstado) {
             }
         }
     })
-    .catch(error => alert('Error al cambiar el estado del producto: ' + error));
+    .catch(error => showToastError('Error al cambiar el estado del producto: ' + error));
 }
 
 function guardarProducto() {
@@ -122,7 +129,7 @@ function guardarProducto() {
     })
     .catch(error => {
         console.error('Error al guardar el producto:', error);
-        alert('Error al guardar el producto: ' + error);
+        showToastError('Error al guardar el producto: ' + error);
     });
 }
 
@@ -245,7 +252,7 @@ function actualizarEstadoPedido(id, estado) {
             return response.text().then(text => { throw new Error(text) });
         }
     })
-    .catch(error => alert('Error al actualizar el estado del pedido: ' + error));
+    .catch(error => showToastError('Error al actualizar el estado del pedido: ' + error));
 }
 
 // Funciones para categorías
@@ -267,7 +274,13 @@ function editarCategoria(id) {
 }
 
 function eliminarCategoria(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
+    showConfirm(
+        '¿Eliminar categoría?',
+        '¿Estás seguro de que deseas eliminar esta categoría?',
+        'Sí, eliminar',
+        'Cancelar'
+    ).then((result) => {
+        if (result.isConfirmed) {
         fetch(`/api/categorias/${id}`, {
             method: 'DELETE',
             headers: {
@@ -281,8 +294,9 @@ function eliminarCategoria(id) {
                 return response.text().then(text => { throw new Error(text) });
             }
         })
-        .catch(error => alert('Error al eliminar la categoría: ' + error));
-    }
+        .catch(error => showToastError('Error al eliminar la categoría: ' + error));
+        }
+    });
 }
 
 function guardarCategoria() {
@@ -309,7 +323,7 @@ function guardarCategoria() {
             return response.text().then(text => { throw new Error(text) });
         }
     })
-    .catch(error => alert('Error al guardar la categoría: ' + error));
+    .catch(error => showToastError('Error al guardar la categoría: ' + error));
 }
 
 // Función para actualizar perfil
@@ -330,12 +344,12 @@ function actualizarPerfil() {
     })
     .then(response => {
         if (response.ok) {
-            alert('Perfil actualizado con éxito');
+            showToastSuccess('Perfil actualizado con éxito');
         } else {
             return response.text().then(text => { throw new Error(text) });
         }
     })
-    .catch(error => alert('Error al actualizar el perfil: ' + error));
+    .catch(error => showToastError('Error al actualizar el perfil: ' + error));
 }
 
 // Cargar usuarios para administradores
@@ -420,7 +434,13 @@ function cargarUsuarios() {
  }
 
  function eliminarUsuario(id) {
-     if (confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
+     showConfirm(
+         '¿Eliminar usuario?',
+         '¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.',
+         'Sí, eliminar',
+         'Cancelar'
+     ).then((result) => {
+         if (result.isConfirmed) {
          fetch(`/api/usuarios/${id}`, {
              method: 'DELETE',
              headers: {
@@ -434,8 +454,9 @@ function cargarUsuarios() {
                  return response.text().then(text => { throw new Error(text) });
              }
          })
-         .catch(error => alert('Error al eliminar el usuario: ' + error));
-     }
+         .catch(error => showToastError('Error al eliminar el usuario: ' + error));
+         }
+     });
  }
 
 function cambiarEstadoUsuario(id, nuevoEstado) {
@@ -453,7 +474,7 @@ function cambiarEstadoUsuario(id, nuevoEstado) {
             return response.text().then(text => { throw new Error(text) });
         }
     })
-    .catch(error => alert('Error al cambiar el estado del usuario: ' + error));
+    .catch(error => showToastError('Error al cambiar el estado del usuario: ' + error));
 }
 
 // Funciones para gestión de productos (administrador)
@@ -524,7 +545,13 @@ function cargarTodosLosProductos() {
 }
 
 function eliminarProductoAdmin(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.')) {
+    showConfirm(
+        '¿Eliminar producto?',
+        '¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.',
+        'Sí, eliminar',
+        'Cancelar'
+    ).then((result) => {
+        if (result.isConfirmed) {
         fetch(`/api/productos/${id}`, {
             method: 'DELETE',
             headers: {
@@ -538,13 +565,14 @@ function eliminarProductoAdmin(id) {
                 if (filaProducto) {
                     filaProducto.remove();
                 }
-                alert('Producto eliminado con éxito');
+                showToastSuccess('Producto eliminado con éxito');
             } else {
                 return response.text().then(text => { throw new Error(text) });
             }
         })
-        .catch(error => alert('Error al eliminar el producto: ' + error));
-    }
+        .catch(error => showToastError('Error al eliminar el producto: ' + error));
+        }
+    });
 }
 
 function filtrarProductosAdmin() {

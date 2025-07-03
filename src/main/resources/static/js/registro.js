@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => {
                 if (response.ok) {
-                    alert('Usuario registrado correctamente');
+                    showSuccess('¡Registro exitoso!', 'Usuario registrado correctamente');
                     window.location.href = '/login';
                 } else {
                     return response.text().then(text => {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                alert('Error: ' + error.message);
+                showError('Error en el registro', error.message);
             });
         });
     });

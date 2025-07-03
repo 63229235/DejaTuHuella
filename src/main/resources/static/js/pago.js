@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Si hay errores, mostrarlos y prevenir el envío del formulario
             if (!isValid) {
-                alert(errorMessage);
+                showError('Error en el pago', errorMessage);
             } else {
                 // Si todo está bien, enviar el formulario
                 formPago.submit();

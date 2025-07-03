@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Este fragmento no necesita head -->
+</head>
+<body>
+    <!-- Fragmento para incluir SweetAlert2 -->
+    <div th:fragment="sweetalert-scripts">
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:src="@{/js/sweetalert-utils.js}"></script>
+    </div>
+</body>
+</html>

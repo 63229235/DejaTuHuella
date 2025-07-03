@@ -15,14 +15,14 @@
                 if (data.success) {
                     // Actualizar el contador del carrito
                     document.querySelector('.cart-badge').textContent = data.cartCount;
-                    alert('Producto agregado al carrito');
+                    showToastSuccess('Producto agregado al carrito');
                 } else {
-                    alert('Error al agregar al carrito: ' + data.message);
+                    showToastError('Error al agregar al carrito: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al agregar al carrito');
+                showToastError('Error al agregar al carrito');
             });
         }
 
