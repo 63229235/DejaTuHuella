@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago con Mercado Pago - Deja Tu Huella</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/pago.css}">
+    <!-- SDK MercadoPago.js -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center mb-4">Procesar Pago</h2>
+                
+                <!-- Alerta de error -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                </div>
+                
+                <div class="payment-form">
+                    <!-- Encabezado del formulario de pago -->
+                    <div class="payment-header text-center">
+                        <h3><i class="fas fa-lock"></i> Pago Seguro con Mercado Pago</h3>
+                        <p class="mb-0">Tus datos están protegidos con encriptación SSL</p>
+                    </div>
+                    
+                    <!-- Resumen del pedido -->
+                    <div class="payment-summary">
+                        <h4>Resumen del Pedido #<span th:text="${pedido.id}"></span></h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Fecha:</strong> <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <p><strong>Total a Pagar:</strong> <span th:text="'S/ ' + ${pedido.total}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón de pago de Mercado Pago -->
+                    <div class="mercadopago-button-container text-center mt-4">
+                        <div id="wallet_container"></div>
+                        <p class="mt-3 text-muted">Al realizar el pago, aceptas nuestros <a href="#">Términos y Condiciones</a></p>
+                    </div>
+                    
+                    <!-- Métodos de pago aceptados -->
+                    <div class="text-center mt-4">
+                        <img src="https://http2.mlstatic.com/storage/developers-site-cms-admin/CDV_MP/279826782437-370x113-metodos-de-pago-checkout-pro.jpg" 
+                             alt="Métodos de pago aceptados" style="max-width: 300px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script para inicializar el botón de pago de Mercado Pago -->
+    <script th:inline="javascript">
+        // Obtener el ID de preferencia desde el modelo
+        const preferenceId = /*[[${preferenceId}]]*/ '';
+        
+        // Inicializar el SDK de Mercado Pago
+        const mp = new MercadoPago('TEST-a54f4bdb-c8e6-4f2e-94d1-92f3f7f2850f', {
+            locale: 'es-PE'
+        });
+        
+        // Inicializar el botón de pago
+        mp.checkout({
+            preference: {
+                id: preferenceId
+            },
+            render: {
+                container: '#wallet_container',
+                label: 'Pagar ahora',
+            }
+        });
+    </script>
+</body>
+</html>

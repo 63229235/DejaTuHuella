@@ -1,9 +1,13 @@
 package com.proyecto.dejatuhuella.service;
 
+import com.proyecto.dejatuhuella.dto.MercadoPagoRequestDTO;
+import com.proyecto.dejatuhuella.dto.MercadoPagoResponseDTO;
 import com.proyecto.dejatuhuella.dto.PagoRequestDTO;
 import com.proyecto.dejatuhuella.model.Pedido;
 import com.proyecto.dejatuhuella.model.Usuario;
 import com.proyecto.dejatuhuella.repository.PedidoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -19,8 +24,16 @@ import java.util.Random;
 @Service
 public class PagoService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PagoService.class);
+
     @Autowired
     private PedidoRepository pedidoRepository;
+    
+    @Autowired
+    private MercadoPagoService mercadoPagoService;
+    
+    @Autowired
+    private UsuarioService usuarioService;
 
     /**
      * Verifica si el pedido pertenece al usuario autenticado actualmente
@@ -42,7 +55,51 @@ public class PagoService {
     }
 
     /**
-     * Procesa el pago de un pedido
+     * Crea una preferencia de pago con Mercado Pago
+     * @param pedidoId ID del pedido a pagar
+     * @return Respuesta con los datos de la preferencia creada
+     */
+    @Transactional
+    public MercadoPagoResponseDTO crearPreferenciaPago(Long pedidoId) {
+        try {
+            // Validar que el pedido existe
+            Pedido pedido = pedidoRepository.findById(pedidoId)
+                    .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + pedidoId));
+            
+            // Validar que el pedido pertenece al usuario autenticado
+            if (!verificarPedidoPertenecaUsuario(pedido)) {
+                throw new RuntimeException("No tienes permiso para pagar este pedido");
+            }
+            
+            // Validar que el pedido está en estado PENDIENTE
+            if (!"PENDIENTE".equals(pedido.getEstado().getNombreEstado())) {
+                throw new RuntimeException("Este pedido no está pendiente de pago");
+            }
+            
+            // Obtener datos del usuario
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            Usuario usuario = pedido.getUsuario();
+            
+            // Crear el DTO para Mercado Pago
+            MercadoPagoRequestDTO mercadoPagoRequest = new MercadoPagoRequestDTO();
+            mercadoPagoRequest.setPedidoId(pedidoId);
+            mercadoPagoRequest.setDescripcion("Pago de pedido #" + pedidoId + " en Deja Tu Huella");
+            mercadoPagoRequest.setMonto(BigDecimal.valueOf(pedido.getTotal()));
+            mercadoPagoRequest.setEmailComprador(usuario.getEmail());
+            mercadoPagoRequest.setNombreComprador(usuario.getNombre() + " " + usuario.getApellido());
+            
+            // Crear la preferencia de pago en Mercado Pago
+            return mercadoPagoService.crearPreferenciaPago(mercadoPagoRequest);
+            
+        } catch (Exception e) {
+            logger.error("Error al crear preferencia de pago: {}", e.getMessage());
+            return new MercadoPagoResponseDTO("error", e.getMessage());
+        }
+    }
+    
+    /**
+     * Procesa el pago de un pedido (método legacy para tarjetas)
      * @return true si el pago fue exitoso, false en caso contrario
      */
     @Transactional

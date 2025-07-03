@@ -1,5 +1,6 @@
 /**
  * Funcionalidad para la pasarela de pago
+ * Incluye soporte para tarjetas de crédito/débito y Mercado Pago
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Formatear número de tarjeta mientras se escribe
