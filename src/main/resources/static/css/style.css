@@ -317,3 +317,258 @@ ul li {
     background-color: #dc3545;
     color: white;
 }
+
+/* Estilos para el Panel de Control Responsive */
+.panel-control-container {
+    min-height: calc(100vh - 76px);
+}
+
+/* Menú lateral responsive */
+@media (max-width: 991.98px) {
+    .panel-sidebar {
+        margin-bottom: 2rem;
+    }
+    
+    .panel-sidebar .list-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .panel-sidebar .list-group-item {
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+        text-align: center;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+        border-radius: 0.375rem !important;
+        margin-bottom: 0;
+    }
+    
+    .panel-sidebar .list-group-item i {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-size: 1.2rem;
+    }
+    
+    .panel-sidebar .list-group-item.bg-light {
+        flex-basis: 100%;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .panel-sidebar .list-group-item {
+        min-width: 100%;
+        flex: none;
+    }
+}
+
+/* Tablas responsive mejoradas */
+@media (max-width: 991.98px) {
+    .table-responsive {
+        border: none;
+    }
+    
+    .table-responsive table {
+        font-size: 0.875rem;
+    }
+    
+    .table-responsive th,
+    .table-responsive td {
+        padding: 0.5rem 0.25rem;
+        vertical-align: middle;
+    }
+    
+    /* Ocultar columnas menos importantes en móviles */
+    .table-responsive .d-none-mobile {
+        display: none !important;
+    }
+    
+    /* Botones más pequeños en tablas */
+    .table-responsive .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .table-responsive .btn-sm i {
+        font-size: 0.875rem;
+    }
+}
+
+/* Encabezados de sección responsive */
+@media (max-width: 767.98px) {
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 1rem;
+    }
+    
+    .d-flex.justify-content-between.align-items-center h2,
+    .d-flex.justify-content-between.align-items-center h3 {
+        margin-bottom: 0;
+        text-align: center;
+    }
+    
+    .d-flex.justify-content-between.align-items-center .btn,
+    .d-flex.justify-content-between.align-items-center .input-group {
+        width: 100%;
+        max-width: none !important;
+    }
+}
+
+/* Modales responsive */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-dialog.modal-lg {
+        max-width: none;
+        margin: 0.5rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* Cards de perfil responsive */
+@media (max-width: 767.98px) {
+    .card .row {
+        flex-direction: column;
+    }
+    
+    .card .col-md-4,
+    .card .col-md-8 {
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+    
+    .card .col-md-4 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Badges responsive */
+@media (max-width: 575.98px) {
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Mejoras para imágenes en tablas */
+@media (max-width: 767.98px) {
+    .table img.img-thumbnail {
+        width: 40px !important;
+        height: 40px;
+        object-fit: cover;
+    }
+}
+
+/* Espaciado mejorado para móviles */
+@media (max-width: 575.98px) {
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    .mt-4 {
+        margin-top: 1.5rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 767px) {
+    .panel-table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .panel-table-responsive .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        margin: 0.1rem;
+    }
+    
+    .panel-table-responsive .badge {
+        font-size: 0.7rem;
+        padding: 0.25em 0.5em;
+    }
+    
+    .panel-table-responsive .img-thumbnail {
+        width: 30px !important;
+        height: 30px;
+        object-fit: cover;
+    }
+    
+    /* Stack action buttons vertically on very small screens */
+    .panel-table-responsive td:last-child {
+        white-space: nowrap;
+    }
+    
+    /* Improve spacing for mobile cards */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Better mobile navigation */
+    .nav-pills .nav-link {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Additional responsive improvements */
+@media (max-width: 575px) {
+    .panel-sidebar {
+        padding: 0.5rem;
+    }
+    
+    .panel-content {
+        padding: 0.5rem;
+    }
+    
+    .panel-table-responsive .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .panel-table-responsive .btn-group .btn {
+        width: 100%;
+        margin: 0;
+    }
+    
+    /* Compact form elements */
+    .form-control, .form-select {
+        font-size: 0.9rem;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    /* Better modal sizing */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}

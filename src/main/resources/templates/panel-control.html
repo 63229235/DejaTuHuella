@@ -15,10 +15,10 @@
 <!-- Barra de navegación -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container mt-4">
+<div class="container mt-4 panel-control-container">
     <div class="row">
         <!-- Menú lateral -->
-        <div class="col-md-3">
+        <div class="col-lg-3 col-md-4 panel-sidebar">
             <div class="list-group">
                 <a href="#" class="list-group-item list-group-item-action active" data-bs-toggle="list" data-bs-target="#productos">
                     <i class="fas fa-box me-2"></i>Mis Productos
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Contenido principal -->
-        <div class="col-md-9">
+        <div class="col-lg-9 col-md-8">
             <div class="tab-content">
                 <!-- Panel de Productos -->
                 <div class="tab-pane fade show active" id="productos">
@@ -59,26 +59,26 @@
                         </button>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped panel-table-responsive">
                             <thead>
                             <tr>
-                                <th>Imagen</th>
+                                <th class="d-none d-md-table-cell">Imagen</th>
                                 <th>Nombre</th>
                                 <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Estado</th>
+                                <th class="d-none d-lg-table-cell">Stock</th>
+                                <th class="d-none d-sm-table-cell">Estado</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="producto : ${productos}" th:attr="data-producto-id=${producto.id}">
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     <img th:src="${producto.imagenUrl}" alt="Producto" class="img-thumbnail" style="width: 50px;">
                                 </td>
                                 <td th:text="${producto.nombre}">Nombre del Producto</td>
                                 <td th:text="${'S/ ' + producto.precio}">S/ 100.00</td>
-                                <td th:text="${producto.stock}">50</td>
-                                <td>
+                                <td class="d-none d-lg-table-cell" th:text="${producto.stock}">50</td>
+                                <td class="d-none d-sm-table-cell">
                                     <span th:if="${producto.activo}" class="badge bg-success">Activo</span>
                                     <span th:unless="${producto.activo}" class="badge bg-danger">Inactivo</span>
                                 </td>
@@ -107,12 +107,12 @@
                     <h2>Mis Ventas</h2>
                     <!-- Contenido de ventas -->
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped panel-table-responsive">
                             <thead>
                             <tr>
-                                <th>ID Pedido</th>
-                                <th>Comprador</th>
-                                <th>Fecha</th>
+                                <th class="d-none d-sm-table-cell">ID Pedido</th>
+                                <th class="d-none d-md-table-cell">Comprador</th>
+                                <th class="d-none d-lg-table-cell">Fecha</th>
                                 <th>Total</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -120,9 +120,9 @@
                             </thead>
                             <tbody>
                             <tr th:each="venta : ${ventas}">
-                                <td th:text="${venta.id}">1</td>
-                                <td th:text="${venta.nombreUsuario}">Nombre Comprador</td>
-                                <td th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                                <td class="d-none d-sm-table-cell" th:text="${venta.id}">1</td>
+                                <td class="d-none d-md-table-cell" th:text="${venta.nombreUsuario}">Nombre Comprador</td>
+                                <td class="d-none d-lg-table-cell" th:text="${#temporals.format(venta.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
                                 <td th:text="${'S/ ' + venta.total}">S/ 150.00</td>
                                 <td>
                                     <span th:if="${venta.estado == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
@@ -155,11 +155,11 @@
                 <div class="tab-pane fade" id="compras">
                     <h2>Mis Compras</h2>
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped panel-table-responsive">
                             <thead>
                             <tr>
-                                <th>ID Pedido</th>
-                                <th>Fecha</th>
+                                <th class="d-none d-sm-table-cell">ID Pedido</th>
+                                <th class="d-none d-lg-table-cell">Fecha</th>
                                 <th>Total</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -167,8 +167,8 @@
                             </thead>
                             <tbody>
                             <tr th:each="pedido : ${pedidos}">
-                                <td th:text="${pedido.id}">1</td>
-                                <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+                                <td class="d-none d-sm-table-cell" th:text="${pedido.id}">1</td>
+                                <td class="d-none d-lg-table-cell" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
                                 <td th:text="${'S/ ' + pedido.total}">S/ 150.00</td>
                                 <td>
                                     <span th:if="${pedido.estado == 'PENDIENTE'}" class="badge bg-warning">Pendiente</span>
@@ -238,19 +238,38 @@
                 <div class="tab-pane fade" id="usuarios" sec:authorize="hasRole('ADMINISTRADOR')">
                     <h2>Gestión de Usuarios</h2>
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped panel-table-responsive">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th class="d-none d-sm-table-cell">ID</th>
                                 <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Rol</th>
+                                <th class="d-none d-md-table-cell">Email</th>
+                                <th class="d-none d-lg-table-cell">Rol</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
                             <tbody id="usuariosTableBody">
-                            <!-- Se cargará dinámicamente con JavaScript -->
+                            <tr th:each="usuario : ${usuarios}">
+                                <td class="d-none d-sm-table-cell" th:text="${usuario.id}">1</td>
+                                <td th:text="${usuario.nombre}">Nombre Usuario</td>
+                                <td class="d-none d-md-table-cell" th:text="${usuario.email}">email@ejemplo.com</td>
+                                <td class="d-none d-lg-table-cell" th:text="${usuario.rol}">USER</td>
+                                <td>
+                                    <span th:if="${usuario.activo}" class="badge bg-success">Activo</span>
+                                    <span th:unless="${usuario.activo}" class="badge bg-danger">Inactivo</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'editarUsuario(' + ${usuario.id} + ')'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning"
+                                            th:onclick="'cambiarEstadoUsuario(' + ${usuario.id} + ', ' + ${!usuario.activo} + ')'">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -265,20 +284,20 @@
                         </button>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped panel-table-responsive">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th class="d-none d-sm-table-cell">ID</th>
                                 <th>Nombre</th>
-                                <th>Descripción</th>
+                                <th class="d-none d-md-table-cell">Descripción</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="categoria : ${categorias}">
-                                <td th:text="${categoria.id}">1</td>
+                                <td class="d-none d-sm-table-cell" th:text="${categoria.id}">1</td>
                                 <td th:text="${categoria.nombre}">Nombre Categoría</td>
-                                <td th:text="${categoria.descripcion}">Descripción</td>
+                                <td class="d-none d-md-table-cell" th:text="${categoria.descripcion}">Descripción</td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary"
                                             th:onclick="'editarCategoria(' + ${categoria.id} + ')'">                                        <i class="fas fa-edit"></i>
@@ -305,21 +324,44 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped panel-table-responsive">
                             <thead>
                             <tr>
-                                <th>Imagen</th>
+                                <th class="d-none d-md-table-cell">Imagen</th>
                                 <th>Nombre</th>
-                                <th>Vendedor</th>
-                                <th>Categoría</th>
+                                <th class="d-none d-md-table-cell">Vendedor</th>
+                                <th class="d-none d-lg-table-cell">Categoría</th>
                                 <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Estado</th>
+                                <th class="d-none d-lg-table-cell">Stock</th>
+                                <th class="d-none d-sm-table-cell">Estado</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
                             <tbody id="todosProductosTableBody">
-                            <!-- Se cargará dinámicamente con JavaScript -->
+                            <tr th:each="producto : ${todosLosProductos}">
+                                <td class="d-none d-md-table-cell">
+                                    <img th:src="${producto.imagenUrl}" alt="Producto" class="img-thumbnail" style="width: 50px;">
+                                </td>
+                                <td th:text="${producto.nombre}">Nombre del Producto</td>
+                                <td class="d-none d-md-table-cell" th:text="${producto.vendedor.nombre}">Vendedor</td>
+                                <td class="d-none d-lg-table-cell" th:text="${producto.categoria.nombre}">Categoría</td>
+                                <td th:text="${'S/ ' + producto.precio}">S/ 100.00</td>
+                                <td class="d-none d-lg-table-cell" th:text="${producto.stock}">50</td>
+                                <td class="d-none d-sm-table-cell">
+                                    <span th:if="${producto.activo}" class="badge bg-success">Activo</span>
+                                    <span th:unless="${producto.activo}" class="badge bg-danger">Inactivo</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'editarProducto(' + ${producto.id} + ')'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning"
+                                            th:onclick="'cambiarEstadoProducto(' + ${producto.id} + ', ' + ${!producto.activo} + ')'">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
