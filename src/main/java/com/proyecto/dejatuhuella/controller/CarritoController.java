@@ -1,5 +1,4 @@
 package com.proyecto.dejatuhuella.controller;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,18 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.proyecto.dejatuhuella.service.CarritoService;
-import com.proyecto.dejatuhuella.service.PedidoService;
 
 @Controller
 @RequestMapping("/cart")
 public class CarritoController {
-
-    @Autowired
-    private CarritoService carritoService;
-
-    @Autowired
-    private PedidoService pedidoService;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
