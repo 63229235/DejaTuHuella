@@ -8,6 +8,8 @@
             width: 100%;
             top: 0;
             z-index: 1030;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         /* Clase para ocultar el navbar al hacer scroll hacia abajo */
@@ -122,6 +124,21 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: none;
             padding: 0.5rem 0;
+            animation: fadeIn 0.2s ease-out;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .dropdown-item {
@@ -143,6 +160,19 @@
                 border-radius: 8px;
                 margin-top: 0.5rem;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                border: 1px solid rgba(0,0,0,0.05);
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
 
             .nav-link::after {
@@ -151,37 +181,137 @@
 
             .navbar-nav {
                 margin-bottom: 1rem;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+                padding-bottom: 1rem;
             }
 
-            .d-flex.gap-2, .d-flex.gap-3 {
-                flex-direction: column;
+            .nav-item {
+                margin-bottom: 0.25rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-radius: 6px;
+                margin-bottom: 0.25rem;
+            }
+
+            .nav-link:hover {
+                background-color: rgba(0, 123, 255, 0.1);
+            }
+
+            /* Mejoras para la sección de usuario autenticado */
+            .d-flex.align-items-center.gap-3 {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
                 width: 100%;
-                align-items: stretch !important;
+                padding-top: 1rem;
+            }
+
+            /* Mejoras para botones de login/registro */
+            .d-flex.gap-2 {
+                flex-direction: row;
+                gap: 0.5rem !important;
+                width: 100%;
+                justify-content: center;
+                padding-top: 1rem;
             }
 
             .btn-custom-outline, .btn-custom-primary {
-                margin-bottom: 0.5rem;
+                flex: 1;
                 text-align: center;
+                margin-bottom: 0;
+                padding: 0.5rem 1rem;
             }
 
             .cart-icon {
-                margin-bottom: 0.5rem;
-                display: inline-flex;
+                padding: 0.5rem;
+                border-radius: 8px;
+                background-color: rgba(0, 123, 255, 0.1);
+                color: #007bff;
+                text-decoration: none;
+            }
+
+            .user-dropdown {
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                background-color: rgba(0, 123, 255, 0.05);
+                border: 1px solid rgba(0, 123, 255, 0.2);
+                width: auto;
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-toggler {
+                border: none;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: none;
+            }
+
+            .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 123, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            width: 1.2em;
+            height: 1.2em;
+            }
+
+            /* Mejoras para pantallas medianas */
+            .d-flex.align-items-center.gap-3 {
+                flex-direction: column;
+                gap: 1rem !important;
+                align-items: stretch;
+            }
+
+            .cart-icon {
+                align-self: center;
+                width: fit-content;
+            }
+
+            .user-dropdown {
+                width: 100%;
                 justify-content: center;
             }
         }
 
         @media (max-width: 576px) {
             .navbar-brand span {
-                font-size: 0.9rem;
+                font-size: 1rem;
+                font-weight: 600;
             }
 
             .navbar-custom {
-                padding: 0.3rem 0.5rem;
+                padding: 0.5rem;
+            }
+
+            .navbar-collapse {
+                padding: 0.75rem;
             }
 
             .dropdown-item {
                 font-size: 0.9rem;
-                padding: 0.4rem 1rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .btn-custom-outline, .btn-custom-primary {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .cart-badge {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.3rem;
+            }
+
+            /* Mejoras para pantallas muy pequeñas */
+            .d-flex.gap-2 {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+
+            .btn-custom-outline, .btn-custom-primary {
+                width: 100%;
             }
         }
