@@ -15,14 +15,17 @@
                 if (data.success) {
                     // Actualizar el contador del carrito
                     document.querySelector('.cart-badge').textContent = data.cartCount;
-                    alert('Producto agregado al carrito');
+                    // Usar SweetAlert2 para mostrar mensaje de éxito
+                    mostrarToast('Producto agregado al carrito', 'success');
                 } else {
-                    alert('Error al agregar al carrito: ' + data.message);
+                    // Usar SweetAlert2 para mostrar mensaje de error
+                    mostrarError(data.message || 'No se pudo agregar el producto', 'Error al agregar al carrito');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al agregar al carrito');
+                // Usar SweetAlert2 para mostrar mensaje de error
+                mostrarError('No se pudo procesar la solicitud', 'Error al agregar al carrito');
             });
         }
 
@@ -49,5 +52,5 @@
                 });
         }
 
-        // Actualizar productos destacados cada 15 minutos (900000 ms)
-        setInterval(actualizarProductosDestacados, 900000);
+        // Actualizar productos destacados cada 2.5 minutos (900000 ms)
+        setInterval(actualizarProductosDestacados, 150000);

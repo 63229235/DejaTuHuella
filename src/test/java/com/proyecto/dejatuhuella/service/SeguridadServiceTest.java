@@ -1,5 +1,25 @@
 package com.proyecto.dejatuhuella.service;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.proyecto.dejatuhuella.model.DetallePedido;
 import com.proyecto.dejatuhuella.model.Pedido;
 import com.proyecto.dejatuhuella.model.Producto;
@@ -8,27 +28,6 @@ import com.proyecto.dejatuhuella.model.enums.Rol;
 import com.proyecto.dejatuhuella.repository.PedidoRepository;
 import com.proyecto.dejatuhuella.repository.ProductoRepository;
 import com.proyecto.dejatuhuella.repository.UsuarioRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SeguridadServiceTest {
@@ -257,7 +256,7 @@ public class SeguridadServiceTest {
         assertFalse(resultado);
     }
 
-    @Test
+     @Test
     @DisplayName("Debería verificar si el usuario autenticado es vendedor en el pedido")
     void esVendedorEnPedido() {
         // Arrange
@@ -269,10 +268,11 @@ public class SeguridadServiceTest {
         when(authentication.isAuthenticated()).thenReturn(true);
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(authentication.getPrincipal()).thenReturn(userDetails); // ✅ solución
+        when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("usuario@test.com");
 
-        when(usuarioService.buscarPorEmail("usuario@test.com")).thenReturn(Optional.of(usuarioAutenticado));
+        // Mock correcto para el repositorio
+        when(usuarioRepository.findByEmail("usuario@test.com")).thenReturn(Optional.of(usuarioAutenticado));
 
         // Crear un pedido con un producto del usuario autenticado
         Pedido pedidoConProductoDelUsuario = new Pedido();
@@ -308,10 +308,11 @@ public class SeguridadServiceTest {
         when(authentication.isAuthenticated()).thenReturn(true);
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(authentication.getPrincipal()).thenReturn(userDetails); // ✅ solución
+        when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("usuario@test.com");
 
-        when(usuarioService.buscarPorEmail("usuario@test.com")).thenReturn(Optional.of(usuarioAutenticado));
+        // Mock correcto para el repositorio
+        when(usuarioRepository.findByEmail("usuario@test.com")).thenReturn(Optional.of(usuarioAutenticado));
 
         // Crear un pedido con productos de otro usuario
         Pedido pedidoSinProductosDelUsuario = new Pedido();
@@ -338,5 +339,4 @@ public class SeguridadServiceTest {
         // Assert
         assertFalse(resultado);
     }
-
 }

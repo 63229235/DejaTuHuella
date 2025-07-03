@@ -16,12 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.proyecto.dejatuhuella.model.Categoria;
 import com.proyecto.dejatuhuella.model.Producto;
-import com.proyecto.dejatuhuella.service.CarritoService;
 import com.proyecto.dejatuhuella.service.CategoriaService;
 import com.proyecto.dejatuhuella.service.PedidoService;
 import com.proyecto.dejatuhuella.service.ProductoService;
 import com.proyecto.dejatuhuella.service.ResenaService;
-import com.proyecto.dejatuhuella.service.UsuarioService;
 
 @Controller
 public class WebController {
@@ -36,16 +34,10 @@ public class WebController {
     private ResenaService resenaService;
 
     @Autowired
-    private CarritoService carritoService;
-
-    @Autowired
     private com.proyecto.dejatuhuella.service.CarritoPersistentService carritoPersistentService;
 
     @Autowired
     private PedidoService pedidoService;
-
-    @Autowired
-    private UsuarioService usuarioService;
 
     @ModelAttribute("cartCount")
     public Integer cartCount() {

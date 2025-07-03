@@ -103,32 +103,39 @@ function filtrarPorEstado(estado, isPedidosPage) {
 }
 
 /**
- * Añade animaciones a los mensajes de alerta
+ * Añade animaciones a los mensajes de alerta usando SweetAlert2
  */
 function animateAlerts() {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
-        // Solo animar si el alert es visible
-        if (alert.style.display !== 'none' && !alert.classList.contains('animated')) {
-            alert.classList.add('animated');
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-20px)';
-            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        // Solo procesar si el alert es visible
+        if (alert.style.display !== 'none' && !alert.classList.contains('processed-by-sweetalert')) {
+            alert.classList.add('processed-by-sweetalert');
             
-            setTimeout(() => {
-                alert.style.opacity = '1';
-                alert.style.transform = 'translateY(0)';
-            }, 100);
+            // Obtener el texto del mensaje
+            const mensaje = alert.textContent.trim();
+            if (!mensaje) return;
             
-            // Si es un mensaje de éxito, ocultarlo después de 5 segundos
+            // Determinar el tipo de alerta
+            let tipo = 'info';
             if (alert.classList.contains('alert-success')) {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-                        alert.style.display = 'none';
-                    }, 500);
-                }, 5000);
+                tipo = 'success';
+            } else if (alert.classList.contains('alert-danger')) {
+                tipo = 'error';
+            } else if (alert.classList.contains('alert-warning')) {
+                tipo = 'warning';
+            }
+            
+            // Ocultar el alert original
+            alert.style.display = 'none';
+            
+            // Mostrar con SweetAlert2
+            if (tipo === 'success') {
+                mostrarToast(mensaje, tipo);
+            } else if (tipo === 'error') {
+                mostrarError(mensaje);
+            } else {
+                mostrarInfo(mensaje);
             }
         }
     });

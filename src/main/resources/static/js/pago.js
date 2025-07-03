@@ -154,10 +154,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Si hay errores, mostrarlos y prevenir el envío del formulario
             if (!isValid) {
-                alert(errorMessage);
+                mostrarError(errorMessage, 'Error de validación');
             } else {
-                // Si todo está bien, enviar el formulario
-                formPago.submit();
+                // Mostrar indicador de carga mientras se procesa
+                Swal.fire({
+                    title: 'Procesando pago',
+                    text: 'Por favor espera mientras procesamos tu pago...',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        // Si todo está bien, enviar el formulario después de mostrar el indicador
+                        setTimeout(() => {
+                            formPago.submit();
+                        }, 1500); // Pequeño retraso para mostrar la animación
+                    }
+                });
             }
         });
     }

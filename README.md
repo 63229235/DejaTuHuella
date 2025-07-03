@@ -152,16 +152,19 @@ Gestiona las operaciones relacionadas con los productos.
 - `buscarProductos`: Busca productos por nombre
 - `cambiarEstadoProducto`: Activa o desactiva un producto
 
-### CarritoService
+### CarritoPersistentService
 
-Gestiona las operaciones relacionadas con el carrito de compras.
+Gestiona las operaciones relacionadas con el carrito de compras persistente.
 
 **Métodos principales**:
-- `obtenerCarritoUsuario`: Recupera el carrito del usuario actual
-- `agregarProductoAlCarrito`: Añade un producto al carrito
-- `actualizarCantidadProducto`: Actualiza la cantidad de un producto en el carrito
-- `eliminarProductoDelCarrito`: Elimina un producto del carrito
+- `obtenerCarritoUsuarioActual`: Recupera el carrito del usuario actual
+- `agregarProducto`: Añade un producto al carrito
+- `actualizarCantidad`: Actualiza la cantidad de un producto en el carrito
+- `eliminarProducto`: Elimina un producto del carrito
 - `vaciarCarrito`: Elimina todos los productos del carrito
+- `getItemsDetallados`: Obtiene los items del carrito con detalles
+- `getTotal`: Calcula el total del carrito
+- `verificarStock`: Verifica si hay suficiente stock para todos los productos del carrito
 
 ### PedidoService
 
@@ -202,7 +205,7 @@ El proyecto incluye pruebas unitarias y de integración para garantizar la calid
 
 - **UsuarioServiceTest**: Prueba las operaciones de gestión de usuarios
 - **ProductoServiceTest**: Prueba las operaciones de gestión de productos
-- **CarritoServiceTest**: Prueba las operaciones del carrito de compras
+- **CarritoPersistentServiceTest**: Prueba las operaciones del carrito de compras persistente
 - **PedidoServiceTest**: Prueba las operaciones de gestión de pedidos
 - **SeguridadServiceTest**: Prueba las verificaciones de seguridad
 - **FileStorageServiceTest**: Prueba el almacenamiento de archivos
@@ -211,7 +214,7 @@ El proyecto incluye pruebas unitarias y de integración para garantizar la calid
 
 - **UsuarioControllerTest**: Prueba los endpoints de usuarios
 - **ProductoControllerTest**: Prueba los endpoints de productos
-- **CarritoControllerTest**: Prueba los endpoints del carrito
+- **CarritoPersistenteControllerTest**: Prueba los endpoints del carrito persistente
 - **PedidoControllerTest**: Prueba los endpoints de pedidos
 
 ## Sistema de Pagos

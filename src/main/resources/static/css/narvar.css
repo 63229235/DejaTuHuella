@@ -9,6 +9,12 @@
             top: 0;
             z-index: 1030;
         }
+        
+        @media (max-width: 767px) {
+            .navbar-custom {
+                padding: 0.3rem 0.5rem;
+            }
+        }
 
         /* Clase para ocultar el navbar al hacer scroll hacia abajo */
         .navbar-hidden {
@@ -33,6 +39,28 @@
 
         .nav-link:hover {
             color: #007bff !important;
+        }
+        
+        @media (max-width: 991px) {
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navbar-nav {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.4rem 0.5rem;
+                border-bottom: 1px solid #f1f1f1;
+            }
+            
+            .navbar-nav .nav-item:last-child .nav-link {
+                border-bottom: none;
+            }
         }
 
         .nav-link::after {
@@ -102,6 +130,32 @@
             background-color: #007bff;
             color: white;
         }
+        
+        @media (max-width: 767px) {
+            .cart-icon {
+                padding: 0.4rem;
+            }
+            
+            .cart-badge {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.35rem;
+                top: -4px;
+                right: -4px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .cart-icon {
+                padding: 0.3rem;
+            }
+            
+            .cart-badge {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.3rem;
+                top: -3px;
+                right: -3px;
+            }
+        }
 
         .user-dropdown {
             border: none;
@@ -128,6 +182,28 @@
             padding: 0.5rem 1.5rem;
             color: #555;
             transition: all 0.2s ease;
+        }
+        
+        @media (max-width: 767px) {
+            .dropdown-menu {
+                padding: 0.4rem 0;
+            }
+            
+            .dropdown-item {
+                padding: 0.4rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dropdown-menu {
+                padding: 0.3rem 0;
+            }
+            
+            .dropdown-item {
+                padding: 0.35rem 0.75rem;
+                font-size: 0.85rem;
+            }
         }
 
         .dropdown-item:hover {

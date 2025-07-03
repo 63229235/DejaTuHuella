@@ -1,0 +1,55 @@
+# Archivos y directorios a ignorar en el despliegue de Elastic Beanstalk
+
+# Archivos de Maven
+target/
+!target/*.jar
+
+# Archivos de desarrollo local
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos de logs
+logs/
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Archivos de Docker local
+docker-compose.yml
+docker-compose.override.yml
+
+# Archivos de Git
+.git/
+.gitignore
+
+# Archivos de prueba
+src/test/
+
+# Archivos de documentación
+docs/
+README.md
+CONTRIBUTING.md
+LICENSE
+
+# Archivos temporales
+temp/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
