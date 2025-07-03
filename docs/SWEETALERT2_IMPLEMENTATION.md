@@ -1,19 +1,19 @@
-# SweetAlert2 Implementation Guide
+# Guía de Implementación de SweetAlert2
 
-## Overview
+## Descripción General
 
-This project has been enhanced with SweetAlert2 to provide beautiful, responsive, and customizable alert dialogs. SweetAlert2 replaces the default browser alerts with modern, user-friendly notifications.
+Este proyecto ha sido mejorado con SweetAlert2 para proporcionar diálogos de alerta hermosos, responsivos y personalizables. SweetAlert2 reemplaza las alertas predeterminadas del navegador con notificaciones modernas y amigables para el usuario.
 
-## Files Modified
+## Archivos Modificados
 
-### Core SweetAlert2 Files
+### Archivos Principales de SweetAlert2
 
-1. **`/js/sweetalert-utils.js`** - Central utility file containing all SweetAlert2 functions
-2. **`/templates/fragments/sweetalert.html`** - Reusable Thymeleaf fragment for including SweetAlert2 scripts
+1. **`/js/sweetalert-utils.js`** - Archivo de utilidades central que contiene todas las funciones de SweetAlert2
+2. **`/templates/fragments/sweetalert.html`** - Fragmento reutilizable de Thymeleaf para incluir scripts de SweetAlert2
 
-### Updated Templates
+### Plantillas Actualizadas
 
-The following templates have been updated to include SweetAlert2:
+Las siguientes plantillas han sido actualizadas para incluir SweetAlert2:
 
 - `home.html`
 - `registro.html`
@@ -28,92 +28,101 @@ The following templates have been updated to include SweetAlert2:
 - `pago/formulario.html`
 - `pago/confirmacion.html`
 
-### Updated JavaScript Files
+### Archivos JavaScript Actualizados
 
-The following JavaScript files have been updated to use SweetAlert2:
+Los siguientes archivos JavaScript han sido actualizados para usar SweetAlert2:
 
-- `home.js` - Product addition notifications
-- `registro.js` - Registration success/error messages
-- `pago.js` - Payment error messages
-- `panel-control.js` - Admin panel confirmations and notifications
+- `home.js` - Notificaciones de adición de productos
+- `registro.js` - Mensajes de éxito/error de registro
+- `pago.js` - Mensajes de error de pago
+- `panel-control.js` - Confirmaciones y notificaciones del panel de administración
+- `resenas.js` - Validaciones y confirmaciones de reseñas
 
-## Available Functions
+## Funciones Disponibles
 
-### Basic Alerts
+El archivo `sweetalert-utils.js` proporciona las siguientes funciones:
+
+### Alertas Básicas
+
+- `showSuccess(title, text)` - Mensaje de éxito con marca de verificación verde
+- `showError(title, text)` - Mensaje de error con X roja
+- `showInfo(title, text)` - Mensaje de información con i azul
+- `showWarning(title, text)` - Mensaje de advertencia con triángulo amarillo
+
+### Diálogos de Confirmación
+
+- `showConfirm(title, text, confirmCallback, cancelCallback)` - Diálogo de confirmación con callbacks personalizados
+
+### Notificaciones Toast
+
+- `showToast(type, message)` - Notificación pequeña que aparece brevemente
+  - Tipos: 'success', 'error', 'warning', 'info'
 
 ```javascript
-// Success message
-showSuccess('Operation completed successfully!');
+// Mensaje de éxito
+showSuccess('¡Operación completada exitosamente!');
 
-// Error message
-showError('Something went wrong!');
+// Mensaje de error
+showError('¡Algo salió mal!');
 
-// Info message
-showInfo('Here is some information.');
+// Mensaje de información
+showInfo('Aquí tienes información.');
 
-// Warning message
-showWarning('Please be careful!');
-```
+// Mensaje de advertencia
+showWarning('¡Ten cuidado!');
 
-### Confirmation Dialogs
-
-```javascript
-// Confirmation with callback
-showConfirm('Are you sure?', 'This action cannot be undone', function() {
-    // Code to execute if confirmed
-    console.log('User confirmed');
+// Confirmación con callback
+showConfirm('¿Estás seguro?', 'Esta acción no se puede deshacer', function() {
+    // Código a ejecutar si se confirma
+    console.log('Usuario confirmó');
 });
+
+// Toast de éxito
+showToastSuccess('¡Elemento agregado al carrito!');
+
+// Toast de error
+showToastError('Error al guardar cambios');
+
+// Toast de información
+showToastInfo('Nueva actualización disponible');
+
+// Toast de advertencia
+showToastWarning('La sesión expirará pronto');
 ```
 
-### Toast Notifications
+## Procesamiento Automático de Mensajes Flash
 
-```javascript
-// Success toast
-showToastSuccess('Item added to cart!');
+El archivo `sweetalert-utils.js` incluye procesamiento automático de mensajes flash de Thymeleaf. Cuando se carga una página, automáticamente:
 
-// Error toast
-showToastError('Failed to save changes');
+1. Detecta divs de alerta de Bootstrap con clases: `alert-success`, `alert-danger`, `alert-info`, `alert-warning`
+2. Los convierte en notificaciones toast de SweetAlert2
+3. Oculta los divs de alerta originales
 
-// Info toast
-showToastInfo('New update available');
+Esto significa que los mensajes flash existentes aparecerán automáticamente como notificaciones toast modernas sin requerir cambios de código.
 
-// Warning toast
-showToastWarning('Session will expire soon');
-```
+## Uso en Plantillas
 
-## Automatic Flash Message Processing
+### Incluyendo SweetAlert2
 
-The `sweetalert-utils.js` file includes automatic processing of Thymeleaf flash messages. When a page loads, it automatically:
-
-1. Detects Bootstrap alert divs with classes: `alert-success`, `alert-danger`, `alert-info`, `alert-warning`
-2. Converts them to SweetAlert2 toast notifications
-3. Hides the original alert divs
-
-This means existing flash messages will automatically appear as modern toast notifications without requiring code changes.
-
-## Usage in Templates
-
-### Including SweetAlert2
-
-To include SweetAlert2 in a template, add this line before your custom JavaScript:
+Para incluir SweetAlert2 en una plantilla, agrega esta línea antes de tu JavaScript personalizado:
 
 ```html
 <!-- SweetAlert2 -->
 <div th:replace="~{fragments/sweetalert :: sweetalert-scripts}"></div>
 ```
 
-### Example Implementation
+### Ejemplo de Implementación
 
 ```html
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- Your head content -->
+    <!-- Contenido de tu head -->
 </head>
 <body>
-    <!-- Your page content -->
+    <!-- Contenido de tu página -->
     
-    <!-- Flash messages (automatically converted to toasts) -->
+    <!-- Mensajes flash (convertidos automáticamente a toasts) -->
     <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
     <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
     
@@ -126,41 +135,50 @@ To include SweetAlert2 in a template, add this line before your custom JavaScrip
 </html>
 ```
 
-## Best Practices
+## Mejores Prácticas
 
-1. **Use appropriate alert types**: Choose the right function based on the message type (success, error, info, warning)
-2. **Keep messages concise**: Short, clear messages work best with SweetAlert2
-3. **Use toasts for non-critical notifications**: Toasts are less intrusive for status updates
-4. **Use confirmations for destructive actions**: Always confirm delete operations and other irreversible actions
-5. **Consistent styling**: The utility functions ensure consistent appearance across the application
+1. **Usa tipos de alerta apropiados**: Elige la función correcta basada en el tipo de mensaje (éxito, error, información, advertencia)
+2. **Mantén los mensajes concisos**: Los mensajes cortos y claros funcionan mejor con SweetAlert2
+3. **Usa toasts para notificaciones no críticas**: Los toasts son menos intrusivos para actualizaciones de estado
+4. **Usa confirmaciones para acciones destructivas**: Siempre confirma operaciones de eliminación y otras acciones irreversibles
+5. **Estilo consistente**: Las funciones de utilidad aseguran una apariencia consistente en toda la aplicación
 
-## Migration from Native Alerts
+## Migración desde Alertas Nativas
 
-### Before (Native JavaScript)
+### Antes (JavaScript Nativo)
 ```javascript
-alert('Success!');
-if (confirm('Are you sure?')) {
-    // do something
+alert('¡Éxito!');
+if (confirm('¿Estás seguro?')) {
+    // hacer algo
 }
 ```
 
-### After (SweetAlert2)
+### Después (SweetAlert2)
 ```javascript
-showToastSuccess('Success!');
-showConfirm('Are you sure?', 'This action cannot be undone', function() {
-    // do something
+showToastSuccess('¡Éxito!');
+showConfirm('¿Estás seguro?', 'Esta acción no se puede deshacer', function() {
+    // hacer algo
 });
 ```
 
-## Customization
+## Personalización
 
-The `sweetalert-utils.js` file can be extended with additional functions as needed. All SweetAlert2 configuration options are available for customization.
+El archivo `sweetalert-utils.js` puede ser extendido con funciones adicionales según sea necesario. Todas las opciones de configuración de SweetAlert2 están disponibles para personalización.
 
-## Dependencies
+## Dependencias
 
-- SweetAlert2 v11 (loaded from CDN)
-- Bootstrap 5.3.0 (for styling compatibility)
+- SweetAlert2 v11 (cargado desde CDN)
+- Bootstrap 5.3.0 (para compatibilidad de estilos)
 
-## Browser Support
+## Soporte de Navegadores
 
-SweetAlert2 supports all modern browsers. For older browser support, consider using the legacy version of SweetAlert2.
+SweetAlert2 soporta todos los navegadores modernos:
+- Chrome 32+
+- Firefox 27+
+- Safari 9+
+- Edge 79+
+- Internet Explorer 11 (con polyfills)
+
+---
+
+*Esta implementación proporciona una experiencia de usuario moderna y consistente en toda la aplicación mientras mantiene la compatibilidad hacia atrás con la funcionalidad existente.*

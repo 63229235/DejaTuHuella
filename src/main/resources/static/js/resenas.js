@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Validar que se haya seleccionado una calificación
             if (!calificacion) {
-                alert('Por favor, selecciona una calificación');
+                showError('Por favor, selecciona una calificación');
                 return;
             }
             
             // Validar que se haya escrito un comentario
             if (!comentario.trim()) {
-                alert('Por favor, escribe un comentario');
+                showError('Por favor, escribe un comentario');
                 return;
             }
             
@@ -37,15 +37,16 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert(data.error);
+                    showError(data.error);
                 } else {
+                    showSuccess('Reseña enviada exitosamente');
                     // Recargar la página para mostrar la nueva reseña
-                    window.location.reload();
+                    setTimeout(() => window.location.reload(), 1500);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ha ocurrido un error al enviar la reseña');
+                showError('Ha ocurrido un error al enviar la reseña');
             });
         });
     }
@@ -54,26 +55,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const eliminarBotones = document.querySelectorAll('.eliminar-resena');
     eliminarBotones.forEach(boton => {
         boton.addEventListener('click', function() {
-            if (confirm('¿Estás seguro de que deseas eliminar esta reseña?')) {
-                const resenaId = this.getAttribute('data-resena-id');
-                
+            const resenaId = this.getAttribute('data-resena-id');
+            
+            showConfirm('¿Estás seguro?', '¿Deseas eliminar esta reseña? Esta acción no se puede deshacer.', function() {
                 fetch(`/api/resenas/${resenaId}`, {
                     method: 'DELETE'
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        alert(data.error);
+                        showError(data.error);
                     } else {
+                        showSuccess('Reseña eliminada exitosamente');
                         // Recargar la página para actualizar la lista de reseñas
-                        window.location.reload();
+                        setTimeout(() => window.location.reload(), 1500);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Ha ocurrido un error al eliminar la reseña');
+                    showError('Ha ocurrido un error al eliminar la reseña');
                 });
-            }
+            });
         });
     });
 });
