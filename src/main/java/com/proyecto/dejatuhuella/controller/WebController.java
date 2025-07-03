@@ -1,12 +1,7 @@
 package com.proyecto.dejatuhuella.controller;
 
-import com.proyecto.dejatuhuella.model.Usuario;
-import com.proyecto.dejatuhuella.service.CarritoService;
-import com.proyecto.dejatuhuella.service.CategoriaService;
-import com.proyecto.dejatuhuella.service.PedidoService;
-import com.proyecto.dejatuhuella.service.ProductoService;
-import com.proyecto.dejatuhuella.service.ResenaService;
-import com.proyecto.dejatuhuella.service.UsuarioService;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +14,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.proyecto.dejatuhuella.model.Categoria;
+import com.proyecto.dejatuhuella.model.Producto;
+import com.proyecto.dejatuhuella.service.CarritoService;
+import com.proyecto.dejatuhuella.service.CategoriaService;
+import com.proyecto.dejatuhuella.service.PedidoService;
+import com.proyecto.dejatuhuella.service.ProductoService;
+import com.proyecto.dejatuhuella.service.ResenaService;
+import com.proyecto.dejatuhuella.service.UsuarioService;
 
 @Controller
 public class WebController {
@@ -49,7 +51,7 @@ public class WebController {
     public Integer cartCount() {
         // Solo contamos si el usuario está autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String) && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
             try {
                 // Usar el servicio de carrito persistente en lugar del servicio de sesión
                 return carritoPersistentService.getCantidadTotal();
@@ -82,10 +84,11 @@ public class WebController {
     }
 
     @GetMapping("/panel-control")
+    @PreAuthorize("isAuthenticated()")
     public String panelControl(Model model) {
         // Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
+        if (auth != null && auth.isAuthenticated() && !("anonymousUser".equals(auth.getPrincipal()))) {
             try {
                 // Cargar productos del usuario si es vendedor
                 model.addAttribute("productos", productoService.obtenerProductosDelVendedor());
@@ -133,7 +136,7 @@ public class WebController {
     @GetMapping("/categoria/{id}")
     public String productosPorCategoria(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         // Obtener la categoría y verificar si existe
-        var categoriaOptional = categoriaService.obtenerCategoriaPorId(id);
+        Optional<Categoria> categoriaOptional = categoriaService.obtenerCategoriaPorId(id);
         if (categoriaOptional.isEmpty()) {
             // Si la categoría no existe, redirigir a la página de categorías con un mensaje
             redirectAttributes.addFlashAttribute("errorMessage", "La categoría solicitada no existe");
@@ -148,7 +151,7 @@ public class WebController {
 
     @GetMapping("/productos/{id}")
     public String detalleProducto(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        var productoOptional = productoService.obtenerProductoPorId(id);
+        Optional<Producto> productoOptional = productoService.obtenerProductoPorId(id);
         if (productoOptional.isEmpty()) {
             // Si el producto no existe, redirigir a la página principal con un mensaje
             redirectAttributes.addFlashAttribute("errorMessage", "El producto solicitado no existe");

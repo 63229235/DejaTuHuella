@@ -35,7 +35,11 @@
                     </a>
                     <div class="dropdown">
                         <button class="user-dropdown dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user"></i>
+                            <!-- Mostrar imagen de perfil si está disponible, de lo contrario mostrar icono de usuario -->
+                            <img th:if="${#authentication.principal instanceof T(com.proyecto.dejatuhuella.security.CustomUserDetails) && #authentication.principal.usuario.imageUrl != null}" 
+                                 th:src="${#authentication.principal.usuario.imageUrl}" 
+                                 alt="Perfil" class="rounded-circle" style="width: 25px; height: 25px; object-fit: cover;">
+                            <i th:unless="${#authentication.principal instanceof T(com.proyecto.dejatuhuella.security.CustomUserDetails) && #authentication.principal.usuario.imageUrl != null}" class="fas fa-user"></i>
                             <span sec:authentication="name">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

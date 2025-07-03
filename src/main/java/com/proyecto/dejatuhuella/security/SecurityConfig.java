@@ -1,7 +1,5 @@
-package com.proyecto.dejatuhuella.config;
+package com.proyecto.dejatuhuella.security;
 
-// Ya no se necesita @Autowired aquí si no se usa directamente
-// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,22 +11,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 
-// No es necesario importar CustomUserDetailsService aquí si no se usa directamente en esta clase.
-// Spring lo encontrará automáticamente si es un @Service y lo usará para el AuthenticationManager.
-// import com.proyecto.dejatuhuella.service.CustomUserDetailsService;
+import com.proyecto.dejatuhuella.service.CustomOAuth2UserService;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
-    // El campo CustomUserDetailsService ya no es necesario aquí,
-    // Spring Security lo detectará automáticamente si es un bean @Service.
-    /*
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-    */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,12 +31,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public OidcUserService oidcUserService() {
+        return new OidcUserService();
+    }
+    
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, 
+                                                  CustomOAuth2UserService customOAuth2UserService, 
+                                                  OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/", "/home", "/registro", "/login", "/css/**", "/static/js/**", "/images/**", "/uploads/**").permitAll()
+                                .requestMatchers("/", "/home", "/registro", "/login", "/css/**", "/static/js/**", "/images/**", "/uploads/**", "/oauth2/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Permite el registro público
                                 .requestMatchers("/api/public/**", "/api/categorias/**", "/api/productos/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
@@ -59,6 +56,13 @@ public class SecurityConfig {
                                 .defaultSuccessUrl("/", true) // Redirigir al home después del login
                                 .failureUrl("/login?error=true") // URL en caso de error de autenticación
                                 .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
                 )
                 .logout(logout ->
                         logout

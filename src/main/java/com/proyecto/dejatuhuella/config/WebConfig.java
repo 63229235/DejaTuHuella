@@ -7,7 +7,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -18,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Configurar el acceso a la carpeta de uploads
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Path.of(uploadDir);
         String uploadAbsolutePath = uploadPath.toFile().getAbsolutePath();
         
         registry.addResourceHandler("/uploads/**")
