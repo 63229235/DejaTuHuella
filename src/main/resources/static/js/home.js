@@ -63,11 +63,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Iniciando sistema de actualización automática de productos');
             
-            // Actualizar productos destacados cada 1.5 minutos (90000 ms)
-            const intervalo = setInterval(actualizarProductosDestacados, 90000);
+            // Actualizar productos destacados cada 1 minuto (60000 ms)
+            const intervalo = setInterval(actualizarProductosDestacados, 120000);
             
-            console.log('⏰ Actualización automática configurada cada 1.5 minutos');
-            
-            // Opcional: ejecutar una actualización inicial después de 5 segundos
-            setTimeout(actualizarProductosDestacados, 5000);
+            console.log('⏰ Actualización automática configurada cada 1 minuto');
         });

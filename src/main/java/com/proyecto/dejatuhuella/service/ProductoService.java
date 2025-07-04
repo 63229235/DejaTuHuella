@@ -1,12 +1,8 @@
 package com.proyecto.dejatuhuella.service;
 
-import com.proyecto.dejatuhuella.dto.ProductoRequestDTO;
-import com.proyecto.dejatuhuella.model.Categoria;
-import com.proyecto.dejatuhuella.model.Producto;
-import com.proyecto.dejatuhuella.model.Usuario;
-import com.proyecto.dejatuhuella.repository.CategoriaRepository;
-import com.proyecto.dejatuhuella.repository.ProductoRepository;
-import com.proyecto.dejatuhuella.repository.UsuarioRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,8 +10,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.proyecto.dejatuhuella.dto.ProductoRequestDTO;
+import com.proyecto.dejatuhuella.model.Categoria;
+import com.proyecto.dejatuhuella.model.Producto;
+import com.proyecto.dejatuhuella.model.Usuario;
+import com.proyecto.dejatuhuella.repository.CategoriaRepository;
+import com.proyecto.dejatuhuella.repository.ProductoRepository;
+import com.proyecto.dejatuhuella.repository.UsuarioRepository;
 
 @Service
 public class ProductoService {
@@ -23,7 +24,7 @@ public class ProductoService {
     // Cache para productos destacados
     private List<Producto> productosDestacadosCache;
     private long ultimaActualizacionCache = 0;
-    private static final long INTERVALO_ACTUALIZACION_CACHE = 10 * 60 * 1000; // 10 minutos en milisegundos
+    private static final long INTERVALO_ACTUALIZACION_CACHE = 2 * 60 * 1000; // 2 minuto en milisegundos
 
     @Autowired
     private ProductoRepository productoRepository;
@@ -178,7 +179,7 @@ public class ProductoService {
             java.util.Collections.shuffle(todosLosProductos);
             
             // Tomar los primeros 8 productos (o menos si no hay suficientes)
-            int cantidadProductos = Math.min(8, todosLosProductos.size());
+            int cantidadProductos = Math.min(4, todosLosProductos.size());
             productosDestacadosCache = todosLosProductos.subList(0, cantidadProductos);
             
             // Actualizar el tiempo de la última actualización
