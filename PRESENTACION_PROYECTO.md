@@ -316,6 +316,17 @@ public Pedido procesarPedido(Long usuarioId, DatosPago datosPago) {
 ## 🗄️ Modelos de Datos
 
 ### Entidad Usuario
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/model/Usuario.java`
+
+**🔍 Explicación**: Esta entidad representa a los usuarios del sistema. Utiliza JPA para mapear la tabla "usuarios" en la base de datos. Incluye validaciones, relaciones con otras entidades y timestamps automáticos.
+
+**🔑 Características clave**:
+- `@Entity`: Marca la clase como entidad JPA
+- `@Column(unique = true)`: Garantiza emails únicos
+- `@Enumerated(EnumType.STRING)`: Almacena el rol como string en BD
+- `@OneToMany`: Relación uno-a-muchos con pedidos y carrito
+- `@CreationTimestamp`: Timestamp automático de creación
+
 ```java
 @Entity
 @Table(name = "usuarios")
@@ -356,6 +367,17 @@ public class Usuario {
 ```
 
 ### Entidad Producto
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/model/Producto.java`
+
+**🔍 Explicación**: Entidad central del e-commerce que representa los productos del catálogo. Incluye campos específicos para productos sostenibles y manejo de inventario.
+
+**🔑 Características clave**:
+- `@Column(precision = 10, scale = 2)`: Precisión decimal para precios
+- `@Column(length = 1000)`: Descripción extendida para detalles
+- `@UpdateTimestamp`: Actualización automática de fecha de modificación
+- Campos específicos de sostenibilidad (`esSostenible`, `certificacionEcologica`)
+- Control de inventario con campo `stock`
+
 ```java
 @Entity
 @Table(name = "productos")
@@ -396,6 +418,17 @@ public class Producto {
 ```
 
 ### Entidad Pedido
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/model/Pedido.java`
+
+**🔍 Explicación**: Representa las órdenes de compra en el sistema. Mantiene la relación con el usuario, detalles del pedido y estado de procesamiento.
+
+**🔑 Características clave**:
+- `@ManyToOne(fetch = FetchType.LAZY)`: Carga perezosa para optimizar rendimiento
+- `@JoinColumn`: Define la clave foránea hacia Usuario
+- `@Enumerated(EnumType.STRING)`: Estados del pedido como strings legibles
+- `@OneToMany(cascade = CascadeType.ALL)`: Operaciones en cascada con detalles
+- Campos de auditoría y seguimiento (fechaPedido, estado, direccionEnvio)
+
 ```java
 @Entity
 @Table(name = "pedidos")
@@ -432,6 +465,23 @@ public class Pedido {
 ## 🔧 Servicios y Lógica de Negocio
 
 ### ProductoService - Gestión de Inventario
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/service/ProductoService.java`
+
+**🔍 Explicación**: Servicio principal para la gestión del catálogo de productos. Implementa la lógica de negocio para búsquedas, filtros, control de inventario y productos sostenibles.
+
+**🔑 Funcionalidades clave**:
+- **Búsqueda inteligente**: Combina filtros por nombre y categoría
+- **Control de stock**: Validación y actualización automática de inventario
+- **Productos sostenibles**: Filtrado específico para productos ecológicos
+- **Paginación**: Manejo eficiente de grandes catálogos
+- **Transacciones**: `@Transactional` garantiza consistencia de datos
+
+**🔧 Métodos principales**:
+- `buscarProductos()`: Búsqueda con múltiples filtros
+- `reducirStock()`: Control de inventario con validaciones
+- `obtenerCategorias()`: Lista de categorías disponibles
+- `obtenerProductosSostenibles()`: Filtro de productos ecológicos
+
 ```java
 @Service
 @Transactional
@@ -485,6 +535,23 @@ public class ProductoService {
 ```
 
 ### UsuarioService - Gestión de Usuarios
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/service/UsuarioService.java`
+
+**🔍 Explicación**: Servicio que maneja toda la lógica relacionada con usuarios. Implementa `UserDetailsService` de Spring Security para integración con autenticación.
+
+**🔑 Funcionalidades clave**:
+- **Autenticación Spring Security**: Implementa `loadUserByUsername()`
+- **Registro seguro**: Validación de emails únicos y encriptación de contraseñas
+- **Gestión de perfiles**: Actualización de datos personales
+- **Encriptación BCrypt**: Contraseñas hasheadas con `PasswordEncoder`
+- **Validaciones de negocio**: Prevención de duplicados y datos inválidos
+
+**🔧 Métodos principales**:
+- `loadUserByUsername()`: Carga usuario para Spring Security
+- `registrarUsuario()`: Registro con validaciones y encriptación
+- `actualizarPerfil()`: Modificación de datos personales
+- Integración con roles y autoridades del sistema
+
 ```java
 @Service
 @Transactional
@@ -551,6 +618,22 @@ public class UsuarioService implements UserDetailsService {
 ## 🌐 Controladores y API REST
 
 ### WebController - Interfaz Web
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/controller/WebController.java`
+
+**🔍 Explicación**: Controlador principal para las páginas web del frontend. Maneja las rutas públicas y la navegación principal del sitio usando el patrón MVC de Spring.
+
+**🔑 Funcionalidades clave**:
+- **Patrón MVC**: Controlador que retorna vistas Thymeleaf
+- **Página principal**: Carga productos destacados y sostenibles
+- **Detalles de producto**: Vista individual con productos relacionados
+- **Inyección de dependencias**: Uso de servicios para lógica de negocio
+- **Model binding**: Paso de datos a las plantillas Thymeleaf
+
+**🔧 Endpoints principales**:
+- `GET /`: Página principal con productos destacados
+- `GET /producto/{id}`: Vista detallada de producto individual
+- Integración con ProductoService para obtener datos
+
 ```java
 @Controller
 public class WebController {
@@ -586,6 +669,24 @@ public class WebController {
 ```
 
 ### API REST para Productos
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/controller/ProductoRestController.java`
+
+**🔍 Explicación**: API REST que expone endpoints para operaciones CRUD de productos. Diseñada para consumo por aplicaciones frontend, móviles o integraciones externas.
+
+**🔑 Funcionalidades clave**:
+- **RESTful Design**: Endpoints siguiendo convenciones REST
+- **Paginación**: Manejo eficiente de grandes conjuntos de datos
+- **Filtros dinámicos**: Búsqueda por categoría y texto
+- **DTOs**: Transferencia de datos optimizada sin exponer entidades
+- **Seguridad**: Autorización basada en roles para operaciones administrativas
+- **Validación**: `@Valid` para validar datos de entrada
+
+**🔧 Endpoints disponibles**:
+- `GET /api/productos`: Lista paginada con filtros opcionales
+- `GET /api/productos/{id}`: Producto específico por ID
+- `POST /api/productos`: Crear producto (solo administradores)
+- Conversión automática a DTOs para respuestas optimizadas
+
 ```java
 @RestController
 @RequestMapping("/api/productos")
@@ -650,8 +751,26 @@ public class ProductoRestController {
 ## 🎨 Interfaz de Usuario
 
 ### Página Principal (home.html)
+**📁 Ruta**: `src/main/resources/templates/home.html`
+
+**🔍 Explicación**: Plantilla principal del sitio web que muestra la página de inicio. Utiliza Thymeleaf para renderizado dinámico y Bootstrap para diseño responsivo.
+
+**🔑 Funcionalidades clave**:
+- **Diseño responsivo**: Bootstrap 5 para adaptabilidad móvil
+- **Navegación dinámica**: Menú que cambia según autenticación
+- **Hero section**: Sección principal con llamada a la acción
+- **Productos destacados**: Grid dinámico de productos principales
+- **Badges sostenibles**: Identificación visual de productos ecológicos
+- **Thymeleaf integration**: Uso de `th:` para datos dinámicos
+
+**🔧 Secciones principales**:
+- **Header/Navbar**: Navegación con contador de carrito
+- **Hero**: Mensaje principal y botón de exploración
+- **Productos destacados**: Cards con información de productos
+- **Footer**: Información de contacto y empresa
+
 ```html
-<!DOCTYPE html>
+<!DOCTYPE html
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -745,6 +864,24 @@ public class ProductoRestController {
 ```
 
 ### Carrito de Compras (carrito.html)
+**📁 Ruta**: `src/main/resources/templates/carrito.html`
+
+**🔍 Explicación**: Plantilla para la gestión del carrito de compras. Permite visualizar, modificar cantidades y proceder al checkout de productos seleccionados.
+
+**🔑 Funcionalidades clave**:
+- **Estado dinámico**: Muestra carrito vacío o con productos
+- **Gestión de cantidades**: Botones para incrementar/decrementar
+- **Cálculos automáticos**: Subtotal, envío y total en tiempo real
+- **AJAX interactions**: Actualizaciones sin recargar página
+- **Resumen de pedido**: Panel lateral con totales
+- **Validaciones**: Control de stock y cantidades mínimas
+
+**🔧 Funcionalidades JavaScript**:
+- `actualizarCantidad()`: Modifica cantidad vía API REST
+- `eliminarItem()`: Remueve productos del carrito
+- Confirmaciones de usuario para acciones destructivas
+- Manejo de errores en operaciones AJAX
+
 ```html
 <div class="container py-5">
     <h2>Mi Carrito de Compras</h2>
@@ -863,6 +1000,24 @@ function eliminarItem(itemId) {
 ## 🔒 Sistema de Seguridad
 
 ### Configuración de Spring Security
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/security/SecurityConfig.java`
+
+**🔍 Explicación**: Configuración central de seguridad usando Spring Security. Implementa autenticación JWT, autorización basada en roles y protección de endpoints.
+
+**🔑 Funcionalidades clave**:
+- **JWT Authentication**: Tokens stateless para autenticación
+- **Autorización por roles**: USUARIO y ADMINISTRADOR con permisos específicos
+- **BCrypt**: Encriptación segura de contraseñas
+- **CSRF Protection**: Deshabilitado para APIs REST
+- **Method Security**: `@PreAuthorize` habilitado para métodos
+- **Custom Filters**: Filtro JWT personalizado para validación de tokens
+
+**🔧 Configuración de rutas**:
+- **Públicas**: `/`, `/productos/**`, `/api/auth/**`
+- **Solo administradores**: `/admin/**`, `/api/admin/**`
+- **Autenticadas**: Todas las demás rutas requieren autenticación
+- **Recursos estáticos**: CSS, JS, imágenes son públicos
+
 ```java
 @Configuration
 @EnableWebSecurity
@@ -927,6 +1082,24 @@ public class SecurityConfig {
 ```
 
 ### JWT Utility Class
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/security/JwtUtil.java`
+
+**🔍 Explicación**: Utilidad para manejo de tokens JWT (JSON Web Tokens). Proporciona funcionalidades para generar, validar y extraer información de tokens de autenticación.
+
+**🔑 Funcionalidades clave**:
+- **Generación de tokens**: Creación de JWT con claims personalizados
+- **Validación**: Verificación de integridad y expiración de tokens
+- **Extracción de datos**: Obtención de username y claims del token
+- **Configuración segura**: Clave secreta y tiempo de expiración configurables
+- **Algoritmo HS512**: Firma digital segura para los tokens
+- **Manejo de expiración**: Control automático de tokens vencidos
+
+**🔧 Métodos principales**:
+- `generateToken()`: Genera nuevo token para usuario
+- `validateToken()`: Valida token contra UserDetails
+- `getUsernameFromToken()`: Extrae username del token
+- `isTokenExpired()`: Verifica si el token ha expirado
+
 ```java
 @Component
 public class JwtUtil {
@@ -983,6 +1156,24 @@ public class JwtUtil {
 ## 💳 Sistema de Pagos
 
 ### Servicio de Pagos
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/service/PagoService.java`
+
+**🔍 Explicación**: Servicio que maneja el procesamiento de pagos usando la API de Stripe. Gestiona transacciones, reembolsos y validaciones de pagos de forma segura.
+
+**🔑 Funcionalidades clave**:
+- **Integración Stripe**: API de pagos líder en la industria
+- **PaymentIntent**: Manejo de intenciones de pago para mayor seguridad
+- **Conversión de moneda**: Manejo automático de centavos para Stripe
+- **Manejo de errores**: Captura y procesamiento de excepciones de Stripe
+- **Reembolsos**: Procesamiento automático de devoluciones
+- **Configuración externa**: API key configurable desde properties
+
+**🔧 Métodos principales**:
+- `procesarPago()`: Procesa pagos con tarjeta de crédito
+- `procesarReembolso()`: Maneja devoluciones de dinero
+- `init()`: Inicialización de la API key de Stripe
+- Validaciones de monto y método de pago
+
 ```java
 @Service
 public class PagoService {
@@ -1101,6 +1292,24 @@ public class PagoController {
 ## 🧪 Testing y Calidad
 
 ### Pruebas Unitarias
+**📁 Ruta**: `src/test/java/com/proyecto/dejatuhuella/service/ProductoServiceTest.java`
+
+**🔍 Explicación**: Pruebas unitarias para el servicio de productos usando JUnit 5 y Mockito. Valida la lógica de negocio de forma aislada sin dependencias externas.
+
+**🔑 Funcionalidades de testing**:
+- **Mockito**: Simulación de dependencias (repositories)
+- **JUnit 5**: Framework de testing moderno con anotaciones
+- **AssertJ**: Assertions fluidas y legibles
+- **Test isolation**: Cada test es independiente
+- **Given-When-Then**: Estructura clara de pruebas
+- **Edge cases**: Pruebas de casos límite y errores
+
+**🔧 Casos de prueba cubiertos**:
+- `testBuscarProductos_ConTerminoBusqueda_DeberiaRetornarProductosFiltrados()`
+- `testReducirStock_ConStockSuficiente_DeberiaActualizarStock()`
+- `testReducirStock_ConStockInsuficiente_DeberiaLanzarExcepcion()`
+- Validaciones de stock, búsquedas y operaciones CRUD
+
 ```java
 @ExtendWith(MockitoExtension.class)
 class ProductoServiceTest {
@@ -1182,6 +1391,24 @@ class ProductoServiceTest {
 ```
 
 ### Pruebas de Integración
+**📁 Ruta**: `src/test/java/com/proyecto/dejatuhuella/integration/CarritoIntegrationTest.java`
+
+**🔍 Explicación**: Pruebas de integración que validan el funcionamiento conjunto de múltiples componentes del sistema, incluyendo servicios, repositorios y base de datos.
+
+**🔑 Funcionalidades de testing**:
+- **@SpringBootTest**: Carga contexto completo de Spring
+- **TestEntityManager**: Manejo de entidades en tests
+- **@Transactional**: Rollback automático después de cada test
+- **Base de datos de prueba**: Configuración separada para testing
+- **Integración real**: Pruebas con componentes reales, no mocks
+- **Flujo completo**: Validación de operaciones end-to-end
+
+**🔧 Casos de prueba cubiertos**:
+- `testAgregarProductoAlCarrito_DeberiaCrearNuevoItem()`
+- `testCalcularTotal_ConMultiplesItems_DeberiaRetornarSumaCorrecta()`
+- Flujos completos de carrito de compras
+- Validaciones de persistencia y cálculos
+
 ```java
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -1354,11 +1581,32 @@ class CompraFlowSystemTest {
 ### Configuración para Elastic Beanstalk
 
 #### Procfile
+**📁 Ruta**: `Procfile` (raíz del proyecto)
+
+**🔍 Explicación**: Archivo de configuración para Elastic Beanstalk que especifica cómo ejecutar la aplicación. Define el comando para iniciar el servidor web.
+
+**🔑 Funcionalidades clave**:
+- **Comando de inicio**: Especifica cómo ejecutar el JAR
+- **Variable PORT**: Usa la variable de entorno proporcionada por EB
+- **Proceso web**: Define el tipo de proceso como 'web'
+- **Configuración dinámica**: Puerto configurable en tiempo de ejecución
+
 ```
 web: java -jar target/dejatuhuella-1.0.0.jar --server.port=$PORT
 ```
 
 #### .ebextensions/01-environment.config
+**📁 Ruta**: `.ebextensions/01-environment.config` (raíz del proyecto)
+
+**🔍 Explicación**: Configuración avanzada para Elastic Beanstalk que define variables de entorno, opciones de JVM y configuración del proxy para archivos estáticos.
+
+**🔑 Funcionalidades clave**:
+- **Variables de entorno**: Configuración de SERVER_PORT
+- **Opciones JVM**: Parámetros específicos para la máquina virtual Java
+- **Proxy configuration**: Mapeo de archivos estáticos (CSS, JS, imágenes)
+- **Load balancer**: Configuración del listener HTTP en puerto 80
+- **Performance**: Optimización para servir contenido estático
+
 ```yaml
 option_settings:
   aws:elasticbeanstalk:application:environment:
@@ -1374,6 +1622,18 @@ option_settings:
 ```
 
 #### application-prod.properties
+**📁 Ruta**: `src/main/resources/application-prod.properties`
+
+**🔍 Explicación**: Configuración específica para el entorno de producción en AWS. Define conexiones a servicios externos, configuraciones de seguridad y optimizaciones para producción.
+
+**🔑 Funcionalidades clave**:
+- **RDS Integration**: Conexión a base de datos MySQL en AWS RDS
+- **Variables de entorno**: Uso de variables seguras para credenciales
+- **JWT Configuration**: Configuración de tokens para autenticación
+- **Stripe Integration**: API keys para procesamiento de pagos
+- **Email Service**: Configuración SMTP para notificaciones
+- **Logging optimizado**: Niveles de log apropiados para producción
+
 ```properties
 # Configuración de producción
 spring.profiles.active=prod
@@ -1409,6 +1669,23 @@ spring.mail.password=${MAIL_PASSWORD}
 ```
 
 ### Pipeline CI/CD con GitHub Actions
+**📁 Ruta**: `.github/workflows/deploy.yml`
+
+**🔍 Explicación**: Pipeline automatizado de integración y despliegue continuo usando GitHub Actions. Ejecuta pruebas automáticamente y despliega a AWS cuando se actualiza la rama principal.
+
+**🔑 Funcionalidades clave**:
+- **Trigger automático**: Se ejecuta en push a main y pull requests
+- **Testing automatizado**: Ejecuta todas las pruebas antes del despliegue
+- **Cache de dependencias**: Optimización con cache de Maven
+- **Reportes de pruebas**: Generación automática de reportes de testing
+- **Despliegue condicional**: Solo despliega si las pruebas pasan
+- **Secrets management**: Uso seguro de credenciales AWS
+
+**🔧 Jobs del pipeline**:
+- **test**: Ejecuta pruebas unitarias e integración
+- **deploy**: Construye y despliega a Elastic Beanstalk
+- Validación de calidad de código y cobertura
+
 ```yaml
 name: Deploy to AWS Elastic Beanstalk
 
