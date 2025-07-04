@@ -50,4 +50,4 @@
         }
 
         // Actualizar productos destacados cada 15 minutos (900000 ms)
-        setInterval(actualizarProductosDestacados, 900000);
+        setInterval(actualizarProductosDestacados, 120000); // Cambiado a 2 minutos para pruebas
