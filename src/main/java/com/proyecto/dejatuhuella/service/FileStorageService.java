@@ -1,45 +1,47 @@
 package com.proyecto.dejatuhuella.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class FileStorageService {
 
-    @Value("${file.upload-dir:uploads}")
-    private String uploadDir;
+    @Autowired
+    private Cloudinary cloudinary;
 
     public String storeFile(MultipartFile file) {
         try {
-            // Crear directorio si no existe
-            Path uploadPath = Path.of(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
             // Generar nombre único para el archivo
             String originalFileName = file.getOriginalFilename();
             String fileExtension = "";
             if (originalFileName != null && originalFileName.contains(".")) {
                 fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
             }
-            String fileName = UUID.randomUUID().toString() + fileExtension;
+            String publicId = "dejatuhuella/productos/" + UUID.randomUUID().toString();
 
-            // Guardar archivo
-            Path targetLocation = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            // Subir archivo a Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), 
+                ObjectUtils.asMap(
+                    "public_id", publicId,
+                    "resource_type", "auto",
+                    "folder", "dejatuhuella/productos",
+                    "transformation", ObjectUtils.asMap(
+                        "quality", "auto:good",
+                        "fetch_format", "auto"
+                    )
+                ));
 
-            // Devolver la URL relativa del archivo
-            return "/uploads/" + fileName;
+            // Devolver la URL segura del archivo
+            return (String) uploadResult.get("secure_url");
         } catch (IOException ex) {
-            throw new RuntimeException("No se pudo almacenar el archivo. Error: " + ex.getMessage());
+            throw new RuntimeException("No se pudo almacenar el archivo en Cloudinary. Error: " + ex.getMessage());
         }
     }
 }
