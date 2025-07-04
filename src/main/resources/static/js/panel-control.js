@@ -90,19 +90,49 @@ function guardarProducto() {
     const productoId = document.getElementById('productoId').value;
     const formData = new FormData();
     
-    formData.append('nombre', document.getElementById('nombre').value);
-    formData.append('descripcion', document.getElementById('descripcion').value);
-    formData.append('precio', document.getElementById('precio').value);
-    formData.append('stock', document.getElementById('stock').value);
-    formData.append('categoriaId', document.getElementById('categoria').value);
+    // Validar campos requeridos
+    const nombre = document.getElementById('nombre').value.trim();
+    const descripcion = document.getElementById('descripcion').value.trim();
+    const precio = document.getElementById('precio').value;
+    const stock = document.getElementById('stock').value;
+    const categoriaId = document.getElementById('categoria').value;
+    
+    if (!nombre || !descripcion || !precio || !stock || !categoriaId) {
+        showToastError('Por favor, completa todos los campos requeridos.');
+        return;
+    }
+    
+    formData.append('nombre', nombre);
+    formData.append('descripcion', descripcion);
+    formData.append('precio', precio);
+    formData.append('stock', stock);
+    formData.append('categoriaId', categoriaId);
     
     const imagenInput = document.getElementById('imagen');
     if (imagenInput.files.length > 0) {
-        formData.append('imagen', imagenInput.files[0]);
+        const file = imagenInput.files[0];
+        // Validar tipo de archivo
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showToastError('Por favor, selecciona un archivo de imagen válido (JPG, PNG, GIF, WEBP).');
+            return;
+        }
+        // Validar tamaño de archivo (10MB máximo)
+        if (file.size > 10 * 1024 * 1024) {
+            showToastError('El archivo es demasiado grande. El tamaño máximo es 10MB.');
+            return;
+        }
+        formData.append('imagen', file);
     }
     
     const url = productoId ? `/api/productos/${productoId}` : '/api/productos';
     const method = productoId ? 'PUT' : 'POST';
+    
+    // Mostrar indicador de carga
+    const submitBtn = document.querySelector('#agregarProductoModal .btn-primary');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
     
     fetch(url, {
         method: method,
@@ -110,26 +140,51 @@ function guardarProducto() {
     })
     .then(response => {
         if (response.ok) {
-            // Cerrar el modal después de guardar
-            const modal = bootstrap.Modal.getInstance(document.getElementById('agregarProductoModal'));
-            if (modal) {
-                modal.hide();
-            }
-            
-            // En lugar de recargar la página, actualizar la tabla dinámicamente
             return response.json();
         } else {
-            return response.text().then(text => { throw new Error(text) });
+            return response.text().then(text => {
+                console.error('Error response:', text);
+                throw new Error(text || 'Error desconocido al guardar el producto');
+            });
         }
     })
     .then(nuevoProducto => {
-        console.log('Producto guardado:', nuevoProducto);
+        console.log('Producto guardado exitosamente:', nuevoProducto);
+        
+        // Cerrar el modal después de guardar
+        const modal = bootstrap.Modal.getInstance(document.getElementById('agregarProductoModal'));
+        if (modal) {
+            modal.hide();
+        }
+        
+        // Limpiar el formulario
+        document.getElementById('productoForm').reset();
+        document.getElementById('productoId').value = '';
+        
         // Actualizar la tabla de productos dinámicamente
         actualizarTablaProductos(nuevoProducto);
+        
+        // Mostrar mensaje de éxito
+        showToastSuccess(productoId ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
     })
     .catch(error => {
         console.error('Error al guardar el producto:', error);
-        showToastError('Error al guardar el producto: ' + error);
+        let errorMessage = 'Error al guardar el producto';
+        
+        if (error.message.includes('Invalid transformation parameter')) {
+            errorMessage = 'Error en la configuración de imagen. Por favor, contacta al administrador.';
+        } else if (error.message.includes('Cloudinary')) {
+            errorMessage = 'Error al subir la imagen. Por favor, intenta nuevamente.';
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        showToastError(errorMessage);
+    })
+    .finally(() => {
+        // Restaurar el botón
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     });
 }
 
