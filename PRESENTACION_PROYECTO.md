@@ -134,6 +134,17 @@ src/
 ## ⚙️ Funcionalidades Principales
 
 ### 1. Gestión de Usuarios
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/controller/UsuarioController.java`
+
+**🔍 Explicación**: Controlador que maneja el registro, autenticación y gestión de usuarios. Implementa validaciones, encriptación de contraseñas y manejo de sesiones.
+
+**🔑 Funcionalidades clave**:
+- **Validación de duplicados**: Verificación de emails únicos
+- **Encriptación segura**: Uso de `BCryptPasswordEncoder`
+- **Manejo de errores**: Mensajes informativos al usuario
+- **Redirección controlada**: Flujo de navegación optimizado
+- **Timestamps automáticos**: Registro de fecha de creación
+- **Roles por defecto**: Asignación automática de permisos
 
 #### Registro y Autenticación
 ```java
@@ -161,6 +172,18 @@ public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
 ```
 
 #### Autenticación JWT
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/controller/AuthController.java`
+
+**🔍 Explicación**: Endpoint REST para autenticación basada en tokens JWT. Valida credenciales y genera tokens seguros para acceso a la API.
+
+**🔑 Funcionalidades clave**:
+- **AuthenticationManager**: Validación segura de credenciales
+- **JWT Token Generation**: Creación de tokens con expiración
+- **ResponseEntity**: Respuestas HTTP estructuradas
+- **Exception Handling**: Manejo específico de `BadCredentialsException`
+- **UserDetails**: Integración con Spring Security
+- **Status Codes**: Códigos HTTP apropiados (200, 401)
+
 ```java
 @PostMapping("/api/auth/login")
 public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -184,6 +207,17 @@ public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 ```
 
 ### 2. Catálogo de Productos
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/controller/ProductoController.java`
+
+**🔍 Explicación**: Controlador que maneja la visualización y búsqueda de productos en el catálogo. Implementa paginación, filtros dinámicos y integración con el frontend.
+
+**🔑 Funcionalidades clave**:
+- **Paginación**: Manejo eficiente de grandes catálogos con `Pageable`
+- **Búsqueda múltiple**: Filtros por nombre, categoría o listado completo
+- **Parámetros opcionales**: `@RequestParam(required = false)` para flexibilidad
+- **Model binding**: Paso de datos a la vista Thymeleaf
+- **Categorías dinámicas**: Lista actualizada de categorías disponibles
+- **Valores por defecto**: Paginación configurada (12 elementos por página)
 
 #### Búsqueda y Filtrado
 ```java
@@ -212,6 +246,17 @@ public String listarProductos(
 ```
 
 ### 3. Carrito de Compras
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/service/CarritoService.java`
+
+**🔍 Explicación**: Servicio que gestiona la lógica de negocio del carrito de compras. Maneja la adición de productos, validaciones de stock, cálculos de totales y persistencia de datos.
+
+**🔑 Funcionalidades clave**:
+- **Validación de stock**: Verificación antes de agregar productos
+- **Gestión de duplicados**: Actualiza cantidad si el producto ya existe
+- **Cálculos automáticos**: Total del carrito con precisión decimal
+- **Manejo de excepciones**: `StockInsuficienteException` personalizada
+- **Operaciones atómicas**: Transacciones seguras con la base de datos
+- **Stream API**: Cálculos eficientes con programación funcional
 
 #### Gestión del Carrito
 ```java
@@ -255,6 +300,18 @@ public class CarritoService {
 ```
 
 ### 4. Sistema de Pedidos
+**📁 Ruta**: `src/main/java/com/proyecto/dejatuhuella/service/PedidoService.java`
+
+**🔍 Explicación**: Servicio transaccional que orquesta el proceso completo de creación de pedidos. Integra carrito, inventario, pagos y notificaciones en una operación atómica.
+
+**🔑 Funcionalidades clave**:
+- **@Transactional**: Garantiza consistencia de datos en operaciones complejas
+- **Validaciones múltiples**: Carrito vacío, stock disponible, datos de pago
+- **Gestión de estados**: Flujo controlado (PENDIENTE → CONFIRMADO)
+- **Actualización de inventario**: Reducción automática de stock
+- **Integración de pagos**: Procesamiento con servicios externos
+- **Limpieza automática**: Vaciado del carrito tras confirmación
+- **Manejo de errores**: Excepciones específicas para cada caso
 
 #### Procesamiento de Pedidos
 ```java
