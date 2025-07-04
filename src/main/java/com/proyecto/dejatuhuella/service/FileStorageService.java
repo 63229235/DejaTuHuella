@@ -34,7 +34,7 @@ public class FileStorageService {
                     "folder", "dejatuhuella/productos",
                     "transformation", ObjectUtils.asMap(
                         "quality", "auto:good",
-                        "fetch_format", "auto"
+                        "f_auto", true
                     )
                 ));
 
