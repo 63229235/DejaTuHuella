@@ -39,6 +39,10 @@
                         <div class="alert alert-success" th:if="${param.logout}">
                             <p class="mb-0">Has cerrado sesión.</p>
                         </div>
+                        <!-- Mensaje de registro exitoso -->
+                        <div class="alert alert-success" th:if="${param.registro}">
+                            <p class="mb-0">¡Registro exitoso! Ya puedes iniciar sesión.</p>
+                        </div>
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                         </div>

@@ -3,7 +3,6 @@ package com.proyecto.dejatuhuella.controller;
 import java.util.List;
 import java.util.Map;
 
-import com.proyecto.dejatuhuella.dto.UsuarioDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyecto.dejatuhuella.dto.UsuarioDTO;
 import com.proyecto.dejatuhuella.model.Usuario;
 import com.proyecto.dejatuhuella.service.UsuarioService;
 
@@ -37,20 +37,20 @@ public class UsuarioController {
 
     // Endpoint público para registrar nuevos usuarios
     @PostMapping
-public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
-    log.info("Intentando crear usuario con datos: {}", usuario);
-    try {
-        Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
-        log.info("Usuario creado exitosamente: {}", nuevoUsuario);
-        return ResponseEntity.ok(nuevoUsuario);
-    } catch (RuntimeException e) {
-        log.error("Error al crear usuario (RuntimeException): {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    } catch (Exception e) {
-        log.error("Error inesperado al crear usuario: ", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
+        log.info("Intentando crear usuario con datos: {}", usuario);
+        try {
+            Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
+            log.info("Usuario creado exitosamente: {}", nuevoUsuario);
+            return ResponseEntity.ok(nuevoUsuario);
+        } catch (RuntimeException e) {
+            log.error("Error al crear usuario (RuntimeException): {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            log.error("Error inesperado al crear usuario: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-}
 
     // Solo administradores pueden ver todos los usuarios
     @GetMapping

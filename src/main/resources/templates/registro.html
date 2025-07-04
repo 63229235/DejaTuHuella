@@ -21,8 +21,14 @@
             <div class="card shadow">
                 <div class="card-body p-4">
                     <h2 class="text-center mb-4">Formulario de Registro</h2>
+                    
+                    <!-- Mensaje de error si hay algún problema -->
+                    <div class="alert alert-danger" th:if="${param.error}">
+                        <p class="mb-0" th:text="${param.error}">Error en el registro.</p>
+                    </div>
+                    
                     <!-- El action apuntará a un endpoint en tu UsuarioController que maneje el POST -->
-                    <form th:action="@{/api/usuarios}" method="post" class="needs-validation" novalidate>
+                    <form th:action="@{/registro}" method="post" id="registroForm" class="needs-validation" novalidate>
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre:</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" required>
@@ -68,6 +74,6 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{/js/sweetalert-utils.js}"></script>
-<script th:src="@{/js/registro.js}"></script>
+
 </body>
 </html>

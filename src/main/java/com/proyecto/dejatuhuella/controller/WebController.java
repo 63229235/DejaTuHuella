@@ -12,10 +12,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.proyecto.dejatuhuella.model.Categoria;
 import com.proyecto.dejatuhuella.model.Producto;
+import com.proyecto.dejatuhuella.model.Usuario;
+import com.proyecto.dejatuhuella.model.enums.Rol;
 import com.proyecto.dejatuhuella.service.CategoriaService;
 import com.proyecto.dejatuhuella.service.PedidoService;
 import com.proyecto.dejatuhuella.service.ProductoService;
@@ -72,6 +76,38 @@ public class WebController {
     @GetMapping("/registro")
     public String registro() {
         return "registro"; // Devuelve el nombre de la plantilla HTML (registro.html)
+    }
+
+    @PostMapping("/registro")
+    public String procesarRegistro(@RequestParam String nombre,
+                                 @RequestParam String apellido,
+                                 @RequestParam String email,
+                                 @RequestParam String password,
+                                 @RequestParam String rol,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            // Validar campos obligatorios
+            if (nombre == null || nombre.trim().isEmpty() ||
+                apellido == null || apellido.trim().isEmpty() ||
+                email == null || email.trim().isEmpty() ||
+                password == null || password.trim().isEmpty()) {
+                redirectAttributes.addAttribute("error", "Todos los campos son obligatorios");
+                return "redirect:/registro";
+            }
+            
+            Usuario usuario = new Usuario();
+            usuario.setNombre(nombre.trim() + " " + apellido.trim());
+            usuario.setEmail(email.trim().toLowerCase());
+            usuario.setPassword(password);
+            usuario.setRol(rol != null ? Rol.valueOf(rol) : Rol.USUARIO);
+            
+            usuarioService.crearUsuario(usuario);
+            redirectAttributes.addAttribute("registro", "exitoso");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("error", e.getMessage());
+            return "redirect:/registro";
+        }
     }
 
     @GetMapping("/login")
