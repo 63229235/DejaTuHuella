@@ -1,0 +1,176 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .entity { fill: #e1f5fe; stroke: #0277bd; stroke-width: 2; }
+      .entity-title { fill: #01579b; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; }
+      .attribute { fill: #333; font-family: Arial, sans-serif; font-size: 11px; }
+      .pk { fill: #d32f2f; font-weight: bold; }
+      .fk { fill: #1976d2; font-style: italic; }
+      .relationship { stroke: #424242; stroke-width: 2; fill: none; }
+      .relationship-label { fill: #424242; font-family: Arial, sans-serif; font-size: 10px; }
+    </style>
+  </defs>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" class="entity-title" font-size="18">Modelo de Datos - DejaTuHuella</text>
+  
+  <!-- Usuario Entity -->
+  <rect x="50" y="80" width="200" height="220" class="entity" rx="5"/>
+  <text x="150" y="100" text-anchor="middle" class="entity-title">Usuario</text>
+  <line x1="60" y1="110" x2="240" y2="110" stroke="#0277bd" stroke-width="1"/>
+  <text x="60" y="130" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="60" y="145" class="attribute">nombre (VARCHAR)</text>
+  <text x="60" y="160" class="attribute">apellido (VARCHAR)</text>
+  <text x="60" y="175" class="attribute">email (VARCHAR)</text>
+  <text x="60" y="190" class="attribute">password (VARCHAR)</text>
+  <text x="60" y="205" class="attribute">telefono (VARCHAR)</text>
+  <text x="60" y="220" class="attribute">direccion (VARCHAR)</text>
+  <text x="60" y="235" class="attribute">providerId (VARCHAR)</text>
+  <text x="60" y="250" class="attribute">providerUserId (VARCHAR)</text>
+  <text x="60" y="265" class="attribute">imageUrl (VARCHAR)</text>
+  <text x="60" y="280" class="attribute">activo (BOOLEAN)</text>
+  <text x="60" y="295" class="attribute">rol (ENUM)</text>
+  
+  <!-- Producto Entity -->
+  <rect x="350" y="80" width="200" height="200" class="entity" rx="5"/>
+  <text x="450" y="100" text-anchor="middle" class="entity-title">Producto</text>
+  <line x1="360" y1="110" x2="540" y2="110" stroke="#0277bd" stroke-width="1"/>
+  <text x="360" y="130" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="360" y="145" class="attribute">nombre (VARCHAR)</text>
+  <text x="360" y="160" class="attribute">descripcion (TEXT)</text>
+  <text x="360" y="175" class="attribute">precio (DECIMAL)</text>
+  <text x="360" y="190" class="attribute">stock (INTEGER)</text>
+  <text x="360" y="205" class="attribute">imagen (VARCHAR)</text>
+  <text x="360" y="220" class="attribute">fechaCreacion (DATETIME)</text>
+  <text x="360" y="235" class="attribute">activo (BOOLEAN)</text>
+  <text x="360" y="250" class="attribute fk">🔗 usuario_id (BIGINT)</text>
+  <text x="360" y="265" class="attribute fk">🔗 categoria_id (BIGINT)</text>
+  
+  <!-- Categoria Entity -->
+  <rect x="650" y="80" width="180" height="120" class="entity" rx="5"/>
+  <text x="740" y="100" text-anchor="middle" class="entity-title">Categoria</text>
+  <line x1="660" y1="110" x2="820" y2="110" stroke="#0277bd" stroke-width="1"/>
+  <text x="660" y="130" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="660" y="145" class="attribute">nombre (VARCHAR)</text>
+  <text x="660" y="160" class="attribute">descripcion (VARCHAR)</text>
+  
+  <!-- Carrito Entity -->
+  <rect x="50" y="350" width="180" height="100" class="entity" rx="5"/>
+  <text x="140" y="370" text-anchor="middle" class="entity-title">Carrito</text>
+  <line x1="60" y1="380" x2="220" y2="380" stroke="#0277bd" stroke-width="1"/>
+  <text x="60" y="400" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="60" y="415" class="attribute fk">🔗 usuario_id (BIGINT)</text>
+  
+  <!-- CarritoItem Entity -->
+  <rect x="280" y="350" width="180" height="120" class="entity" rx="5"/>
+  <text x="370" y="370" text-anchor="middle" class="entity-title">CarritoItem</text>
+  <line x1="290" y1="380" x2="450" y2="380" stroke="#0277bd" stroke-width="1"/>
+  <text x="290" y="400" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="290" y="415" class="attribute">cantidad (INTEGER)</text>
+  <text x="290" y="430" class="attribute">precioUnitario (DECIMAL)</text>
+  <text x="290" y="445" class="attribute fk">🔗 carrito_id (BIGINT)</text>
+  <text x="290" y="460" class="attribute fk">🔗 producto_id (BIGINT)</text>
+  
+  <!-- Pedido Entity -->
+  <rect x="520" y="350" width="180" height="140" class="entity" rx="5"/>
+  <text x="610" y="370" text-anchor="middle" class="entity-title">Pedido</text>
+  <line x1="530" y1="380" x2="690" y2="380" stroke="#0277bd" stroke-width="1"/>
+  <text x="530" y="400" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="530" y="415" class="attribute">fechaPedido (DATETIME)</text>
+  <text x="530" y="430" class="attribute">estado (ENUM)</text>
+  <text x="530" y="445" class="attribute">total (DECIMAL)</text>
+  <text x="530" y="460" class="attribute fk">🔗 usuario_id (BIGINT)</text>
+  
+  <!-- DetallePedido Entity -->
+  <rect x="750" y="350" width="180" height="140" class="entity" rx="5"/>
+  <text x="840" y="370" text-anchor="middle" class="entity-title">DetallePedido</text>
+  <line x1="760" y1="380" x2="920" y2="380" stroke="#0277bd" stroke-width="1"/>
+  <text x="760" y="400" class="attribute pk">🔑 id (BIGINT)</text>
+  <text x="760" y="415" class="attribute">cantidad (INTEGER)</text>
+  <text x="760" y="430" class="attribute">precioUnitario (DECIMAL)</text>
+  <text x="760" y="445" class="attribute">subtotal (DECIMAL)</text>
+  <text x="760" y="460" class="attribute fk">🔗 pedido_id (BIGINT)</text>
+  <text x="760" y="475" class="attribute fk">🔗 producto_id (BIGINT)</text>
+  
+
+  
+  <!-- Relationships -->
+  
+  <!-- Usuario -> Producto (1:N) -->
+  <path d="M 250 180 L 350 180" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="300" y="175" class="relationship-label">publica</text>
+  <text x="260" y="175" class="relationship-label">1</text>
+  <text x="340" y="175" class="relationship-label">N</text>
+  
+  <!-- Categoria -> Producto (1:N) -->
+  <path d="M 650 140 L 550 140" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="600" y="135" class="relationship-label">categoriza</text>
+  <text x="640" y="135" class="relationship-label">1</text>
+  <text x="560" y="135" class="relationship-label">N</text>
+  
+  <!-- Usuario -> Carrito (1:1) -->
+  <path d="M 150 300 L 150 350" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="160" y="325" class="relationship-label">tiene</text>
+  <text x="140" y="310" class="relationship-label">1</text>
+  <text x="140" y="340" class="relationship-label">1</text>
+  
+  <!-- Carrito -> CarritoItem (1:N) -->
+  <path d="M 230 400 L 280 400" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="255" y="395" class="relationship-label">contiene</text>
+  <text x="240" y="395" class="relationship-label">1</text>
+  <text x="270" y="395" class="relationship-label">N</text>
+  
+  <!-- Producto -> CarritoItem (1:N) -->
+  <path d="M 450 280 L 370 350" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="400" y="310" class="relationship-label">incluido en</text>
+  <text x="440" y="290" class="relationship-label">1</text>
+  <text x="380" y="340" class="relationship-label">N</text>
+  
+  <!-- Usuario -> Pedido (1:N) -->
+  <path d="M 150 300 L 150 320 L 610 320 L 610 350" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="380" y="315" class="relationship-label">realiza</text>
+  <text x="160" y="315" class="relationship-label">1</text>
+  <text x="600" y="340" class="relationship-label">N</text>
+  
+  <!-- Pedido -> DetallePedido (1:N) -->
+  <path d="M 700 420 L 750 420" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="725" y="415" class="relationship-label">detalla</text>
+  <text x="710" y="415" class="relationship-label">1</text>
+  <text x="740" y="415" class="relationship-label">N</text>
+  
+  <!-- Producto -> DetallePedido (1:N) -->
+  <path d="M 550 180 L 840 180 L 840 350" class="relationship" marker-end="url(#arrowhead)"/>
+  <text x="695" y="175" class="relationship-label">incluido en</text>
+  <text x="560" y="175" class="relationship-label">1</text>
+  <text x="830" y="340" class="relationship-label">N</text>
+  
+
+  
+
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#424242"/>
+    </marker>
+  </defs>
+  
+  <!-- Legend -->
+  <rect x="50" y="550" width="300" height="200" fill="#f5f5f5" stroke="#ccc" stroke-width="1" rx="5"/>
+  <text x="200" y="570" text-anchor="middle" class="entity-title">Leyenda</text>
+  <line x1="60" y1="580" x2="340" y2="580" stroke="#ccc" stroke-width="1"/>
+  
+  <text x="60" y="600" class="attribute pk">🔑 Clave Primaria (Primary Key)</text>
+  <text x="60" y="620" class="attribute fk">🔗 Clave Foránea (Foreign Key)</text>
+  <text x="60" y="640" class="attribute">Atributo Regular</text>
+  
+  <line x1="60" y1="660" x2="100" y2="660" class="relationship"/>
+  <text x="110" y="665" class="relationship-label">Relación</text>
+  
+  <text x="60" y="685" class="relationship-label">1 = Uno</text>
+  <text x="60" y="700" class="relationship-label">N = Muchos</text>
+  
+  <text x="60" y="720" class="attribute" font-size="10px">Estados de Pedido: PENDIENTE, CONFIRMADO, ENVIADO, ENTREGADO, CANCELADO</text>
+  <text x="60" y="735" class="attribute" font-size="10px">Roles de Usuario: USUARIO, ADMINISTRADOR</text>
+  
+</svg>

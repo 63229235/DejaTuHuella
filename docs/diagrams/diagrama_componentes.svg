@@ -1,0 +1,206 @@
+<svg width="1000" height="700" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .component { fill: #e3f2fd; stroke: #1976d2; stroke-width: 2; }
+      .service { fill: #f3e5f5; stroke: #7b1fa2; stroke-width: 2; }
+      .controller { fill: #e8f5e8; stroke: #388e3c; stroke-width: 2; }
+      .repository { fill: #fff3e0; stroke: #f57c00; stroke-width: 2; }
+      .database { fill: #fce4ec; stroke: #c2185b; stroke-width: 2; }
+      .frontend { fill: #f1f8e9; stroke: #689f38; stroke-width: 2; }
+      .title { fill: #1565c0; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; }
+      .component-title { fill: #333; font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; }
+      .component-text { fill: #555; font-family: Arial, sans-serif; font-size: 10px; }
+      .arrow { stroke: #424242; stroke-width: 2; fill: none; }
+      .arrow-label { fill: #424242; font-family: Arial, sans-serif; font-size: 9px; }
+    </style>
+  </defs>
+  
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" class="title">Diagrama de Componentes - DejaTuHuella</text>
+  
+  <!-- Frontend Layer -->
+  <rect x="50" y="60" width="900" height="100" class="frontend" rx="10"/>
+  <text x="500" y="85" text-anchor="middle" class="component-title">CAPA DE PRESENTACIÓN (Frontend)</text>
+  
+  <!-- Thymeleaf Templates -->
+  <rect x="80" y="100" width="150" height="50" class="component" rx="5"/>
+  <text x="155" y="120" text-anchor="middle" class="component-title">Thymeleaf Templates</text>
+  <text x="155" y="135" text-anchor="middle" class="component-text">HTML + CSS + Bootstrap</text>
+  <text x="155" y="145" text-anchor="middle" class="component-text">Renderizado del lado servidor</text>
+  
+  <!-- JavaScript -->
+  <rect x="260" y="100" width="150" height="50" class="component" rx="5"/>
+  <text x="335" y="120" text-anchor="middle" class="component-title">JavaScript</text>
+  <text x="335" y="135" text-anchor="middle" class="component-text">jQuery + AJAX</text>
+  <text x="335" y="145" text-anchor="middle" class="component-text">Interactividad del cliente</text>
+  
+  <!-- Static Resources -->
+  <rect x="440" y="100" width="150" height="50" class="component" rx="5"/>
+  <text x="515" y="120" text-anchor="middle" class="component-title">Recursos Estáticos</text>
+  <text x="515" y="135" text-anchor="middle" class="component-text">CSS, JS, Imágenes</text>
+  <text x="515" y="145" text-anchor="middle" class="component-text">Bootstrap, FontAwesome</text>
+  
+  <!-- OAuth2 Integration -->
+  <rect x="620" y="100" width="150" height="50" class="component" rx="5"/>
+  <text x="695" y="120" text-anchor="middle" class="component-title">OAuth2 Google</text>
+  <text x="695" y="135" text-anchor="middle" class="component-text">Autenticación externa</text>
+  <text x="695" y="145" text-anchor="middle" class="component-text">Spring Security OAuth2</text>
+  
+  <!-- Web Browser -->
+  <rect x="800" y="100" width="120" height="50" class="frontend" rx="5"/>
+  <text x="860" y="120" text-anchor="middle" class="component-title">Navegador Web</text>
+  <text x="860" y="135" text-anchor="middle" class="component-text">Chrome, Firefox</text>
+  <text x="860" y="145" text-anchor="middle" class="component-text">Safari, Edge</text>
+  
+  <!-- Controller Layer -->
+  <rect x="50" y="200" width="900" height="80" class="controller" rx="10"/>
+  <text x="500" y="225" text-anchor="middle" class="component-title">CAPA DE CONTROLADORES (Spring MVC)</text>
+  
+  <!-- WebController -->
+  <rect x="80" y="240" width="120" height="30" class="controller" rx="5"/>
+  <text x="140" y="255" text-anchor="middle" class="component-title">WebController</text>
+  <text x="140" y="265" text-anchor="middle" class="component-text">Páginas principales</text>
+  
+  <!-- ProductoController -->
+  <rect x="220" y="240" width="120" height="30" class="controller" rx="5"/>
+  <text x="280" y="255" text-anchor="middle" class="component-title">ProductoController</text>
+  <text x="280" y="265" text-anchor="middle" class="component-text">Gestión productos</text>
+  
+  <!-- UsuarioController -->
+  <rect x="360" y="240" width="120" height="30" class="controller" rx="5"/>
+  <text x="420" y="255" text-anchor="middle" class="component-title">UsuarioController</text>
+  <text x="420" y="265" text-anchor="middle" class="component-text">Gestión usuarios</text>
+  
+  <!-- CarritoController -->
+  <rect x="500" y="240" width="120" height="30" class="controller" rx="5"/>
+  <text x="560" y="255" text-anchor="middle" class="component-title">CarritoController</text>
+  <text x="560" y="265" text-anchor="middle" class="component-text">Carrito compras</text>
+  
+  <!-- PedidoController -->
+  <rect x="640" y="240" width="120" height="30" class="controller" rx="5"/>
+  <text x="700" y="255" text-anchor="middle" class="component-title">PedidoController</text>
+  <text x="700" y="265" text-anchor="middle" class="component-text">Gestión pedidos</text>
+  
+  <!-- AdminController -->
+  <rect x="780" y="240" width="120" height="30" class="controller" rx="5"/>
+  <text x="840" y="255" text-anchor="middle" class="component-title">AdminController</text>
+  <text x="840" y="265" text-anchor="middle" class="component-text">Panel admin</text>
+  
+  <!-- Service Layer -->
+  <rect x="50" y="320" width="900" height="80" class="service" rx="10"/>
+  <text x="500" y="345" text-anchor="middle" class="component-title">CAPA DE SERVICIOS (Business Logic)</text>
+  
+  <!-- ProductoService -->
+  <rect x="80" y="360" width="120" height="30" class="service" rx="5"/>
+  <text x="140" y="375" text-anchor="middle" class="component-title">ProductoService</text>
+  <text x="140" y="385" text-anchor="middle" class="component-text">Lógica productos</text>
+  
+  <!-- UsuarioService -->
+  <rect x="220" y="360" width="120" height="30" class="service" rx="5"/>
+  <text x="280" y="375" text-anchor="middle" class="component-title">UsuarioService</text>
+  <text x="280" y="385" text-anchor="middle" class="component-text">Lógica usuarios</text>
+  
+  <!-- CarritoPersistentService -->
+  <rect x="360" y="360" width="120" height="30" class="service" rx="5"/>
+  <text x="420" y="375" text-anchor="middle" class="component-title">CarritoService</text>
+  <text x="420" y="385" text-anchor="middle" class="component-text">Lógica carrito</text>
+  
+  <!-- PedidoService -->
+  <rect x="500" y="360" width="120" height="30" class="service" rx="5"/>
+  <text x="560" y="375" text-anchor="middle" class="component-title">PedidoService</text>
+  <text x="560" y="385" text-anchor="middle" class="component-text">Lógica pedidos</text>
+  
+  <!-- ResenaService -->
+  <rect x="640" y="360" width="120" height="30" class="service" rx="5"/>
+  <text x="700" y="375" text-anchor="middle" class="component-title">ResenaService</text>
+  <text x="700" y="385" text-anchor="middle" class="component-text">Lógica reseñas</text>
+  
+  <!-- SeguridadService -->
+  <rect x="780" y="360" width="120" height="30" class="service" rx="5"/>
+  <text x="840" y="375" text-anchor="middle" class="component-title">SeguridadService</text>
+  <text x="840" y="385" text-anchor="middle" class="component-text">Seguridad/Auth</text>
+  
+  <!-- Repository Layer -->
+  <rect x="50" y="440" width="900" height="80" class="repository" rx="10"/>
+  <text x="500" y="465" text-anchor="middle" class="component-title">CAPA DE REPOSITORIOS (Data Access)</text>
+  
+  <!-- ProductoRepository -->
+  <rect x="80" y="480" width="120" height="30" class="repository" rx="5"/>
+  <text x="140" y="495" text-anchor="middle" class="component-title">ProductoRepository</text>
+  <text x="140" y="505" text-anchor="middle" class="component-text">JPA Repository</text>
+  
+  <!-- UsuarioRepository -->
+  <rect x="220" y="480" width="120" height="30" class="repository" rx="5"/>
+  <text x="280" y="495" text-anchor="middle" class="component-title">UsuarioRepository</text>
+  <text x="280" y="505" text-anchor="middle" class="component-text">JPA Repository</text>
+  
+  <!-- CarritoRepository -->
+  <rect x="360" y="480" width="120" height="30" class="repository" rx="5"/>
+  <text x="420" y="495" text-anchor="middle" class="component-title">CarritoRepository</text>
+  <text x="420" y="505" text-anchor="middle" class="component-text">JPA Repository</text>
+  
+  <!-- PedidoRepository -->
+  <rect x="500" y="480" width="120" height="30" class="repository" rx="5"/>
+  <text x="560" y="495" text-anchor="middle" class="component-title">PedidoRepository</text>
+  <text x="560" y="505" text-anchor="middle" class="component-text">JPA Repository</text>
+  
+  <!-- ResenaRepository -->
+  <rect x="640" y="480" width="120" height="30" class="repository" rx="5"/>
+  <text x="700" y="495" text-anchor="middle" class="component-title">ResenaRepository</text>
+  <text x="700" y="505" text-anchor="middle" class="component-text">JPA Repository</text>
+  
+  <!-- CategoriaRepository -->
+  <rect x="780" y="480" width="120" height="30" class="repository" rx="5"/>
+  <text x="840" y="495" text-anchor="middle" class="component-title">CategoriaRepository</text>
+  <text x="840" y="505" text-anchor="middle" class="component-text">JPA Repository</text>
+  
+  <!-- Database Layer -->
+  <rect x="50" y="560" width="900" height="80" class="database" rx="10"/>
+  <text x="500" y="585" text-anchor="middle" class="component-title">CAPA DE DATOS</text>
+  
+  <!-- MySQL Database -->
+  <rect x="200" y="600" width="200" height="30" class="database" rx="5"/>
+  <text x="300" y="615" text-anchor="middle" class="component-title">MySQL Database</text>
+  <text x="300" y="625" text-anchor="middle" class="component-text">Base de datos relacional</text>
+  
+  <!-- File System -->
+  <rect x="450" y="600" width="200" height="30" class="database" rx="5"/>
+  <text x="550" y="615" text-anchor="middle" class="component-title">Sistema de Archivos</text>
+  <text x="550" y="625" text-anchor="middle" class="component-text">Almacenamiento de imágenes</text>
+  
+  <!-- Arrows -->
+  
+  <!-- Frontend to Controllers -->
+  <path d="M 500 160 L 500 200" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="510" y="180" class="arrow-label">HTTP Requests</text>
+  
+  <!-- Controllers to Services -->
+  <path d="M 500 280 L 500 320" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="510" y="300" class="arrow-label">Business Logic</text>
+  
+  <!-- Services to Repositories -->
+  <path d="M 500 400 L 500 440" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="510" y="420" class="arrow-label">Data Access</text>
+  
+  <!-- Repositories to Database -->
+  <path d="M 500 520 L 500 560" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="510" y="540" class="arrow-label">SQL Queries</text>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#424242"/>
+    </marker>
+  </defs>
+  
+  <!-- Side Components -->
+  
+  <!-- Spring Security -->
+  <rect x="20" y="300" width="20" height="120" class="service" rx="5"/>
+  <text x="30" y="360" text-anchor="middle" class="component-title" transform="rotate(-90 30 360)">Spring Security</text>
+  
+  <!-- Spring Boot -->
+  <rect x="960" y="200" width="20" height="240" class="component" rx="5"/>
+  <text x="970" y="320" text-anchor="middle" class="component-title" transform="rotate(90 970 320)">Spring Boot Framework</text>
+  
+</svg>

@@ -1,0 +1,204 @@
+<svg width="1100" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .server { fill: #e8f5e8; stroke: #2e7d32; stroke-width: 3; }
+      .client { fill: #e3f2fd; stroke: #1565c0; stroke-width: 3; }
+      .database { fill: #fce4ec; stroke: #ad1457; stroke-width: 3; }
+      .cloud { fill: #f3e5f5; stroke: #6a1b9a; stroke-width: 3; }
+      .network { fill: #fff3e0; stroke: #ef6c00; stroke-width: 2; }
+      .title { fill: #1565c0; font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; }
+      .node-title { fill: #333; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; }
+      .component-title { fill: #555; font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; }
+      .component-text { fill: #666; font-family: Arial, sans-serif; font-size: 9px; }
+      .connection { stroke: #424242; stroke-width: 2; fill: none; }
+      .connection-label { fill: #424242; font-family: Arial, sans-serif; font-size: 10px; }
+      .port-label { fill: #d32f2f; font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; }
+    </style>
+  </defs>
+  
+  <!-- Title -->
+  <text x="550" y="30" text-anchor="middle" class="title">Diagrama de Despliegue - DejaTuHuella</text>
+  
+  <!-- Internet Cloud -->
+  <ellipse cx="550" cy="100" rx="200" ry="40" class="cloud"/>
+  <text x="550" y="105" text-anchor="middle" class="node-title">Internet</text>
+  
+  <!-- Client Devices -->
+  
+  <!-- Desktop Computer -->
+  <rect x="50" y="200" width="180" height="120" class="client" rx="10"/>
+  <text x="140" y="220" text-anchor="middle" class="node-title">Computadora de Escritorio</text>
+  
+  <rect x="70" y="240" width="140" height="25" class="client" rx="5"/>
+  <text x="140" y="255" text-anchor="middle" class="component-title">Navegador Web</text>
+  
+  <text x="80" y="280" class="component-text">• Chrome, Firefox, Edge</text>
+  <text x="80" y="295" class="component-text">• Resolución: 1920x1080+</text>
+  <text x="80" y="310" class="component-text">• JavaScript habilitado</text>
+  
+  <!-- Mobile Device -->
+  <rect x="280" y="200" width="140" height="120" class="client" rx="10"/>
+  <text x="350" y="220" text-anchor="middle" class="node-title">Dispositivo Móvil</text>
+  
+  <rect x="295" y="240" width="110" height="25" class="client" rx="5"/>
+  <text x="350" y="255" text-anchor="middle" class="component-title">Navegador Móvil</text>
+  
+  <text x="290" y="280" class="component-text">• Safari, Chrome Mobile</text>
+  <text x="290" y="295" class="component-text">• Diseño responsivo</text>
+  <text x="290" y="310" class="component-text">• Touch interface</text>
+  
+  <!-- Tablet -->
+  <rect x="460" y="200" width="140" height="120" class="client" rx="10"/>
+  <text x="530" y="220" text-anchor="middle" class="node-title">Tablet</text>
+  
+  <rect x="475" y="240" width="110" height="25" class="client" rx="5"/>
+  <text x="530" y="255" text-anchor="middle" class="component-title">Navegador Tablet</text>
+  
+  <text x="470" y="280" class="component-text">• iPad Safari, Android</text>
+  <text x="470" y="295" class="component-text">• Interfaz adaptativa</text>
+  <text x="470" y="310" class="component-text">• Resolución media</text>
+  
+  <!-- Load Balancer / Reverse Proxy -->
+  <rect x="650" y="200" width="180" height="80" class="network" rx="10"/>
+  <text x="740" y="220" text-anchor="middle" class="node-title">Load Balancer</text>
+  <text x="740" y="235" text-anchor="middle" class="component-title">(Nginx / Apache)</text>
+  
+  <text x="660" y="255" class="component-text">• Distribución de carga</text>
+  <text x="660" y="270" class="component-text">• SSL/TLS Termination</text>
+  
+  <!-- Web Server / Application Server -->
+  <rect x="200" y="400" width="300" height="180" class="server" rx="10"/>
+  <text x="350" y="425" text-anchor="middle" class="node-title">Servidor de Aplicaciones</text>
+  <text x="350" y="440" text-anchor="middle" class="component-title">Spring Boot Application</text>
+  
+  <!-- Embedded Tomcat -->
+  <rect x="220" y="460" width="120" height="40" class="server" rx="5"/>
+  <text x="280" y="475" text-anchor="middle" class="component-title">Apache Tomcat</text>
+  <text x="280" y="485" text-anchor="middle" class="component-text">Embedded Server</text>
+  <text x="280" y="495" class="port-label">Puerto: 8081</text>
+  
+  <!-- Spring Boot App -->
+  <rect x="360" y="460" width="120" height="40" class="server" rx="5"/>
+  <text x="420" y="475" text-anchor="middle" class="component-title">DejaTuHuella App</text>
+  <text x="420" y="485" text-anchor="middle" class="component-text">JAR Executable</text>
+  <text x="420" y="495" class="component-text">Java 17+</text>
+  
+  <!-- File System -->
+  <rect x="220" y="520" width="120" height="40" class="server" rx="5"/>
+  <text x="280" y="535" text-anchor="middle" class="component-title">Sistema Archivos</text>
+  <text x="280" y="545" class="component-text">Imágenes productos</text>
+  <text x="280" y="555" class="component-text">/uploads/</text>
+  
+  <!-- Security -->
+  <rect x="360" y="520" width="120" height="40" class="server" rx="5"/>
+  <text x="420" y="535" text-anchor="middle" class="component-title">Spring Security</text>
+  <text x="420" y="545" class="component-text">OAuth2 + JWT</text>
+  <text x="420" y="555" class="component-text">BCrypt encryption</text>
+  
+  <!-- Database Server -->
+  <rect x="600" y="400" width="200" height="180" class="database" rx="10"/>
+  <text x="700" y="425" text-anchor="middle" class="node-title">Servidor de Base de Datos</text>
+  
+  <!-- MySQL -->
+  <rect x="620" y="460" width="160" height="50" class="database" rx="5"/>
+  <text x="700" y="480" text-anchor="middle" class="component-title">MySQL 8.0+</text>
+  <text x="700" y="490" text-anchor="middle" class="component-text">Base de datos relacional</text>
+  <text x="700" y="500" class="port-label">Puerto: 3306</text>
+  
+  <!-- Database Schema -->
+  <rect x="620" y="530" width="160" height="40" class="database" rx="5"/>
+  <text x="700" y="545" text-anchor="middle" class="component-title">Schema: dejatuhuella</text>
+  <text x="700" y="555" text-anchor="middle" class="component-text">Tablas: usuarios, productos,</text>
+  <text x="700" y="565" class="component-text">pedidos, carritos, etc.</text>
+  
+  <!-- External Services -->
+  
+  <!-- Google OAuth -->
+  <rect x="850" y="200" width="180" height="80" class="cloud" rx="10"/>
+  <text x="940" y="220" text-anchor="middle" class="node-title">Google OAuth2</text>
+  <text x="940" y="235" text-anchor="middle" class="component-title">accounts.google.com</text>
+  
+  <text x="860" y="255" class="component-text">• Autenticación externa</text>
+  <text x="860" y="270" class="component-text">• Gestión de identidades</text>
+  
+  <!-- Payment Gateway -->
+  <rect x="850" y="400" width="180" height="80" class="cloud" rx="10"/>
+  <text x="940" y="420" text-anchor="middle" class="node-title">Pasarela de Pagos</text>
+  <text x="940" y="435" text-anchor="middle" class="component-title">(Stripe / PayPal)</text>
+  
+  <text x="860" y="455" class="component-text">• Procesamiento pagos</text>
+  <text x="860" y="470" class="component-text">• Validación tarjetas</text>
+  
+  <!-- Email Service -->
+  <rect x="850" y="500" width="180" height="80" class="cloud" rx="10"/>
+  <text x="940" y="520" text-anchor="middle" class="node-title">Servicio de Email</text>
+  <text x="940" y="535" text-anchor="middle" class="component-title">(SMTP / SendGrid)</text>
+  
+  <text x="860" y="555" class="component-text">• Confirmaciones pedidos</text>
+  <text x="860" y="570" class="component-text">• Notificaciones usuarios</text>
+  
+  <!-- Connections -->
+  
+  <!-- Clients to Internet -->
+  <path d="M 140 200 L 140 150 L 400 150 L 400 140" class="connection" marker-end="url(#arrowhead)"/>
+  <path d="M 350 200 L 350 150 L 500 150 L 500 140" class="connection" marker-end="url(#arrowhead)"/>
+  <path d="M 530 200 L 530 150 L 600 150 L 600 140" class="connection" marker-end="url(#arrowhead)"/>
+  
+  <text x="300" y="165" class="connection-label">HTTPS (443)</text>
+  
+  <!-- Internet to Load Balancer -->
+  <path d="M 650 140 L 740 140 L 740 200" class="connection" marker-end="url(#arrowhead)"/>
+  <text x="695" y="170" class="connection-label">HTTPS</text>
+  
+  <!-- Load Balancer to App Server -->
+  <path d="M 740 280 L 740 350 L 350 350 L 350 400" class="connection" marker-end="url(#arrowhead)"/>
+  <text x="545" y="340" class="connection-label">HTTP (8081)</text>
+  
+  <!-- App Server to Database -->
+  <path d="M 500 490 L 600 490" class="connection" marker-end="url(#arrowhead)"/>
+  <text x="550" y="485" class="connection-label">JDBC (3306)</text>
+  
+  <!-- App Server to Google OAuth -->
+  <path d="M 500 450 L 750 450 L 750 240 L 850 240" class="connection" marker-end="url(#arrowhead)"/>
+  <text x="675" y="345" class="connection-label">OAuth2 HTTPS</text>
+  
+  <!-- App Server to Payment Gateway -->
+  <path d="M 500 500 L 850 440" class="connection" marker-end="url(#arrowhead)"/>
+  <text x="675" y="470" class="connection-label">API HTTPS</text>
+  
+  <!-- App Server to Email Service -->
+  <path d="M 500 540 L 850 540" class="connection" marker-end="url(#arrowhead)"/>
+  <text x="675" y="535" class="connection-label">SMTP (587)</text>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#424242"/>
+    </marker>
+  </defs>
+  
+  <!-- Deployment Information -->
+  <rect x="50" y="650" width="1000" height="120" fill="#f5f5f5" stroke="#ccc" stroke-width="1" rx="10"/>
+  <text x="550" y="675" text-anchor="middle" class="node-title">Información de Despliegue</text>
+  
+  <text x="70" y="700" class="component-title">Entorno de Desarrollo:</text>
+  <text x="70" y="715" class="component-text">• Servidor local: localhost:8081</text>
+  <text x="70" y="730" class="component-text">• Base de datos: MySQL local</text>
+  <text x="70" y="745" class="component-text">• Archivos: Sistema local</text>
+  
+  <text x="350" y="700" class="component-title">Entorno de Producción:</text>
+  <text x="350" y="715" class="component-text">• Servidor: AWS EC2 / DigitalOcean</text>
+  <text x="350" y="730" class="component-text">• Base de datos: AWS RDS MySQL</text>
+  <text x="350" y="745" class="component-text">• Archivos: AWS S3 / Local Storage</text>
+  
+  <text x="650" y="700" class="component-title">Requisitos del Sistema:</text>
+  <text x="650" y="715" class="component-text">• Java 17 o superior</text>
+  <text x="650" y="730" class="component-text">• MySQL 8.0+</text>
+  <text x="650" y="745" class="component-text">• 2GB RAM mínimo, 4GB recomendado</text>
+  
+  <text x="850" y="700" class="component-title">Puertos Utilizados:</text>
+  <text x="850" y="715" class="component-text">• 8081: Aplicación Spring Boot</text>
+  <text x="850" y="730" class="component-text">• 3306: MySQL Database</text>
+  <text x="850" y="745" class="component-text">• 443/80: HTTPS/HTTP</text>
+  
+</svg>

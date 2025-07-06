@@ -44,7 +44,6 @@ src/
     └── java/
         └── com/proyecto/dejatuhuella/
             ├── controller/      # Pruebas de controladores
-            ├── repository/      # Pruebas de repositorios
             └── service/         # Pruebas de servicios
 ```
 
