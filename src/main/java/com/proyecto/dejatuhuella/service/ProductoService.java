@@ -1,7 +1,9 @@
 package com.proyecto.dejatuhuella.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,8 +23,8 @@ import com.proyecto.dejatuhuella.repository.UsuarioRepository;
 @Service
 public class ProductoService {
 
-    // Cache para productos destacados
-    private List<Producto> productosDestacadosCache;
+    // Cache optimizado para productos destacados (solo IDs para reducir memoria)
+    private List<Long> productosDestacadosIdsCache;
     private long ultimaActualizacionCache = 0;
     private static final long INTERVALO_ACTUALIZACION_CACHE = 288 * 60 * 1000; // 4.8 horas (5 actualizaciones por día)
 
@@ -161,31 +163,37 @@ public class ProductoService {
     
     /**
      * Obtiene una lista de productos destacados aleatorios.
-     * Los productos se actualizan cada 10 minutos para mantener la frescura del contenido.
+     * Cache optimizado: almacena solo IDs para reducir uso de memoria.
+     * Los productos se actualizan cada 4.8 horas (5 veces por día).
      * @return Lista de productos destacados aleatorios
      */
     @Transactional(readOnly = true)
     public List<Producto> obtenerProductosDestacadosAleatorios() {
         long tiempoActual = System.currentTimeMillis();
         
-        // Si el cache está vacío o ha pasado el tiempo de actualización, regeneramos la lista
-        if (productosDestacadosCache == null || 
+        // Si el cache está vacío o ha pasado el tiempo de actualización, regeneramos la lista de IDs
+        if (productosDestacadosIdsCache == null || 
             tiempoActual - ultimaActualizacionCache > INTERVALO_ACTUALIZACION_CACHE) {
             
-            // Obtener todos los productos
-            List<Producto> todosLosProductos = productoRepository.findAll();
+            // Obtener solo los IDs de productos activos (más eficiente)
+            List<Long> todosLosIds = productoRepository.findAllIds();
             
-            // Mezclar la lista para obtener productos aleatorios
-            java.util.Collections.shuffle(todosLosProductos);
+            // Mezclar la lista para obtener IDs aleatorios
+            Collections.shuffle(todosLosIds);
             
-            // Tomar los primeros 4 productos (o menos si no hay suficientes)
-            int cantidadProductos = Math.min(4, todosLosProductos.size());
-            productosDestacadosCache = todosLosProductos.subList(0, cantidadProductos);
+            // Tomar los primeros 4 IDs (o menos si no hay suficientes)
+            int cantidadProductos = Math.min(4, todosLosIds.size());
+            productosDestacadosIdsCache = todosLosIds.subList(0, cantidadProductos);
             
             // Actualizar el tiempo de la última actualización
             ultimaActualizacionCache = tiempoActual;
         }
         
-        return productosDestacadosCache;
+        // Obtener los productos completos solo cuando se necesiten
+        return productosDestacadosIdsCache.stream()
+                .map(id -> productoRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 }
