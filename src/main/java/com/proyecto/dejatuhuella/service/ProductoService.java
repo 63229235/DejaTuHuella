@@ -24,7 +24,7 @@ public class ProductoService {
     // Cache para productos destacados
     private List<Producto> productosDestacadosCache;
     private long ultimaActualizacionCache = 0;
-    private static final long INTERVALO_ACTUALIZACION_CACHE = 10 * 60 * 1000; // 2 minuto en milisegundos
+    private static final long INTERVALO_ACTUALIZACION_CACHE = 288 * 60 * 1000; // 4.8 horas (5 actualizaciones por día)
 
     @Autowired
     private ProductoRepository productoRepository;
