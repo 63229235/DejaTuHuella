@@ -64,10 +64,11 @@ public class WebController {
 
     @GetMapping("/")
     public String home(Model model) {
-        // Cargar categorías destacadas
-        model.addAttribute("categoriasDestacadas", categoriaService.obtenerTodasLasCategorias());
+        // Cargar solo las primeras 6 categorías para reducir memoria
+        List<Categoria> categorias = categoriaService.obtenerTodasLasCategorias();
+        model.addAttribute("categoriasDestacadas", categorias.size() > 6 ? categorias.subList(0, 6) : categorias);
 
-        // Cargar productos destacados aleatorios
+        // Cargar productos destacados aleatorios (limitado a 8 productos)
         model.addAttribute("productosDestacados", productoService.obtenerProductosDestacadosAleatorios());
 
         return "home"; // Devuelve el nombre de la plantilla HTML (home.html)

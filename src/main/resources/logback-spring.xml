@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Configuración para producción optimizada para memoria -->
+    <springProfile name="!dev">
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+        
+        <!-- Solo logs de ERROR y WARN para reducir memoria -->
+        <root level="WARN">
+            <appender-ref ref="STDOUT" />
+        </root>
+        
+        <!-- Logs específicos de la aplicación en INFO -->
+        <logger name="com.proyecto.dejatuhuella" level="INFO" additivity="false">
+            <appender-ref ref="STDOUT" />
+        </logger>
+        
+        <!-- Reducir logs de Spring y Hibernate -->
+        <logger name="org.springframework" level="WARN" />
+        <logger name="org.hibernate" level="WARN" />
+        <logger name="com.zaxxer.hikari" level="WARN" />
+        <logger name="org.apache.catalina" level="WARN" />
+    </springProfile>
+    
+    <!-- Configuración para desarrollo -->
+    <springProfile name="dev">
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+        
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+</configuration>

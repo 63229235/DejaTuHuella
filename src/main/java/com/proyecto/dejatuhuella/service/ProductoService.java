@@ -21,10 +21,10 @@ import com.proyecto.dejatuhuella.repository.UsuarioRepository;
 @Service
 public class ProductoService {
 
-    // Cache para productos destacados
-    private List<Producto> productosDestacadosCache;
+    // Cache para productos destacados (optimizado para memoria)
+    private List<Long> productosDestacadosIdsCache;
     private long ultimaActualizacionCache = 0;
-    private static final long INTERVALO_ACTUALIZACION_CACHE = 2 * 60 * 1000; // 2 minuto en milisegundos
+    private static final long INTERVALO_ACTUALIZACION_CACHE = 5 * 60 * 1000; // 5 minutos en milisegundos
 
     @Autowired
     private ProductoRepository productoRepository;
@@ -169,23 +169,24 @@ public class ProductoService {
         long tiempoActual = System.currentTimeMillis();
         
         // Si el cache está vacío o ha pasado el tiempo de actualización, regeneramos la lista
-        if (productosDestacadosCache == null || 
+        if (productosDestacadosIdsCache == null || 
             tiempoActual - ultimaActualizacionCache > INTERVALO_ACTUALIZACION_CACHE) {
             
-            // Obtener todos los productos
-            List<Producto> todosLosProductos = productoRepository.findAll();
+            // Obtener solo los IDs de productos para reducir memoria
+            List<Long> todosLosIds = productoRepository.findAllIds();
             
             // Mezclar la lista para obtener productos aleatorios
-            java.util.Collections.shuffle(todosLosProductos);
+            java.util.Collections.shuffle(todosLosIds);
             
-            // Tomar los primeros 8 productos (o menos si no hay suficientes)
-            int cantidadProductos = Math.min(4, todosLosProductos.size());
-            productosDestacadosCache = todosLosProductos.subList(0, cantidadProductos);
+            // Tomar los primeros 4 IDs
+            int cantidadProductos = Math.min(4, todosLosIds.size());
+            productosDestacadosIdsCache = todosLosIds.subList(0, cantidadProductos);
             
             // Actualizar el tiempo de la última actualización
             ultimaActualizacionCache = tiempoActual;
         }
         
-        return productosDestacadosCache;
+        // Obtener los productos solo cuando se necesiten
+        return productoRepository.findAllById(productosDestacadosIdsCache);
     }
 }

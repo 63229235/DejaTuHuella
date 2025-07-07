@@ -1,0 +1,1 @@
+web: java -Xmx512m -Xms256m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:+DisableExplicitGC -Djava.security.egd=file:/dev/./urandom -jar target/*.jar --server.port=$PORT
